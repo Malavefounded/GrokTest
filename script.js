@@ -136,7 +136,7 @@ function moveSnake() {
 
 function gameOver() {
     alert(`Game Over! Score: ${score}`);
-    snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
+    snake = [{ x: canvas.width / 2, y: canvas.height / 2 }]; // Reset to center
     dx = 0;
     dy = 0;
     score = 0;
@@ -181,7 +181,7 @@ setInterval(draw, gameSpeed);
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    snake = [{ x: canvas.width / 2, y: canvas.height / 2 }]; // Reset snake position
+    snake = [{ x: canvas.width / 2, y: canvas.height / 2 }]; // Reset snake position to center
     dx = 0;
     dy = 0;
     foods = [];
