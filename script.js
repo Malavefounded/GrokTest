@@ -2,21 +2,25 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreElement = document.getElementById('score');
 const programsLeftElement = document.getElementById('programsLeft');
+const namesCollectedElement = document.getElementById('namesCollected');
+const teamMembersElement = document.getElementById('teamMembers');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Ensure snake starts in a safe position (centered, no immediate collisions)
+// Ensure snake starts in the exact center middle, snapped to grid
 let snake = [
-    { x: Math.floor(canvas.width / 20) * 20, y: Math.floor(canvas.height / 20) * 20 } // Center, snapped to grid
+    { x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 } // Center middle, snapped to grid
 ];
 let dx = 0; // Start stationary, controlled by keys
 let dy = 0;
 let foods = []; // Array to hold 3 programs/figures
 let score = 0;
 let gameSpeed = 100; // milliseconds between moves
-let programsLeft = 52; // Total programs/figures to eat
+let programsLeft = 52; // Total programs/figures to audit
 let fruitEatenCount = 0; // Track number of fruit eaten for name addition
+let collectedNames = []; // Track eaten food items (programs/figures)
+let teamMembersFound = []; // Track names added to snake
 
 // Government programs and figures Elon Musk/DOGE are targeting (including Kamala Harris and Joe Biden)
 const governmentPrograms = [
@@ -74,7 +78,12 @@ function drawSnake() {
         // Add additional names every 4 fruit eaten, on the fourth added segment
         if (fruitEatenCount >= 4 && (snake.length - 4 * Math.floor(fruitEatenCount / 4)) === index + 1) {
             const nameIndex = (Math.floor(fruitEatenCount / 4) - 1) % adminNames.length;
-            ctx.fillText(adminNames[nameIndex], segment.x + 10, segment.y + 10 + 15); // Offset below "Doge"
+            const name = adminNames[nameIndex];
+            ctx.fillText(name, segment.x + 10, segment.y + 10 + 15); // Offset below "Doge"
+            if (!teamMembersFound.includes(name)) {
+                teamMembersFound.push(name);
+                updateTeamMembersDisplay();
+            }
         }
     });
 }
@@ -109,8 +118,8 @@ function moveSnake() {
     // Check collision with self
     for (let segment of snake) {
         if (head.x === segment.x && head.y === segment.y) {
-        gameOver();
-        return;
+            gameOver();
+            return;
         }
     }
 
@@ -123,8 +132,10 @@ function moveSnake() {
             score += 10;
             scoreElement.textContent = `Score: ${score}`;
             programsLeft--;
-            programsLeftElement.textContent = `Government Programs Left to Eat: ${programsLeft}`;
+            programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
             fruitEatenCount++;
+            collectedNames.push(food.program); // Add eaten program to collected names
+            updateNamesCollectedDisplay();
             foodEaten = true;
             return false; // Remove eaten food
         }
@@ -140,16 +151,28 @@ function moveSnake() {
 
 function gameOver() {
     alert(`Game Over! Score: ${score}`);
-    snake = [{ x: Math.floor(canvas.width / 20) * 20, y: Math.floor(canvas.height / 20) * 20 }]; // Reset to center, snapped to grid
+    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }]; // Reset to center middle, snapped to grid
     dx = 0;
     dy = 0;
     score = 0;
     scoreElement.textContent = `Score: ${score}`;
     programsLeft = 52;
-    programsLeftElement.textContent = `Government Programs Left to Eat: ${programsLeft}`;
+    programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
     fruitEatenCount = 0;
+    collectedNames = [];
+    teamMembersFound = [];
     foods = [];
+    updateNamesCollectedDisplay();
+    updateTeamMembersDisplay();
     initFoods();
+}
+
+function updateNamesCollectedDisplay() {
+    namesCollectedElement.innerHTML = 'Names Collected (Food Items)<br>' + collectedNames.map(name => `<div>${name}</div>`).join('');
+}
+
+function updateTeamMembersDisplay() {
+    teamMembersElement.innerHTML = 'Team Members Found (Names on Snake)<br>' + teamMembersFound.map(name => `<div>${name}</div>`).join('');
 }
 
 function draw() {
@@ -179,13 +202,15 @@ document.addEventListener('keydown', (e) => {
 });
 
 initFoods();
+updateNamesCollectedDisplay();
+updateTeamMembersDisplay();
 setInterval(draw, gameSpeed);
 
 // Handle window resize
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    snake = [{ x: Math.floor(canvas.width / 20) * 20, y: Math.floor(canvas.height / 20) * 20 }]; // Reset snake position to center, snapped to grid
+    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }]; // Reset snake position to center middle, snapped to grid
     dx = 0;
     dy = 0;
     foods = [];
