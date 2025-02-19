@@ -1,209 +1,141 @@
-// Hexagonal grid constants
-const GRID_SIZE = 7; // 7x7 hex grid
-const HEX_SIZE = 50; // Size of each hexagon
-const CANVAS_WIDTH = 700;
-const CANVAS_HEIGHT = 700;
-const characters = ['Bigbolz', 'Bigballs', 'Elon', 'Mr. Musk', 'Donald Trump', 'The Donald'];
-const programs = ['USAID', 'CFPB', 'NOAA', 'FEMA', 'DOE', 'NIH']; // Government programs
-let currentProgram = programs[0]; // Start with USAID
-
-// Canvas setup
+// Canvas setup (full-screen)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const message = document.getElementById('message');
+const scoreElement = document.getElementById('score');
 
-// Hexagonal grid calculations
-function hexToPixel(q, r) {
-    const x = HEX_SIZE * (3/2 * q);
-    const y = HEX_SIZE * (Math.sqrt(3) * r + Math.sqrt(3)/2 * q);
-    return { x: x + CANVAS_WIDTH / 2 - HEX_SIZE * 1.5 * (GRID_SIZE / 2), y: y + CANVAS_HEIGHT / 2 - HEX_SIZE * Math.sqrt(3) * (GRID_SIZE / 2) };
-}
+// Set canvas to full screen
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-function drawHex(q, r, raised = false) {
-    const { x, y } = hexToPixel(q, r);
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-        const angle = 2 * Math.PI / 6 * i;
-        const px = x + HEX_SIZE * Math.cos(angle);
-        const py = y + HEX_SIZE * Math.sin(angle);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-    }
-    ctx.closePath();
-    if (raised) {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.fillStyle = 'black';
-        ctx.fill();
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
-        ctx.fillStyle = 'white';
-        ctx.font = '12px Arial';
-        ctx.fillText(getRandomCharacter(), 0, 5); // Small text for pins
-        ctx.restore();
-    } else {
-        ctx.fillStyle = 'black';
-        ctx.fill();
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
-    }
-}
+const gridSize = 20; // Size of each grid cell
+const tileCountX = Math.floor(canvas.width / gridSize); // Number of tiles horizontally
+const tileCountY = Math.floor(canvas.height / gridSize); // Number of tiles vertically
 
-// Martian critter (hexagonal USAID stamp/logo as a hexagon with text)
-let critterQ = 3, critterR = 3; // Start in center
-function drawCritter() {
-    const { x, y } = hexToPixel(critterQ, critterR);
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-        const angle = 2 * Math.PI / 6 * i;
-        const px = x + HEX_SIZE / 2 * Math.cos(angle);
-        const py = y + HEX_SIZE / 2 * Math.sin(angle);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-    }
-    ctx.closePath();
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    ctx.strokeStyle = 'black';
-    ctx.stroke();
-    ctx.fillStyle = 'black';
-    ctx.font = '20px Arial';
-    ctx.fillText(currentProgram, x, y);
-    ctx.fillStyle = 'white'; // Reset for text/pins
-}
+// Snake and food properties
+let snake = [
+    { x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }, // Start in the center
+];
+let food = {
+    x: Math.floor(Math.random() * tileCountX),
+    y: Math.floor(Math.random() * tileCountY),
+};
+let dx = 0; // Horizontal velocity
+let dy = 0; // Vertical velocity
+let score = 0;
+let speed = 7; // Frames per second for automation
 
-// Elon/DOGE (player, white hexagonal silhouette)
-let playerQ = 0, playerR = 0;
-function drawPlayer() {
-    const { x, y } = hexToPixel(playerQ, playerR);
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-        const angle = 2 * Math.PI / 6 * i;
-        const px = x + HEX_SIZE / 2 * Math.cos(angle);
-        const py = y + HEX_SIZE / 2 * Math.sin(angle);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-    }
-    ctx.closePath();
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    ctx.strokeStyle = 'black';
-    ctx.stroke();
-    ctx.fillStyle = 'black'; // Reset fill for hexes
-}
+// Government programs Elon Musk might cut (based on public statements, X posts, or policies)
+const programs = [
+    'NASA Funding', 'EPA Regulations', 'DHS Grants', 'DOE Projects', 'NOAA Research', 'FEMA Aid'
+];
+let currentProgram = programs[Math.floor(Math.random() * programs.length)];
 
-// Pins (raised hexagons with random characters)
-const pins = [];
-function drawPins() {
-    pins.forEach(pin => drawHex(pin.q, pin.r, true));
-}
-
-function getRandomCharacter() {
-    return characters[Math.floor(Math.random() * characters.length)];
-}
-
-function canPlacePin(q, r) {
-    return !pins.some(pin => pin.q === q && pin.r === r) && !(q === critterQ && r === critterR) && !(q === playerQ && r === playerR);
-}
-
-function moveCritter() {
+// Automated movement (simple random direction changes)
+function changeDirection() {
     const directions = [
-        [1, 0], [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1]
+        { dx: 0, dy: 1 }, // Down
+        { dx: 0, dy: -1 }, // Up
+        { dx: 1, dy: 0 }, // Right
+        { dx: -1, dy: 0 }, // Left
     ];
-    const dir = directions[Math.floor(Math.random() * directions.length)];
-    const newQ = critterQ + dir[0];
-    const newR = critterR + dir[1];
-    if (newQ >= 0 && newQ < GRID_SIZE && newR >= 0 && newR < GRID_SIZE && !pins.some(pin => pin.q === newQ && pin.r === newR)) {
-        critterQ = newQ;
-        critterR = newR;
-    } else if (newQ < 0 || newQ >= GRID_SIZE || newR < 0 || newR >= GRID_SIZE) {
-        setTimeout(() => alert('Critter escaped! Try again.'), 100);
-        resetRound();
-    }
+    const currentDir = { dx, dy };
+    let newDir;
+    do {
+        newDir = directions[Math.floor(Math.random() * directions.length)];
+    } while (newDir.dx === -currentDir.dx && newDir.dy === -currentDir.dy); // Avoid 180-degree turns
+    dx = newDir.dx;
+    dy = newDir.dy;
 }
 
-function resetRound() {
-    pins.length = 0;
-    critterQ = 3;
-    critterR = 3;
-    playerQ = 0;
-    playerR = 0;
-    currentProgram = programs[Math.floor(Math.random() * programs.length)]; // Random new program each round
-    
-    // Place 2-3 random pre-existing pins at the start of each round
-    const initialPins = Math.floor(Math.random() * 2) + 2; // 2 or 3 pins
-    for (let i = 0; i < initialPins; i++) {
-        let q, r;
-        do {
-            q = Math.floor(Math.random() * GRID_SIZE);
-            r = Math.floor(Math.random() * GRID_SIZE);
-        } while (!canPlacePin(q, r) || (q === critterQ && r === critterR) || (q === playerQ && r === playerR));
-        pins.push({ q, r });
-    }
-    gameLoop();
-}
-
-let trapsLeft = 3;
-let timeLeft = 30;
-let gameInterval;
-
+// Game loop
 function gameLoop() {
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    // Draw hexagonal grid
-    for (let q = 0; q < GRID_SIZE; q++) {
-        for (let r = 0; r < GRID_SIZE; r++) {
-            drawHex(q, r);
-        }
-    }
-    drawCritter();
-    drawPlayer();
-    drawPins();
-    message.textContent = `Time: ${timeLeft}s | Traps Left: ${trapsLeft}`;
+    // Move snake
+    const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-    if (timeLeft <= 0) {
-        if (pins.some(pin => pin.q === critterQ && pin.r === critterR)) {
-            const fullName = {
-                'USAID': 'U.S. Agency for International Development',
-                'CFPB': 'Consumer Financial Protection Bureau',
-                'NOAA': 'National Oceanic and Atmospheric Administration',
-                'FEMA': 'Federal Emergency Management Agency',
-                'DOE': 'Department of Education',
-                'NIH': 'National Institutes of Health'
-            }[currentProgram];
-            alert(`Congrats! You’ve captured ${fullName}`);
-        } else {
-            alert('Time’s up! Critter escaped. Try again.');
-        }
-        resetRound();
+    // Check collision with walls (no wrapping, game ends on border hit)
+    if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
+        resetGame();
         return;
     }
 
-    timeLeft--;
-    if (Math.random() < 0.05) moveCritter(); // Move critter occasionally
-}
-
-canvas.addEventListener('click', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    for (let q = 0; q < GRID_SIZE; q++) {
-        for (let r = 0; r < GRID_SIZE; r++) {
-            const { x: hexX, y: hexY } = hexToPixel(q, r);
-            const dx = x - hexX;
-            const dy = y - hexY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < HEX_SIZE) {
-                if (trapsLeft > 0 && canPlacePin(q, r)) {
-                    pins.push({ q, r });
-                    trapsLeft--;
-                }
-                break;
-            }
+    // Check collision with self
+    for (let i = 0; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+            resetGame();
+            return;
         }
     }
-    gameLoop();
-});
 
-gameInterval = setInterval(gameLoop, 1000);
-resetRound(); // Start the game with initial pins
+    // Add new head
+    snake.unshift(head);
+
+    // Check if snake ate food
+    if (head.x === food.x && head.y === food.y) {
+        score += 10;
+        currentProgram = programs[Math.floor(Math.random() * programs.length)]; // New program each time
+        food = {
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY),
+        };
+        // Ensure food doesn't spawn on snake
+        while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+            food = {
+                x: Math.floor(Math.random() * tileCountX),
+                y: Math.floor(Math.random() * tileCountY),
+            };
+        }
+    } else {
+        snake.pop(); // Remove tail if no food eaten
+    }
+
+    // Draw everything
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw snake (white)
+    ctx.fillStyle = 'white';
+    snake.forEach(segment => {
+        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+    });
+
+    // Draw food (red text for program name)
+    ctx.fillStyle = 'red';
+    ctx.font = '12px Arial';
+    ctx.fillText(currentProgram, food.x * gridSize + 2, food.y * gridSize + 15);
+
+    // Update score
+    scoreElement.textContent = `Score: ${score}`;
+
+    // Change direction occasionally for automation
+    if (Math.random() < 0.02) { // 2% chance per frame to change direction
+        changeDirection();
+    }
+
+    setTimeout(gameLoop, 1000 / speed); // Control game speed (7 FPS)
+}
+
+function resetGame() {
+    snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
+    food = {
+        x: Math.floor(Math.random() * tileCountX),
+        y: Math.floor(Math.random() * tileCountY),
+    };
+    dx = 0;
+    dy = 0;
+    score = 0;
+    currentProgram = programs[Math.floor(Math.random() * programs.length)];
+    changeDirection(); // Start with a random direction
+}
+
+// Start the game
+changeDirection(); // Initial direction
+gameLoop();
+
+// Handle window resize (keep full-screen)
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    tileCountX = Math.floor(canvas.width / gridSize);
+    tileCountY = Math.floor(canvas.height / gridSize);
+    resetGame(); // Reset on resize to fit new dimensions
+});
