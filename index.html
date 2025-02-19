@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elon’s Mars DOGE Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #ff4500; /* Mars reddish hue */
+        }
+        canvas {
+            border: 2px solid #fff;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="rgba(255, 69, 0, 0.8)"/><circle cx="20" cy="20" r="10" fill="rgba(255, 255, 255, 0.2)"/><circle cx="80" cy="80" r="15" fill="rgba(255, 255, 255, 0.2)"/></svg>') repeat;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Elon Player
+        const elon = {
+            x: 50,
+            y: 300,
+            width: 40,
+            height: 60,
+            speed: 5,
+            dy: 0,
+            gravity: 0.5,
+            jumpPower: -12,
+            isJumping: false
+        };
+
+        // Enemies (Government Programs)
+        const enemies = [
+            { name: 'USAID', x: 200, y: 340, width: 40, height: 40, speed: 2 },
+            { name: 'NOAA', x: 400, y: 340, width: 40, height: 40, speed: 2 },
+            { name: 'CFPB', x: 600, y: 340, width: 40, height: 40, speed: 2 }
+        ];
+
+        // Ground
+        const ground = {
+            y: 340,
+            height: 60,
+            color: '#8b4513' // Mars soil color
+        };
+
+        // Controls
+        let rightPressed = false;
+        let leftPressed = false;
+        let jumpPressed = false;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') rightPressed = true;
+            if (e.key === 'ArrowLeft') leftPressed = true;
+            if (e.key === ' ' && !elon.isJumping) {
+                jumpPressed = true;
+                elon.dy = elon.jumpPower;
+                elon.isJumping = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowRight') rightPressed = false;
+            if (e.key === 'ArrowLeft') leftPressed = false;
+            if (e.key === ' ') jumpPressed = false;
+        });
+
+        // Game Loop
+        function update() {
+            // Movement
+            if (rightPressed && elon.x < canvas.width - elon.width) elon.x += elon.speed;
+            if (leftPressed && elon.x > 0) elon.x -= elon.speed;
+
+            // Gravity and Jumping
+            elon.dy += elon.gravity;
+            elon.y += elon.dy;
+
+            if (elon.y + elon.height > ground.y) {
+                elon.y = ground.y - elon.height;
+                elon.dy = 0;
+                elon.isJumping = false;
+            }
+
+            // Enemy Movement
+            enemies.forEach(enemy => {
+                enemy.x -= enemy.speed;
+                if (enemy.x + enemy.width < 0) enemy.x = canvas.width;
+            });
+
+            // Collision Detection
+            enemies.forEach((enemy, index) => {
+                if (
+                    elon.x < enemy.x + enemy.width &&
+                    elon.x + elon.width > enemy.x &&
+                    elon.y + elon.height > enemy.y &&
+                    elon.y + elon.height < enemy.y + enemy.height + 10
+                ) {
+                    enemies.splice(index, 1); // Squash enemy
+                }
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Ground
+            ctx.fillStyle = ground.color;
+            ctx.fillRect(0, ground.y, canvas.width, ground.height);
+
+            // Draw Elon (X Jump when airborne)
+            ctx.fillStyle = '#fff';
+            if (elon.isJumping) {
+                // X Jump Pose
+                ctx.beginPath();
+                ctx.moveTo(elon.x, elon.y + 20); // Head
+                ctx.lineTo(elon.x + elon.width, elon.y); // Left arm up
+                ctx.moveTo(elon.x + 20, elon.y + 20);
+                ctx.lineTo(elon.x + 40, elon.y + 40); // Right arm down
+                ctx.moveTo(elon.x + 20, elon.y + 20);
+                ctx.lineTo(elon.x, elon.y + 60); // Left leg
+                ctx.moveTo(elon.x + 20, elon.y + 20);
+                ctx.lineTo(elon.x + 40, elon.y + 60); // Right leg
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 5;
+                ctx.stroke();
+            } else {
+                ctx.fillRect(elon.x, elon.y, elon.width, elon.height); // Standing
+            }
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.fillText('Elon', elon.x + 5, elon.y + 15);
+
+            // Draw Enemies
+            enemies.forEach(enemy => {
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px Arial';
+                ctx.fillText(enemy.name, enemy.x + 5, enemy.y + 25);
+            });
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
