@@ -33,7 +33,37 @@ body, html {
     z-index: 10;
     max-width: 200px;
     overflow-y: auto;
-    height: 80vh;
+    height: 20vh;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+}
+
+#namesCollected {
+    position: absolute;
+    top: 30vh;
+    right: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    z-index: 10;
+    max-width: 200px;
+    overflow-y: auto;
+    height: 20vh;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+}
+
+#teamMembers {
+    position: absolute;
+    top: 60vh;
+    right: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    z-index: 10;
+    max-width: 200px;
+    overflow-y: auto;
+    height: 20vh;
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
 }
@@ -44,7 +74,8 @@ body, html {
     left: 10px;
     color: white;
     font-family: Arial, sans-serif;
-    font-size: 24px; /* Increased size for ad text */
+    font-size: 24px;
     z-index: 10;
     text-decoration: underline;
+    text-decoration-color: white; /* Ensure underline is visible */
 }
