@@ -8,23 +8,30 @@ canvas.height = window.innerHeight;
 let snake = [
     { x: canvas.width / 2, y: canvas.height / 2 }
 ];
-let dx = 20; // Snake movement speed (pixels)
+let dx = 0; // Start stationary, controlled by keys
 let dy = 0;
-let food = {};
+let foods = []; // Array to hold 2-3 programs
 let score = 0;
 let gameSpeed = 100; // milliseconds between moves
 
-// Government programs as food (examples of programs being shut down)
+// Government programs Elon Musk is currently looking into (as of Feb 19, 2025, based on public statements)
 const governmentPrograms = [
-    "SNAP", "HUD", "EPA Grants", "Medicaid Expansion", "DOE Loans"
+    "USPS", "EPA Regulations", "NASA Funding", "DHS Grants", "DOE Projects", "NOAA Research", "FEMA Aid", "HUD Programs", "Medicaid Expansion", "SNAP Benefits"
 ];
 
-function initFood() {
-    food = {
-        x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
-        y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
-        program: governmentPrograms[Math.floor(Math.random() * governmentPrograms.length)]
-    };
+function initFoods() {
+    while (foods.length < 3) {
+        let newFood = {
+            x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
+            y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
+            program: governmentPrograms[Math.floor(Math.random() * governmentPrograms.length)]
+        };
+        // Ensure food doesn’t spawn on snake or overlap other food
+        if (!snake.some(segment => segment.x === newFood.x && segment.y === newFood.y) &&
+            !foods.some(food => food.x === newFood.x && food.y === newFood.y)) {
+            foods.push(newFood);
+        }
+    }
 }
 
 function drawSnake() {
@@ -47,20 +54,22 @@ function drawSnake() {
     });
 }
 
-function drawFood() {
+function drawFoods() {
     ctx.fillStyle = 'red';
     ctx.font = '16px Arial';
-    ctx.fillText(food.program, food.x + 10, food.y + 10);
+    foods.forEach(food => {
+        ctx.fillText(food.program, food.x + 10, food.y + 10);
+    });
 }
 
 function moveSnake() {
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-    // Wrap around the screen (no walls)
-    if (head.x < 0) head.x = canvas.width - 20;
-    if (head.x >= canvas.width) head.x = 0;
-    if (head.y < 0) head.y = canvas.height - 20;
-    if (head.y >= canvas.height) head.y = 0;
+    // Check collision with walls (no wrapping)
+    if (head.x < 0 || head.x >= canvas.width - 20 || head.y < 0 || head.y >= canvas.height - 20) {
+        gameOver();
+        return;
+    }
 
     // Check collision with self
     for (let segment of snake) {
@@ -72,24 +81,34 @@ function moveSnake() {
 
     snake.unshift(head);
 
-    // Check if snake ate the food
-    if (head.x === food.x && head.y === food.y) {
-        score += 10;
-        scoreElement.textContent = `Score: ${score}`;
-        initFood();
+    // Check if snake ate any food
+    let foodEaten = false;
+    foods = foods.filter(food => {
+        if (head.x === food.x && head.y === food.y) {
+            score += 10;
+            scoreElement.textContent = `Score: ${score}`;
+            foodEaten = true;
+            return false; // Remove eaten food
+        }
+        return true; // Keep uneaten food
+    });
+
+    if (foodEaten) {
+        initFoods(); // Add new food to maintain 3 programs
     } else {
-        snake.pop();
+        snake.pop(); // Remove tail if no food eaten
     }
 }
 
 function gameOver() {
     alert(`Game Over! Score: ${score}`);
     snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
-    dx = 20;
+    dx = 0;
     dy = 0;
     score = 0;
     scoreElement.textContent = `Score: ${score}`;
-    initFood();
+    foods = [];
+    initFoods();
 }
 
 function draw() {
@@ -97,7 +116,7 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawSnake();
-    drawFood();
+    drawFoods();
     moveSnake();
 }
 
@@ -118,5 +137,16 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-initFood();
+initFoods();
 setInterval(draw, gameSpeed);
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    snake = [{ x: canvas.width / 2, y: canvas.height / 2 }]; // Reset snake position
+    dx = 0;
+    dy = 0;
+    foods = [];
+    initFoods();
+});
