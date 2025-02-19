@@ -49,29 +49,46 @@ function drawHex(q, r, raised = false) {
     }
 }
 
-// Martian critter (simplified USAID stamp as a circle with text for now)
+// Martian critter (hexagonal USAID stamp/logo as a hexagon with text)
 let critterQ = 3, critterR = 3; // Start in center
 function drawCritter() {
     const { x, y } = hexToPixel(critterQ, critterR);
     ctx.beginPath();
-    ctx.arc(x, y, HEX_SIZE / 2, 0, 2 * Math.PI);
+    for (let i = 0; i < 6; i++) {
+        const angle = 2 * Math.PI / 6 * i;
+        const px = x + HEX_SIZE / 2 * Math.cos(angle);
+        const py = y + HEX_SIZE / 2 * Math.sin(angle);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
     ctx.fillStyle = 'white';
     ctx.fill();
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
     ctx.fillStyle = 'black';
     ctx.font = '20px Arial';
-    ctx.fillStyle = 'black';
     ctx.fillText(currentProgram, x, y);
     ctx.fillStyle = 'white'; // Reset for text/pins
 }
 
-// Elon/DOGE (player, white circle)
+// Elon/DOGE (player, white hexagonal silhouette)
 let playerQ = 0, playerR = 0;
 function drawPlayer() {
     const { x, y } = hexToPixel(playerQ, playerR);
     ctx.beginPath();
-    ctx.arc(x, y, HEX_SIZE / 2, 0, 2 * Math.PI);
+    for (let i = 0; i < 6; i++) {
+        const angle = 2 * Math.PI / 6 * i;
+        const px = x + HEX_SIZE / 2 * Math.cos(angle);
+        const py = y + HEX_SIZE / 2 * Math.sin(angle);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
     ctx.fillStyle = 'white';
     ctx.fill();
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
     ctx.fillStyle = 'black'; // Reset fill for hexes
 }
 
@@ -112,6 +129,17 @@ function resetRound() {
     playerQ = 0;
     playerR = 0;
     currentProgram = programs[Math.floor(Math.random() * programs.length)]; // Random new program each round
+    
+    // Place 2-3 random pre-existing pins at the start of each round
+    const initialPins = Math.floor(Math.random() * 2) + 2; // 2 or 3 pins
+    for (let i = 0; i < initialPins; i++) {
+        let q, r;
+        do {
+            q = Math.floor(Math.random() * GRID_SIZE);
+            r = Math.floor(Math.random() * GRID_SIZE);
+        } while (!canPlacePin(q, r) || (q === critterQ && r === critterR) || (q === playerQ && r === playerR));
+        pins.push({ q, r });
+    }
     gameLoop();
 }
 
@@ -178,4 +206,4 @@ canvas.addEventListener('click', (event) => {
 });
 
 gameInterval = setInterval(gameLoop, 1000);
-gameLoop();
+resetRound(); // Start the game with initial pins
