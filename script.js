@@ -6,8 +6,9 @@ const programsLeftElement = document.getElementById('programsLeft');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Ensure snake starts in a safe position (centered, no immediate collisions)
 let snake = [
-    { x: canvas.width / 2, y: canvas.height / 2 }
+    { x: Math.floor(canvas.width / 20) * 20, y: Math.floor(canvas.height / 20) * 20 } // Center, snapped to grid
 ];
 let dx = 0; // Start stationary, controlled by keys
 let dy = 0;
@@ -94,6 +95,9 @@ function drawFoods() {
 }
 
 function moveSnake() {
+    // Only move if dx or dy is non-zero (prevent accidental movement)
+    if (dx === 0 && dy === 0) return;
+
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
     // Check collision with walls (kill zones)
@@ -105,8 +109,8 @@ function moveSnake() {
     // Check collision with self
     for (let segment of snake) {
         if (head.x === segment.x && head.y === segment.y) {
-            gameOver();
-            return;
+        gameOver();
+        return;
         }
     }
 
@@ -136,7 +140,7 @@ function moveSnake() {
 
 function gameOver() {
     alert(`Game Over! Score: ${score}`);
-    snake = [{ x: canvas.width / 2, y: canvas.height / 2 }]; // Reset to center
+    snake = [{ x: Math.floor(canvas.width / 20) * 20, y: Math.floor(canvas.height / 20) * 20 }]; // Reset to center, snapped to grid
     dx = 0;
     dy = 0;
     score = 0;
@@ -181,7 +185,7 @@ setInterval(draw, gameSpeed);
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    snake = [{ x: canvas.width / 2, y: canvas.height / 2 }]; // Reset snake position to center
+    snake = [{ x: Math.floor(canvas.width / 20) * 20, y: Math.floor(canvas.height / 20) * 20 }]; // Reset snake position to center, snapped to grid
     dx = 0;
     dy = 0;
     foods = [];
