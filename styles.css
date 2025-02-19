@@ -1,13 +1,24 @@
-body {
+body, html {
     margin: 0;
-    background: black;
+    padding: 0;
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    background: black;
 }
 
 #gameCanvas {
     display: block;
     width: 100vw;
     height: 100vh;
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    z-index: 10;
 }
