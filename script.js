@@ -14,12 +14,12 @@ let snake = [
 ];
 let dx = 0; // Start stationary, controlled by keys
 let dy = 0;
-let foods = []; // Array to hold 3 programs/figures
+let foods = []; // Array to hold 3 items (government programs and team members)
 let score = 0;
 let gameSpeed = 100; // milliseconds between moves
-let programsLeft = 52; // Total programs/figures to audit
-let fruitEatenCount = 0; // Track number of fruit eaten for name addition
-let collectedNames = []; // Track eaten food items (programs/figures)
+let programsLeft = 52; // Total government programs to audit
+let fruitEatenCount = 0; // Track number of items eaten for name addition
+let collectedNames = []; // Track eaten food items (programs/figures and team members)
 let teamMembersFound = []; // Track names added to snake
 
 // Government programs and figures Elon Musk/DOGE are targeting (including Kamala Harris and Joe Biden)
@@ -43,22 +43,111 @@ const governmentPrograms = [
     "National Park Service Programs", "Food and Drug Administration (FDA) Programs", "Centers for Disease Control and Prevention (CDC) Programs"
 ];
 
-// Key cabinet members Elon Musk is happy working with
-const adminNames = ["Donald Trump", "Marco Rubio", "Scott Bessent", "Russell Vought", "Stephen Miller", "Vivek Ramaswamy"];
+// Key team members Elon Musk is happy working with
+const teamMembers = ["Elon Musk", "Donald Trump", "Marco Rubio", "Scott Bessent", "Russell Vought", "Stephen Miller", "Vivek Ramaswamy"];
+
+let killZones = []; // Array to hold 3 kill zones
 
 function initFoods() {
     while (foods.length < 3) {
         let newFood = {
             x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
             y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
-            program: governmentPrograms[Math.floor(Math.random() * governmentPrograms.length)]
+            isProgram: Math.random() < 0.7, // 70% chance for government program, 30% for team member
+            item: Math.random() < 0.7 ? 
+                governmentPrograms[Math.floor(Math.random() * governmentPrograms.length)] : 
+                teamMembers[Math.floor(Math.random() * teamMembers.length)]
         };
-        // Ensure food doesn’t spawn on snake or overlap other food
+        // Ensure food doesn’t spawn on snake, kill zones, or overlap other food
         if (!snake.some(segment => segment.x === newFood.x && segment.y === newFood.y) &&
-            !foods.some(food => food.x === newFood.x && food.y === newFood.y)) {
+            !foods.some(food => food.x === newFood.x && food.y === newFood.y) &&
+            !killZones.some(zone => isPointInKillZone(newFood.x, newFood.y, zone))) {
             foods.push(newFood);
         }
     }
+}
+
+function initKillZones() {
+    killZones = [];
+    const centerX = Math.floor(canvas.width / 40) * 20;
+    const centerY = Math.floor(canvas.height / 40) * 20;
+    const minDistance = 100; // Ensure kill zones are far from center
+
+    while (killZones.length < 3) {
+        let zone = generateRandomKillZone();
+        if (!killZones.some(kz => doZonesOverlap(kz, zone)) &&
+            Math.hypot(zone.x - centerX, zone.y - centerY) > minDistance) {
+            killZones.push(zone);
+        }
+    }
+}
+
+function generateRandomKillZone() {
+    const shapes = [
+        { type: 'L', width: 60, height: 20 }, // L-shaped (vertical + horizontal)
+        { type: 'T', width: 60, height: 20 }, // T-shaped
+        { type: 'I', width: 20, height: 80 }  // I-shaped
+    ];
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    let x, y;
+
+    do {
+        x = Math.floor(Math.random() * (canvas.width / 20 - (shape.width / 20))) * 20;
+        y = Math.floor(Math.random() * (canvas.height / 20 - (shape.height / 20))) * 20;
+    } while (Math.abs(x - Math.floor(canvas.width / 40) * 20) < 100 && Math.abs(y - Math.floor(canvas.height / 40) * 20) < 100);
+
+    return { x, y, width: shape.width, height: shape.height, type: shape.type };
+}
+
+function drawKillZones() {
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    killZones.forEach(zone => {
+        ctx.beginPath();
+        if (zone.type === 'L') {
+            ctx.moveTo(zone.x, zone.y);
+            ctx.lineTo(zone.x + zone.width, zone.y);
+            ctx.lineTo(zone.x + zone.width, zone.y + zone.height);
+            ctx.moveTo(zone.x + zone.width, zone.y);
+            ctx.lineTo(zone.x + zone.width - zone.height, zone.y);
+        } else if (zone.type === 'T') {
+            ctx.moveTo(zone.x + zone.width / 2, zone.y);
+            ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
+            ctx.moveTo(zone.x, zone.y + zone.height / 2);
+            ctx.lineTo(zone.x + zone.width, zone.y + zone.height / 2);
+        } else if (zone.type === 'I') {
+            ctx.moveTo(zone.x + zone.width / 2, zone.y);
+            ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
+        }
+        ctx.stroke();
+    });
+}
+
+function isPointInKillZone(x, y, zone) {
+    if (zone.type === 'L') {
+        return (x >= zone.x && x <= zone.x + zone.width && y >= zone.y && y <= zone.y + zone.height) ||
+               (x >= zone.x + zone.width - zone.height && x <= zone.x + zone.width && y >= zone.y && y <= zone.y + zone.height);
+    } else if (zone.type === 'T') {
+        return (x >= zone.x && x <= zone.x + zone.width && y >= zone.y + zone.height / 2 && y <= zone.y + zone.height) ||
+               (x >= zone.x + zone.width / 2 - zone.width / 2 && x <= zone.x + zone.width / 2 + zone.width / 2 && y >= zone.y && y <= zone.y + zone.height / 2);
+    } else if (zone.type === 'I') {
+        return x >= zone.x + zone.width / 2 - 5 && x <= zone.x + zone.width / 2 + 5 && y >= zone.y && y <= zone.y + zone.height;
+    }
+    return false;
+}
+
+function doZonesOverlap(zone1, zone2) {
+    const overlap = (zone1.x < zone2.x + zone2.width && zone1.x + zone1.width > zone2.x &&
+                     zone1.y < zone2.y + zone2.height && zone1.y + zone1.height > zone2.y);
+    return overlap || 
+           (zone1.type === 'L' && zone2.type === 'L' && checkComplexOverlap(zone1, zone2)) ||
+           (zone1.type === 'T' && zone2.type === 'T' && checkComplexOverlap(zone1, zone2)) ||
+           (zone1.type === 'I' && zone2.type === 'I' && checkComplexOverlap(zone1, zone2));
+}
+
+function checkComplexOverlap(zone1, zone2) {
+    // Simplified overlap check for complex shapes (can be refined if needed)
+    return Math.hypot(zone1.x - zone2.x, zone1.y - zone2.y) < (zone1.width + zone2.width) / 2;
 }
 
 function drawSnake() {
@@ -75,10 +164,10 @@ function drawSnake() {
         ctx.fillStyle = 'white';
         ctx.fillText("Doge", segment.x + 10, segment.y + 10);
 
-        // Add additional names every 4 fruit eaten, on the fourth added segment
+        // Add additional names every 4 items eaten, on the fourth added segment
         if (fruitEatenCount >= 4 && (snake.length - 4 * Math.floor(fruitEatenCount / 4)) === index + 1) {
-            const nameIndex = (Math.floor(fruitEatenCount / 4) - 1) % adminNames.length;
-            const name = adminNames[nameIndex];
+            const nameIndex = (Math.floor(fruitEatenCount / 4) - 1) % teamMembers.length;
+            const name = teamMembers[nameIndex];
             ctx.fillText(name, segment.x + 10, segment.y + 10 + 15); // Offset below "Doge"
             if (!teamMembersFound.includes(name)) {
                 teamMembersFound.push(name);
@@ -89,17 +178,34 @@ function drawSnake() {
 }
 
 function drawFoods() {
-    ctx.fillStyle = 'red';
     foods.forEach(food => {
-        // Draw apple (circle) as food
-        ctx.beginPath();
-        ctx.arc(food.x + 10, food.y + 10, 10, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Draw program name below the apple
-        ctx.fillStyle = 'white';
-        ctx.font = '12px Arial';
-        ctx.fillText(food.program, food.x + 10, food.y + 25); // 15px below the center of the apple
+        if (food.isProgram) {
+            ctx.fillStyle = 'red'; // Government programs (apples)
+            ctx.beginPath();
+            ctx.arc(food.x + 10, food.y + 10, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below apple
+        } else {
+            ctx.fillStyle = 'blue'; // Team members (stars)
+            ctx.beginPath();
+            ctx.moveTo(food.x + 10, food.y); // Top point
+            ctx.lineTo(food.x + 15, food.y + 10); // Right point
+            ctx.lineTo(food.x + 20, food.y + 10); // Right-middle point
+            ctx.lineTo(food.x + 13, food.y + 15); // Bottom-middle point
+            ctx.lineTo(food.x + 17, food.y + 20); // Bottom point
+            ctx.lineTo(food.x + 10, food.y + 15); // Left-middle point
+            ctx.lineTo(food.x + 3, food.y + 20); // Left-bottom point
+            ctx.lineTo(food.x + 7, food.y + 15); // Left-middle (bottom)
+            ctx.lineTo(food.x, food.y + 10); // Left point
+            ctx.lineTo(food.x + 5, food.y + 10); // Left-middle (top)
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below star
+        }
     });
 }
 
@@ -113,6 +219,14 @@ function moveSnake() {
     if (head.x < 0 || head.x >= canvas.width - 20 || head.y < 0 || head.y >= canvas.height - 20) {
         gameOver();
         return;
+    }
+
+    // Check collision with kill zones
+    for (let zone of killZones) {
+        if (isPointInKillZone(head.x, head.y, zone)) {
+            gameOver();
+            return;
+        }
     }
 
     // Check collision with self
@@ -129,12 +243,20 @@ function moveSnake() {
     let foodEaten = false;
     foods = foods.filter(food => {
         if (head.x === food.x && head.y === food.y) {
-            score += 10;
+            if (food.isProgram) {
+                score += 5; // 5 points for government programs
+                for (let i = 0; i < 5; i++) snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y }); // 5 size increase
+            } else {
+                score += 10; // 10 points for team members
+                snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y }); // 1 size increase
+            }
             scoreElement.textContent = `Score: ${score}`;
-            programsLeft--;
-            programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
+            if (food.isProgram) {
+                programsLeft--;
+                programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
+            }
             fruitEatenCount++;
-            collectedNames.push(food.program); // Add eaten program to collected names
+            collectedNames.push(food.item); // Add eaten item to collected names
             updateNamesCollectedDisplay();
             foodEaten = true;
             return false; // Remove eaten food
@@ -143,7 +265,7 @@ function moveSnake() {
     });
 
     if (foodEaten) {
-        initFoods(); // Add new food to maintain 3 programs
+        initFoods(); // Add new food to maintain 3 items
     } else {
         snake.pop(); // Remove tail if no food eaten
     }
@@ -162,9 +284,11 @@ function gameOver() {
     collectedNames = [];
     teamMembersFound = [];
     foods = [];
+    killZones = [];
     updateNamesCollectedDisplay();
     updateTeamMembersDisplay();
     initFoods();
+    initKillZones();
 }
 
 function updateNamesCollectedDisplay() {
@@ -181,6 +305,7 @@ function draw() {
 
     drawSnake();
     drawFoods();
+    drawKillZones();
     moveSnake();
 }
 
@@ -202,6 +327,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 initFoods();
+initKillZones();
 updateNamesCollectedDisplay();
 updateTeamMembersDisplay();
 setInterval(draw, gameSpeed);
@@ -214,5 +340,7 @@ window.addEventListener('resize', () => {
     dx = 0;
     dy = 0;
     foods = [];
+    killZones = [];
     initFoods();
+    initKillZones();
 });
