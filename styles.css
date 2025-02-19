@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    background: black;
+    overflow: hidden;
+    background-image: url('https://cdn.pixabay.com/photo/2015/10/12/15/01/stars-984500_960_720.jpg'); /* Simple starry background */
+    background-size: cover;
+}
+
+#gameCanvas {
+    border: 1px solid white;
+}
+
+.hex {
+    stroke: white;
+    fill: black;
+    filter: drop-shadow(0 0 5px rgba(255, 69, 0, 0.5)); /* Orange Mars glow */
+}
+
+.raised-hex {
+    stroke: white;
+    fill: black;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); /* White glow for raised pins */
+    transform: perspective(500px) rotateX(20deg) translateZ(10px); /* 3D raised effect */
+}
+
+.pin-text {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    fill: white;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
