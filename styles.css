@@ -37,3 +37,9 @@ body {
     stroke: black;
     stroke-width: 2;
 }
+
+.player-hex {
+    fill: white;
+    stroke: black;
+    stroke-width: 2;
+}
