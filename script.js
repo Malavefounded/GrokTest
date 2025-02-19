@@ -4,7 +4,7 @@ const HEX_SIZE = 50; // Size of each hexagon
 const CANVAS_WIDTH = 700;
 const CANVAS_HEIGHT = 700;
 const characters = ['Bigbolz', 'Bigballs', 'Elon', 'Mr. Musk', 'Donald Trump', 'The Donald'];
-const programs = ['USAID', 'CFPB', 'NOAA', 'FEMA', 'DOE', 'NIH']; // Government programs (expand as needed)
+const programs = ['USAID', 'CFPB', 'NOAA', 'FEMA', 'DOE', 'NIH']; // Government programs
 let currentProgram = programs[0]; // Start with USAID
 
 // Canvas setup
@@ -16,10 +16,10 @@ const message = document.getElementById('message');
 function hexToPixel(q, r) {
     const x = HEX_SIZE * (3/2 * q);
     const y = HEX_SIZE * (Math.sqrt(3) * r + Math.sqrt(3)/2 * q);
-    return { x: x + CANVAS_WIDTH / 2 - HEX_SIZE * 1.5, y: y + CANVAS_HEIGHT / 2 - HEX_SIZE * Math.sqrt(3) };
+    return { x: x + CANVAS_WIDTH / 2 - HEX_SIZE * 1.5 * (GRID_SIZE / 2), y: y + CANVAS_HEIGHT / 2 - HEX_SIZE * Math.sqrt(3) * (GRID_SIZE / 2) };
 }
 
-function drawHex(q, r) {
+function drawHex(q, r, raised = false) {
     const { x, y } = hexToPixel(q, r);
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
@@ -30,11 +30,26 @@ function drawHex(q, r) {
         else ctx.lineTo(px, py);
     }
     ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
+    if (raised) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.fillStyle = 'black';
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        ctx.fillStyle = 'white';
+        ctx.font = '12px Arial';
+        ctx.fillText(getRandomCharacter(), 0, 5); // Small text for pins
+        ctx.restore();
+    } else {
+        ctx.fillStyle = 'black';
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+    }
 }
 
-// Martian critter (USAID stamp/logo as a simple circle for now)
+// Martian critter (simplified USAID stamp as a circle with text for now)
 let critterQ = 3, critterR = 3; // Start in center
 function drawCritter() {
     const { x, y } = hexToPixel(critterQ, critterR);
@@ -42,14 +57,14 @@ function drawCritter() {
     ctx.arc(x, y, HEX_SIZE / 2, 0, 2 * Math.PI);
     ctx.fillStyle = 'white';
     ctx.fill();
-    ctx.fillStyle = 'black'; // Reset fill for hexes
+    ctx.fillStyle = 'black';
     ctx.font = '20px Arial';
     ctx.fillStyle = 'black';
     ctx.fillText(currentProgram, x, y);
     ctx.fillStyle = 'white'; // Reset for text/pins
 }
 
-// Elon/DOGE (player, simple white circle for now)
+// Elon/DOGE (player, white circle)
 let playerQ = 0, playerR = 0;
 function drawPlayer() {
     const { x, y } = hexToPixel(playerQ, playerR);
@@ -63,20 +78,7 @@ function drawPlayer() {
 // Pins (raised hexagons with random characters)
 const pins = [];
 function drawPins() {
-    pins.forEach(pin => {
-        const { x, y } = hexToPixel(pin.q, pin.r);
-        ctx.save();
-        ctx.translate(x, y);
-        drawHex(0, 0); // Draw base hex
-        ctx.fillStyle = 'black';
-        ctx.fill();
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
-        ctx.fillStyle = 'white';
-        ctx.font = '12px Arial';
-        ctx.fillText(pin.text, 0, 5); // Small text at top of hex
-        ctx.restore();
-    });
+    pins.forEach(pin => drawHex(pin.q, pin.r, true));
 }
 
 function getRandomCharacter() {
@@ -98,7 +100,6 @@ function moveCritter() {
         critterQ = newQ;
         critterR = newR;
     } else if (newQ < 0 || newQ >= GRID_SIZE || newR < 0 || newR >= GRID_SIZE) {
-        // Critter escapes
         setTimeout(() => alert('Critter escaped! Try again.'), 100);
         resetRound();
     }
@@ -120,6 +121,7 @@ let gameInterval;
 
 function gameLoop() {
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // Draw hexagonal grid
     for (let q = 0; q < GRID_SIZE; q++) {
         for (let r = 0; r < GRID_SIZE; r++) {
             drawHex(q, r);
@@ -165,7 +167,7 @@ canvas.addEventListener('click', (event) => {
             const distance = Math.sqrt(dx * dx + dy * dy);
             if (distance < HEX_SIZE) {
                 if (trapsLeft > 0 && canPlacePin(q, r)) {
-                    pins.push({ q, r, text: getRandomCharacter() });
+                    pins.push({ q, r });
                     trapsLeft--;
                 }
                 break;
