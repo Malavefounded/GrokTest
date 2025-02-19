@@ -1,6 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreElement = document.getElementById('score');
+const programsLeftElement = document.getElementById('programsLeft');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -10,14 +11,35 @@ let snake = [
 ];
 let dx = 0; // Start stationary, controlled by keys
 let dy = 0;
-let foods = []; // Array to hold 2-3 programs
+let foods = []; // Array to hold 3 programs/figures
 let score = 0;
 let gameSpeed = 100; // milliseconds between moves
+let programsLeft = 52; // Total programs/figures to eat
+let fruitEatenCount = 0; // Track number of fruit eaten for name addition
 
-// Government programs Elon Musk is currently looking into (as of Feb 19, 2025, based on public statements)
+// Government programs and figures Elon Musk/DOGE are targeting (including Kamala Harris and Joe Biden)
 const governmentPrograms = [
-    "USPS", "EPA Regulations", "NASA Funding", "DHS Grants", "DOE Projects", "NOAA Research", "FEMA Aid", "HUD Programs", "Medicaid Expansion", "SNAP Benefits"
+    "USPS", "EPA Regulations", "NASA Funding", "DHS Grants", "DOE Projects", "NOAA Research", "FEMA Aid", 
+    "HUD Programs", "Medicaid Expansion", "SNAP Benefits", "Kamala Harris", "Joe Biden", 
+    "Department of Education", "Small Business Administration (SBA)", "Consumer Financial Protection Bureau (CFPB)", 
+    "General Services Administration (GSA)", "National Endowment for Democracy", "Federal Aviation Administration (FAA)", 
+    "Federal Bureau of Investigation (FBI)", "Office of Personnel Management (OPM)", "Treasury Payment Systems", 
+    "Institute of Education Sciences (IES)", "Diversity, Equity, and Inclusion (DEI) Programs", "Foreign Aid Programs", 
+    "Humanitarian Aid Programs", "Development Programs", "Security Programs", "State Department Programs", 
+    "Federal Student Loan Programs", "Federal Research Contracts", "Federal Workforce Programs", 
+    "Environmental Protection Agency (EPA) Programs", "Department of Labor Programs", 
+    "Department of Health and Human Services (HHS) Programs", "Department of Agriculture Programs", 
+    "Department of Energy Programs", "Department of Commerce Programs", "Department of Defense Programs", 
+    "Department of Justice Programs", "Department of Transportation Programs", "Department of Housing and Urban Development (HUD) Programs", 
+    "Department of the Interior Programs", "Department of Veterans Affairs (VA) Programs", "National Science Foundation (NSF) Programs", 
+    "National Institutes of Health (NIH) Programs", "Federal Communications Commission (FCC) Programs", 
+    "Federal Trade Commission (FTC) Programs", "Securities and Exchange Commission (SEC) Programs", 
+    "Federal Reserve Programs", "Amtrak Programs", "Public Broadcasting Service (PBS) Funding", 
+    "National Park Service Programs", "Food and Drug Administration (FDA) Programs", "Centers for Disease Control and Prevention (CDC) Programs"
 ];
+
+// Key cabinet members Elon Musk is happy working with
+const adminNames = ["Donald Trump", "Marco Rubio", "Scott Bessent", "Russell Vought", "Stephen Miller", "Vivek Ramaswamy"];
 
 function initFoods() {
     while (foods.length < 3) {
@@ -36,7 +58,7 @@ function initFoods() {
 
 function drawSnake() {
     ctx.fillStyle = 'green'; // Snake body color
-    ctx.font = '16px Arial'; // Font for "D.O.G.E" text
+    ctx.font = '16px Arial'; // Font for names
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -44,28 +66,37 @@ function drawSnake() {
         // Draw thick snake segment (20x20 pixels)
         ctx.fillRect(segment.x, segment.y, 20, 20);
 
-        // Draw "D.O.G.E" text on the snake
-        let text = "D.O.G.E";
-        if (index % 4 === 0) { // Repeat "D.O.G.E" every 4 segments for visibility
-            ctx.fillStyle = 'white';
-            ctx.fillText(text, segment.x + 10, segment.y + 10);
-            ctx.fillStyle = 'green'; // Reset color for next segment
+        // Always show "Doge" as the main name on every segment
+        ctx.fillStyle = 'white';
+        ctx.fillText("Doge", segment.x + 10, segment.y + 10);
+
+        // Add additional names every 4 fruit eaten, on the fourth added segment
+        if (fruitEatenCount >= 4 && (snake.length - 4 * Math.floor(fruitEatenCount / 4)) === index + 1) {
+            const nameIndex = (Math.floor(fruitEatenCount / 4) - 1) % adminNames.length;
+            ctx.fillText(adminNames[nameIndex], segment.x + 10, segment.y + 10 + 15); // Offset below "Doge"
         }
     });
 }
 
 function drawFoods() {
     ctx.fillStyle = 'red';
-    ctx.font = '16px Arial';
     foods.forEach(food => {
-        ctx.fillText(food.program, food.x + 10, food.y + 10);
+        // Draw apple (circle) as food
+        ctx.beginPath();
+        ctx.arc(food.x + 10, food.y + 10, 10, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw program name below the apple
+        ctx.fillStyle = 'white';
+        ctx.font = '12px Arial';
+        ctx.fillText(food.program, food.x + 10, food.y + 25); // 15px below the center of the apple
     });
 }
 
 function moveSnake() {
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-    // Check collision with walls (no wrapping)
+    // Check collision with walls (kill zones)
     if (head.x < 0 || head.x >= canvas.width - 20 || head.y < 0 || head.y >= canvas.height - 20) {
         gameOver();
         return;
@@ -87,6 +118,9 @@ function moveSnake() {
         if (head.x === food.x && head.y === food.y) {
             score += 10;
             scoreElement.textContent = `Score: ${score}`;
+            programsLeft--;
+            programsLeftElement.textContent = `Government Programs Left to Eat: ${programsLeft}`;
+            fruitEatenCount++;
             foodEaten = true;
             return false; // Remove eaten food
         }
@@ -107,6 +141,9 @@ function gameOver() {
     dy = 0;
     score = 0;
     scoreElement.textContent = `Score: ${score}`;
+    programsLeft = 52;
+    programsLeftElement.textContent = `Government Programs Left to Eat: ${programsLeft}`;
+    fruitEatenCount = 0;
     foods = [];
     initFoods();
 }
