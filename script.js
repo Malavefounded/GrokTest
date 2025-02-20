@@ -11,7 +11,7 @@ const HEIGHT = 900;
 const FOOD_SIZE = 15; // Increased food size for larger canvas
 const TEAM_MEMBER_POINTS = 5;
 const AGENCY_POINTS = 10;
-const FPS = 30; // Increased FPS to make snake faster
+const FPS = 60; // Increased FPS significantly to make snake faster
 
 let snakePos = [WIDTH / 2, HEIGHT / 2];
 let snakeBody = [[WIDTH / 2, HEIGHT / 2]];
@@ -95,8 +95,8 @@ function draw() {
         ctx.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);
         if (i === 0) { // Draw "D.O.G.E" on snake head
             ctx.fillStyle = 'white';
-            ctx.font = '15px Arial'; // Increased font size for larger canvas
-            ctx.fillText('D.O.G.E', x + 3, y + 12); // Adjusted position for larger canvas
+            ctx.font = '15px Arial'; // Adjusted font size to ensure "D.O.G.E" fits
+            ctx.fillText('D.O.G.E', x + 2, y + 12); // Adjusted position for clarity
             ctx.fillStyle = 'black'; // Reset fill style for body
         }
     }
@@ -110,14 +110,14 @@ function draw() {
         ctx.closePath();
 
         ctx.fillStyle = 'black';
-        ctx.font = '20px Arial'; // Increased font size for larger canvas
-        ctx.fillText(food.name, food.pos[0], food.pos[1] + FOOD_SIZE + 10); // Moved text up, adjusted for larger canvas
+        ctx.font = '20px Arial';
+        ctx.fillText(food.name, food.pos[0], food.pos[1] + FOOD_SIZE + 5); // Moved text higher (reduced offset)
     });
 
     // Draw reset text (blue, top center)
     ctx.fillStyle = 'blue';
-    ctx.font = '30px Arial'; // Increased font size for larger canvas
-    ctx.fillText('Press SPACE to reset', WIDTH / 2 - 165, 45); // Adjusted position for larger canvas
+    ctx.font = '30px Arial';
+    ctx.fillText('Press SPACE to reset', WIDTH / 2 - 165, 45);
 
     // Update score display
     scoreDisplay.textContent = `Score: ${score}  Length: ${snakeBody.length}`;
@@ -151,4 +151,62 @@ function update(currentTime) {
     snakeBody.unshift([snakePos[0], snakePos[1]]);
 
     // Check for food collision
-    let
+    let foodEaten = null;
+    foods.forEach((food, index) => {
+        if (snakePos[0] === food.pos[0] && snakePos[1] === food.pos[1]) {
+            foodEaten = { ...food, index };
+            score += food.type === 'Team Member' ? TEAM_MEMBER_POINTS : AGENCY_POINTS;
+            if (food.type === 'Team Member') {
+                collectedTeamMembers.add(food.name);
+            } else {
+                collectedAgencies.add(food.name);
+            }
+        }
+    });
+
+    if (foodEaten) {
+        foods.splice(foodEaten.index, 1);
+        const newFoodType = foodEaten.type === 'Team Member' ? 'Team Member' : 'Agency';
+        const newFoodName = randomChoice(newFoodType === 'Team Member' ? teamMembers : agencies);
+        const newPos = getNonOverlappingPos(foods);
+        foods.push({ type: newFoodType, name: newFoodName, pos: newPos });
+    } else {
+        snakeBody.pop();
+    }
+
+    // Check borders (kill zones)
+    if (snakePos[0] < 0 || snakePos[0] >= WIDTH || snakePos[1] < 0 || snakePos[1] >= HEIGHT) {
+        gameOver = true;
+    }
+}
+
+// Reset game
+function resetGame() {
+    snakePos = [WIDTH / 2, HEIGHT / 2];
+    snakeBody = [[WIDTH / 2, HEIGHT / 2]];
+    direction = 'RIGHT';
+    changeTo = direction;
+    score = 0;
+    gameOver = false;
+    collectedTeamMembers.clear();
+    collectedAgencies.clear();
+    foods = [
+        { type: "Agency", name: randomChoice(agencies), pos: getNonOverlappingPos() },
+        { type: "Agency", name: randomChoice(agencies), pos: getNonOverlappingPos([foods[0]]) },
+        { type: "Team Member", name: randomChoice(teamMembers), pos: getNonOverlappingPos(foods) }
+    ];
+    lastUpdateTime = performance.now(); // Reset last update time using performance.now() for consistent timing
+    gameLoop();
+}
+
+// Game loop
+function gameLoop(timestamp) {
+    draw();
+    if (!gameOver) {
+        update(timestamp);
+    }
+    requestAnimationFrame(gameLoop);
+}
+
+// Start the game
+requestAnimationFrame(gameLoop);
