@@ -120,7 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 foods.push({
                     x: Math.floor(Math.random() * tileCountX),
                     y: Math.floor(Math.random() * tileCountY),
-                    type: Math.random() < 0.5 ? 'audit' : 'team'
+                    type: Math.random() < 0.5 ? 'audit' : 'team',
+                    acronym: foods[i].type === 'audit' ? agencyList[agencyList.length - 1] : null // Assign unique acronym to new Audit
                 });
                 foodEaten = true;
                 // Ensure a new Democrat appears every time food is eaten
@@ -163,13 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
         foods.forEach(food => {
             ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-            if (food.type === 'audit' && agencyList.length > 0) {
-                // Use the last unique acronym added to ensure no duplicates
-                const acronym = agencyList[agencyList.length - 1];
+            if (food.type === 'audit' && food.acronym) {
+                // Use the acronym assigned to this specific food object
                 ctx.fillStyle = 'white';
                 ctx.font = '10px Arial';
-                const textX = food.x * gridSize + (gridSize - ctx.measureText(acronym).width) / 2;
-                ctx.fillText(acronym, textX, food.y * gridSize + gridSize + 10);
+                const textX = food.x * gridSize + (gridSize - ctx.measureText(food.acronym).width) / 2;
+                ctx.fillText(food.acronym, textX, food.y * gridSize + gridSize + 10);
             }
         });
 
