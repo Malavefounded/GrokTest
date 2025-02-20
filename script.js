@@ -77,18 +77,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addDemocrat() {
-        if (usedDemocratNames.size >= democratNames.length) return;
-        const name = democratNames[Math.floor(Math.random() * democratNames.length)]; // Random selection
-        if (!usedDemocratNames.has(name)) {
-            usedDemocratNames.add(name);
-            democratList.push(name);
-            democrats.push({
+        if (usedDemocratNames.size >= democratNames.length) {
+            console.warn('No more unique Democrat names available.');
+            return; // Prevent freezing if no names left
+        }
+        let name;
+        let attempts = 0;
+        const maxAttempts = 10; // Prevent infinite loop
+        do {
+            name = democratNames[Math.floor(Math.random() * democratNames.length)]; // Random selection
+            attempts++;
+            if (attempts > maxAttempts) {
+                console.error('Failed to find unique Democrat name after max attempts.');
+                return; // Exit to prevent freezing
+            }
+        } while (usedDemocratNames.has(name));
+        usedDemocratNames.add(name);
+        democratList.push(name);
+        // Check for valid spawn location (not overlapping snake, foods, or other Democrats)
+        let validPosition = false;
+        let newDemocrat;
+        attempts = 0;
+        do {
+            newDemocrat = {
                 x: Math.floor(Math.random() * tileCountX),
                 y: Math.floor(Math.random() * tileCountY),
                 name
-            });
-            updateUIText();
-        }
+            };
+            validPosition = !snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) &&
+                           !foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) &&
+                           !democrats.some(d => d.x === newDemocrat.x && d.y === newDemocrat.y);
+            attempts++;
+            if (attempts > maxAttempts) {
+                console.warn('Could not find valid position for Democrat, skipping spawn.');
+                return; // Skip spawn to prevent freezing
+            }
+        } while (!validPosition);
+        democrats.push(newDemocrat);
+        updateUIText();
     }
 
     function updateUIText() {
@@ -131,6 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!foodEaten) snake.pop();
 
+            // Check for overlap with existing Democrats or foods to prevent freezing
+            if (democrats.some(d => d.x === head.x && d.y === head.y) || 
+                foods.some(f => f.x === head.x && f.y === head.y && f !== foods[foods.length - 1])) {
+                gameOver();
+                return;
+            }
+
             // Check collisions
             if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
                 gameOver();
@@ -142,4 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
             }
-            for 
+            for (let i = 0; i < democrats.length; i++) {
+                if (head.x === democrats[i].x && head.y === democrats[i].y) {
+                    gameOver();
+                    return;
+                }
+            }
+
+            // Draw everything
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
