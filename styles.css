@@ -40,14 +40,15 @@ body {
 
 #democratsText {
     position: absolute;
-    left: -150px; /* Position left of the border, outside the canvas */
-    bottom: 10px; /* Position below the canvas, near the bottom */
+    left: -120px; /* Adjusted to position closer to the left border, aligning with yellow X */
+    bottom: 20px; /* Adjusted to position below the canvas, aligning with yellow X */
     color: white;
     font-family: Arial, sans-serif;
     font-size: 12px; /* Small but legible text */
     text-align: left;
     white-space: pre-line; /* Preserve line breaks */
     display: none; /* Hidden by default, shown only when a new Democrat appears */
+    z-index: 10; /* Ensure text is above other elements */
 }
 
 #gameCanvas {
