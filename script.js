@@ -1,3 +1,4 @@
+
 // Initialize the canvas
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -19,7 +20,7 @@ let direction = 'RIGHT';
 let changeTo = direction;
 let score = 0;
 let gameOver = false;
-let lastUpdateTime = 0;
+let lastUpdateTime = performance.now(); // Initialize with performance.now() for consistent timing
 
 const teamMembers = ["Elon Musk", "Donald Trump", "Vivek Ramaswamy", "Russell Vought", "Joni Ernst"];
 const agencies = ["USAID", "CFPB", "Dept. of Education", "FAA", "IRS"];
