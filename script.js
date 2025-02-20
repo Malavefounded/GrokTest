@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateUIText() {
         democratsText.innerHTML = `Democrats Against you:\n${democratList.join('\n') || ''}`;
         agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.join('\n') || ''}`;
-        teamMembersText.innerHTML = `Collected Team Members:\n${teamMemberList.map(name => `<span style="margin-right: 15px; display: inline-block;">${name}</span>`).join('') || ''}`;
+        teamMembersText.innerHTML = `Collected Team Members:\n${teamMemberList.map(name => `<span style="margin-right: 15px; display: inline-block;">${name || ''}</span>`).join('') || ''}`;
     }
 
     function drawGame() {
@@ -240,6 +240,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.fillText(food.acronym, textX, food.y * gridSize + gridSize + 10);
                 }
                 if (food.type === 'team' && food.name) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    const textX = food.x * gridSize + (gridSize - ctx.measureText(food.name).width) / 2;
+                    ctx.fillText(food.name, textX, food.y * gridSize + gridSize + 10);
+                } else if (food.type === 'team' && !food.name) {
+                    console.warn('Green block missing name, assigning default');
+                    food.name = getRandomTeamMember(); // Assign a name if missing
                     ctx.fillStyle = 'white';
                     ctx.font = '10px Arial';
                     const textX = food.x * gridSize + (gridSize - ctx.measureText(food.name).width) / 2;
