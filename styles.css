@@ -54,11 +54,12 @@ body {
     font-size: 16px;
     color: black;
     padding: 10px;
-    background-color: #e0e0e0;
+    background-color: #e0e0f0; /* Light blue for visibility */
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 200px;
     box-sizing: border-box;
+    visibility: visible; /* Ensure panels are visible */
 }
 
 #auditedPanel {
