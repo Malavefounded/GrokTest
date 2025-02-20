@@ -11,7 +11,7 @@ const HEIGHT = 900;
 const FOOD_SIZE = 15; // Increased food size for larger canvas
 const TEAM_MEMBER_POINTS = 5;
 const AGENCY_POINTS = 10;
-const FPS = 60; // Increased FPS significantly to make snake faster
+const FPS = 120; // Increased FPS significantly to make snake much faster
 
 let snakePos = [WIDTH / 2, HEIGHT / 2];
 let snakeBody = [[WIDTH / 2, HEIGHT / 2]];
@@ -95,8 +95,8 @@ function draw() {
         ctx.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);
         if (i === 0) { // Draw "D.O.G.E" on snake head
             ctx.fillStyle = 'white';
-            ctx.font = '15px Arial'; // Adjusted font size to ensure "D.O.G.E" fits
-            ctx.fillText('D.O.G.E', x + 2, y + 12); // Adjusted position for clarity
+            ctx.font = '15px Arial';
+            ctx.fillText('D.O.G.E', x + 2, y + 12);
             ctx.fillStyle = 'black'; // Reset fill style for body
         }
     }
@@ -111,7 +111,7 @@ function draw() {
 
         ctx.fillStyle = 'black';
         ctx.font = '20px Arial';
-        ctx.fillText(food.name, food.pos[0], food.pos[1] + FOOD_SIZE + 5); // Moved text higher (reduced offset)
+        ctx.fillText(food.name, food.pos[0], food.pos[1] + FOOD_SIZE + 5);
     });
 
     // Draw reset text (blue, top center)
