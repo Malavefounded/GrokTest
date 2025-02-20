@@ -123,6 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: Math.random() < 0.5 ? 'audit' : 'team'
                 });
                 foodEaten = true;
+                // Spawn a new Democrat when food is eaten
+                addDemocrat();
                 break;
             }
         }
@@ -182,9 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update score
         scoreText.textContent = `Score: ${score}`;
-
-        // Spawn new Democrat periodically
-        if (Math.random() < 0.01) addDemocrat();
 
         setTimeout(drawGame, gameSpeed);
     }
