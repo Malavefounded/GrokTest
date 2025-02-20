@@ -103,7 +103,7 @@ function drawGame() {
                 y: Math.floor(Math.random() * tileCountY),
                 type: Math.random() < 0.5 ? 'audit' : 'team'
             });
-            // Add a Democrat block after eating food
+            // Add one Democrat block after eating food
             addDemocrat();
             foodEaten = true;
             break;
@@ -163,73 +163,4 @@ function drawGame() {
     });
 
     // Draw "D.O.G.E" above the snake's head
-    ctx.fillStyle = 'white';
-    ctx.font = '15px Arial';
-    const nameWidth = ctx.measureText('D.O.G.E').width;
-    const nameX = snake[0].x * gridSize + (gridSize - nameWidth) / 2; // Center the name above the head
-    const nameY = snake[0].y * gridSize - 5; // Position above the head with a small offset
-    ctx.fillText('D.O.G.E', nameX, nameY);
-
-    // Draw score
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.fillText(`Score: ${score}`, 10, 30);
-
-    setTimeout(drawGame, gameSpeed);
-}
-
-function gameOver() {
-    gameActive = false;
-    ctx.fillStyle = 'white';
-    ctx.font = '40px Arial';
-    const gameOverWidth = ctx.measureText('Game Over!').width;
-    const scoreWidth = ctx.measureText(`Score: ${score}`).width;
-    ctx.fillText('Game Over!', (canvas.width - gameOverWidth) / 2, canvas.height / 2 - 20); // Center horizontally and vertically
-    ctx.fillText(`Score: ${score}`, (canvas.width - scoreWidth) / 2, canvas.height / 2 + 20); // Center horizontally, below Game Over
-    restartText.style.display = 'block'; // Show restart text
-}
-
-function restartGame() {
-    snake = [{ x: 20, y: 12 }];
-    foods = [
-        {
-            x: Math.floor(Math.random() * tileCountX),
-            y: Math.floor(Math.random() * tileCountY),
-            type: Math.random() < 0.5 ? 'audit' : 'team'
-        },
-        {
-            x: Math.floor(Math.random() * tileCountX),
-            y: Math.floor(Math.random() * tileCountY),
-            type: Math.random() < 0.5 ? 'audit' : 'team'
-        },
-        {
-            x: Math.floor(Math.random() * tileCountX),
-            y: Math.floor(Math.random() * tileCountY),
-            type: Math.random() < 0.5 ? 'audit' : 'team'
-        }
-    ];
-    democrats = []; // Clear Democrats on restart
-    dx = 0;
-    dy = 0;
-    score = 0;
-    gameSpeed = 100;
-    gameActive = true;
-    restartText.style.display = 'none'; // Hide restart text
-    drawGame();
-}
-
-function addDemocrat() {
-    let newDemocrat;
-    do {
-        newDemocrat = {
-            x: Math.floor(Math.random() * tileCountX),
-            y: Math.floor(Math.random() * tileCountY)
-        };
-        // Ensure the new Democrat doesn't overlap with the snake, existing foods, or other Democrats
-    } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
-             foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
-             democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
-    democrats.push(newDemocrat);
-}
-
-drawGame();
+    ctx.fill
