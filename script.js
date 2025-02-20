@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Draw everything, ensuring proper color management
-        ctx.fillStyle = 'black';
+        // Draw everything, with strict color management to ensure blue Democrats
+        ctx.fillStyle = 'black'; // Reset to black background
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = 'lime';
+        ctx.fillStyle = 'lime'; // Ensure snake is lime green
         snake.forEach(segment => ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2));
 
         // Draw good foods (Audits and Team Members)
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Draw bad Democrats blocks (blue, instant death) with names underneath in white
-        ctx.fillStyle = 'blue'; // Explicitly set blue for all Democrat blocks
+        ctx.fillStyle = 'blue'; // Explicitly and forcefully set blue for all Democrat blocks
         democrats.forEach(democrat => {
             ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2); // Draw blue block
             // Draw Democrat name under the block in small, legible white text
