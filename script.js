@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const restartText = document.getElementById('restartText');
     const rulesText = document.getElementById('rulesText');
-    const democratsText = document.getElementById('democratsText'); // Reference to the new div
+    const democratsText = document.getElementById('democratsText'); // Reference to the div
 
     if (!canvas || !ctx || !restartText || !rulesText || !democratsText) {
         console.error('One or more DOM elements not found. Check your HTML.');
@@ -144,19 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(name, nameX, nameY); // Draw only text, no rectangle
         });
 
-        // Update "Democrats Against you" text in the HTML div (outside playable area, left of border, below canvas)
-        if (democrats.length > 0 && democrats[democrats.length - 1].newlyAdded) {
-            const message = `Democrats Against you\n${democrats[democrats.length - 1].name}`;
-            democratsText.textContent = message; // Set the text content of the div
-            democratsText.style.display = 'block'; // Show the text
-            // Hide the text after a short delay (e.g., 3 seconds) to match the temporary nature of the message
-            setTimeout(() => {
-                democratsText.style.display = 'none';
-            }, 3000); // Hide after 3 seconds
-            // Mark the Democrat as no longer newly added after displaying
-            democrats[democrats.length - 1].newlyAdded = false;
+        // Update "Democrats Against you" text in the HTML div (always visible, updated with names when Democrats appear)
+        if (democrats.length > 0) {
+            const lastDemocrat = democrats[democrats.length - 1];
+            democratsText.textContent = `Democrats Against you\n${lastDemocrat.name}`; // Always show the latest Democrat name
         } else {
-            democratsText.style.display = 'none'; // Hide if no new Democrat
+            democratsText.textContent = 'Democrats Against you'; // Show only "Democrats Against you" if no Democrats exist
         }
 
         // Draw "D.O.G.E" above the snake's head
@@ -198,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         usedNames.clear(); // Clear used names on restart
         dx = dy = 0; score = 0; gameSpeed = 100; gameActive = true;
         restartText.style.display = 'none'; // Hide restart text
-        democratsText.style.display = 'none'; // Hide "Democrats Against you" text on restart
+        democratsText.textContent = 'Democrats Against you'; // Reset to initial state on restart
         drawGame(); // Start the game loop with setTimeout
     }
 
@@ -220,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
         usedNames.add(randomName);
         newDemocrat.name = randomName;
-        newDemocrat.newlyAdded = true; // Mark as newly added for displaying the message
+        newDemocrat.newlyAdded = true; // Mark as newly added for potential future use (though not needed here)
         democrats.push(newDemocrat);
     }
 
