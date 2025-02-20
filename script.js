@@ -1,7 +1,7 @@
 // Wait for the DOM to be fully loaded before running the game
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: false }); // Disable willReadFrequently to optimize performance and avoid color issues
     const restartText = document.getElementById('restartText');
     const rulesText = document.getElementById('rulesText');
 
@@ -110,8 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Draw everything, with strict color management to ensure blue Democrats
-        ctx.fillStyle = 'black'; // Reset to black background
+        // Draw everything, with strict and isolated color management to ensure blue Democrats
+        ctx.fillStyle = 'black'; // Reset background to black explicitly
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.fillStyle = 'lime'; // Ensure snake is lime green
@@ -124,12 +124,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Draw bad Democrats blocks (blue, instant death) with names underneath in white
-        ctx.fillStyle = 'blue'; // Explicitly and forcefully set blue for all Democrat blocks
+        ctx.save(); // Save the current context state
+        ctx.fillStyle = 'blue'; // Forcefully set blue for Democrat blocks, isolated from other styles
         democrats.forEach(democrat => {
             ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2); // Draw blue block
-            // Draw Democrat name under the block in small, legible white text
-            ctx.fillStyle = 'white'; // Ensure names are white for contrast against blue blocks
-            ctx.font = '10px Arial'; // Small but legible text
+        });
+        ctx.restore(); // Restore context state before drawing names
+
+        // Draw Democrat names under the blocks in white, ensuring no color interference
+        ctx.fillStyle = 'white'; // Ensure names are white for contrast against blue blocks
+        ctx.font = '10px Arial'; // Small but legible text
+        democrats.forEach(democrat => {
             const name = democrat.name;
             const nameWidth = ctx.measureText(name).width;
             const nameX = democrat.x * gridSize + (gridSize - nameWidth) / 2; // Center the name under the block
