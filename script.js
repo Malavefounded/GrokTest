@@ -5,33 +5,30 @@ const programsLeftElement = document.getElementById('programsLeft');
 const namesCollectedElement = document.getElementById('namesCollected');
 const teamMembersElement = document.getElementById('teamMembers');
 
-// Ensure canvas dimensions are set immediately
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let snake = [
     { x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }
 ];
-let dx = 0; // Start stationary, no movement until key press
+let dx = 0;
 let dy = 0;
-let foods = []; // Array to hold exactly 2 items (government program and team member)
+let foods = [];
 let score = 0;
-let gameSpeed = 100; // milliseconds between moves
-let programsLeft = 52; // Total government programs to audit
-let fruitEatenCount = 0; // Track number of items eaten for name addition
-let collectedNames = []; // Track eaten food items (programs/figures and team members)
-let teamMembersFound = []; // Track names added to snake
+let gameSpeed = 100;
+let programsLeft = 52;
+let fruitEatenCount = 0;
+let collectedNames = [];
+let teamMembersFound = [];
 
-// Government programs Elon Musk/DOGE will audit (simplified list for 2 items)
 const governmentPrograms = [
     "EPA Regulations", "NASA Funding", "DHS Grants", "DOE Projects", "NOAA Research", "FEMA Aid", 
     "HUD Programs", "Medicaid Expansion", "SNAP Benefits", "Kamala Harris", "Joe Biden"
 ];
 
-// Key team members in Donald Trump’s current team that Elon trusts and is happy with (as of February 2025)
 const teamMembers = ["Elon Musk", "Donald Trump", "Marco Rubio", "Scott Bessent", "Russell Vought", "Stephen Miller", "Vivek Ramaswamy"];
 
-let killZones = []; // Array to hold 3 kill zones
+let killZones = [];
 
 function initFoods() {
     foods = [
@@ -49,7 +46,6 @@ function initFoods() {
         }
     ];
 
-    // Ensure foods don’t spawn on snake, kill zones, or overlap each other
     foods.forEach(food => {
         while (snake.some(segment => segment.x === food.x && segment.y === food.y) ||
                foods.some(f => f !== food && f.x === food.x && f.y === food.y) ||
@@ -64,7 +60,7 @@ function initKillZones() {
     killZones = [];
     const centerX = Math.floor(canvas.width / 40) * 20;
     const centerY = Math.floor(canvas.height / 40) * 20;
-    const minDistance = 200; // Ensure kill zones are far from center
+    const minDistance = 200;
 
     while (killZones.length < 3) {
         let zone = generateRandomKillZone();
@@ -77,9 +73,9 @@ function initKillZones() {
 
 function generateRandomKillZone() {
     const shapes = [
-        { type: 'L', width: 60, height: 20 }, // L-shaped (vertical + horizontal)
-        { type: 'T', width: 60, height: 20 }, // T-shaped
-        { type: 'I', width: 20, height: 80 }  // I-shaped
+        { type: 'L', width: 60, height: 20 },
+        { type: 'T', width: 60, height: 20 },
+        { type: 'I', width: 20, height: 80 }
     ];
     const shape = shapes[Math.floor(Math.random() * shapes.length)];
     let x, y;
@@ -111,21 +107,20 @@ function doZonesOverlap(zone1, zone2) {
 }
 
 function drawSnake() {
-    ctx.fillStyle = 'green'; // Snake body color
-    ctx.font = '16px Arial'; // Font for names
+    ctx.fillStyle = 'green';
+    ctx.font = '16px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     snake.forEach((segment, index) => {
-        ctx.fillRect(segment.x, segment.y, 20, 20); // Draw thick snake segment
+        ctx.fillRect(segment.x, segment.y, 20, 20);
         ctx.fillStyle = 'white';
-        ctx.fillText("D.O.G.E", segment.x + 10, segment.y + 10); // Always show "D.O.G.E"
+        ctx.fillText("D.O.G.E", segment.x + 10, segment.y + 10);
 
-        // Add additional names every 4 items eaten, on the fourth added segment
         if (fruitEatenCount >= 4 && (snake.length - 4 * Math.floor(fruitEatenCount / 4)) === index + 1) {
             const nameIndex = (Math.floor(fruitEatenCount / 4) - 1) % teamMembers.length;
             const name = teamMembers[nameIndex];
-            ctx.fillText(name, segment.x + 10, segment.y + 10 + 15); // Offset below "D.O.G.E"
+            ctx.fillText(name, segment.x + 10, segment.y + 10 + 15);
             if (!teamMembersFound.includes(name)) {
                 teamMembersFound.push(name);
                 updateTeamMembersDisplay();
@@ -137,31 +132,31 @@ function drawSnake() {
 function drawFoods() {
     foods.forEach(food => {
         if (food.isProgram) {
-            ctx.fillStyle = 'red'; // Government programs (apples)
+            ctx.fillStyle = 'red';
             ctx.beginPath();
             ctx.arc(food.x + 10, food.y + 10, 10, 0, Math.PI * 2);
             ctx.fill();
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
-            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below apple
+            ctx.fillText(food.item, food.x + 10, food.y + 25);
         } else {
-            ctx.fillStyle = 'blue'; // Team members (stars)
+            ctx.fillStyle = 'blue';
             ctx.beginPath();
-            ctx.moveTo(food.x + 10, food.y); // Top point
-            ctx.lineTo(food.x + 15, food.y + 10); // Right point
-            ctx.lineTo(food.x + 20, food.y + 10); // Right-middle point
-            ctx.lineTo(food.x + 13, food.y + 15); // Bottom-middle point
-            ctx.lineTo(food.x + 17, food.y + 20); // Bottom point
-            ctx.lineTo(food.x + 10, food.y + 15); // Left-middle point
-            ctx.lineTo(food.x + 3, food.y + 20); // Left-bottom point
-            ctx.lineTo(food.x + 7, food.y + 15); // Left-middle (bottom)
-            ctx.lineTo(food.x, food.y + 10); // Left point
-            ctx.lineTo(food.x + 5, food.y + 10); // Left-middle (top)
+            ctx.moveTo(food.x + 10, food.y);
+            ctx.lineTo(food.x + 15, food.y + 10);
+            ctx.lineTo(food.x + 20, food.y + 10);
+            ctx.lineTo(food.x + 13, food.y + 15);
+            ctx.lineTo(food.x + 17, food.y + 20);
+            ctx.lineTo(food.x + 10, food.y + 15);
+            ctx.lineTo(food.x + 3, food.y + 20);
+            ctx.lineTo(food.x + 7, food.y + 15);
+            ctx.lineTo(food.x, food.y + 10);
+            ctx.lineTo(food.x + 5, food.y + 10);
             ctx.closePath();
             ctx.fill();
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
-            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below star
+            ctx.fillText(food.item, food.x + 10, food.y + 25);
         }
     });
 }
@@ -177,7 +172,7 @@ function drawKillZones() {
             ctx.lineTo(zone.x + zone.width, zone.y + zone.height);
             ctx.moveTo(zone.x + zone.width, zone.y);
             ctx.lineTo(zone.x + zone.width - zone.height, zone.y);
-            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height); // Draw collision box
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
             ctx.fillStyle = 'red';
             ctx.font = '16px Arial';
             ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
@@ -186,7 +181,162 @@ function drawKillZones() {
             ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
             ctx.moveTo(zone.x, zone.y + zone.height / 2);
             ctx.lineTo(zone.x + zone.width, zone.y + zone.height / 2);
-            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height); // Draw collision box
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
             ctx.fillStyle = 'red';
             ctx.font = '16px Arial';
-            ctx.fillText('Kill
+            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
+        } else if (zone.type === 'I') {
+            ctx.moveTo(zone.x + zone.width / 2, zone.y);
+            ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
+            ctx.fillStyle = 'red';
+            ctx.font = '16px Arial';
+            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
+        }
+        ctx.stroke();
+    });
+}
+
+function moveSnake() {
+    if (dx === 0 && dy === 0) return;
+
+    const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+    if (head.x < 0 || head.x >= canvas.width - 20 || head.y < 0 || head.y >= canvas.height - 20) {
+        gameOver();
+        return;
+    }
+
+    for (let zone of killZones) {
+        if (isPointInKillZone(head.x, head.y, zone)) {
+            gameOver();
+            return;
+        }
+    }
+
+    for (let segment of snake) {
+        if (head.x === segment.x && head.y === segment.y) {
+            gameOver();
+            return;
+        }
+    }
+
+    snake.unshift(head);
+
+    let foodEaten = false;
+    foods = foods.filter(food => {
+        if (head.x === food.x && head.y === food.y) {
+            if (food.isProgram) {
+                score += 5;
+                for (let i = 0; i < 5; i++) snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
+            } else {
+                score += 10;
+                for (let i = 0; i < 10; i++) snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
+            }
+            scoreElement.textContent = `Score: ${score}`;
+            if (food.isProgram) {
+                programsLeft--;
+                programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
+            }
+            fruitEatenCount++;
+            collectedNames.push(food.item);
+            updateNamesCollectedDisplay();
+            foodEaten = true;
+            return false;
+        }
+        return true;
+    });
+
+    if (foodEaten) {
+        initFoods();
+    } else {
+        snake.pop();
+    }
+}
+
+function gameOver() {
+    alert(`Game Over! Score: ${score}`);
+    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }];
+    dx = 0;
+    dy = 0;
+    score = 0;
+    programsLeft = 52;
+    fruitEatenCount = 0;
+    collectedNames = [];
+    teamMembersFound = [];
+    foods = [];
+    killZones = [];
+    scoreElement.textContent = `Score: ${score}`;
+    programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
+    updateNamesCollectedDisplay();
+    updateTeamMembersDisplay();
+    initFoods();
+    initKillZones();
+}
+
+function updateNamesCollectedDisplay() {
+    namesCollectedElement.innerHTML = 'Names Collected (Food Items)<br>' + collectedNames.map(name => `<div>${name}</div>`).join('');
+}
+
+function updateTeamMembersDisplay() {
+    teamMembersElement.innerHTML = 'Team Members Found (Names on Snake)<br>' + teamMembersFound.map(name => `<div>${name}</div>`).join('');
+}
+
+function draw() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawSnake();
+    drawFoods();
+    drawKillZones();
+    moveSnake();
+}
+
+document.addEventListener('keydown', (e) => {
+    switch (e.key) {
+        case 'ArrowUp':
+            if (dy === 0) { dx = 0; dy = -20; }
+            break;
+        case 'ArrowDown':
+            if (dy === 0) { dx = 0; dy = 20; }
+            break;
+        case 'ArrowLeft':
+            if (dx === 0) { dx = -20; dy = 0; }
+            break;
+        case 'ArrowRight':
+            if (dx === 0) { dx = 20; dy = 0; }
+            break;
+    }
+});
+
+function initGame() {
+    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }];
+    dx = 0;
+    dy = 0;
+    score = 0;
+    programsLeft = 52;
+    fruitEatenCount = 0;
+    collectedNames = [];
+    teamMembersFound = [];
+    foods = [];
+    killZones = [];
+
+    scoreElement.textContent = `Score: ${score}`;
+    programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
+    updateNamesCollectedDisplay();
+    updateTeamMembersDisplay();
+    initFoods();
+    initKillZones();
+    draw();
+}
+
+window.onload = () => {
+    initGame();
+    setInterval(draw, gameSpeed);
+};
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initGame();
+});
