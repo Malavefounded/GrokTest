@@ -13,9 +13,19 @@ body, html {
     height: 100vh;
 }
 
-#rules {
+#score {
     position: absolute;
     top: 10px;
+    left: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    z-index: 10;
+}
+
+#rules {
+    position: absolute;
+    top: 50px;
     left: 10px;
     color: white;
     font-family: Arial, sans-serif;
@@ -24,16 +34,6 @@ body, html {
     max-width: 200px;
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
-}
-
-#score {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 24px;
-    z-index: 10;
 }
 
 #programsLeft {
@@ -79,6 +79,18 @@ body, html {
     height: 20vh;
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
+}
+
+#premiumDomains {
+    position: absolute;
+    bottom: 50px;
+    left: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    z-index: 10;
+    text-decoration: underline;
+    text-decoration-color: white; /* Ensure underline is visible */
 }
 
 #ad {
