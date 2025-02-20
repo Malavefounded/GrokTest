@@ -8,10 +8,10 @@ const teamMembersPanel = document.getElementById('teamMembersPanel');
 // Game settings
 const WIDTH = 1200;
 const HEIGHT = 900;
-const FOOD_SIZE = 15; // Increased food size for larger canvas
+const FOOD_SIZE = 15;
 const TEAM_MEMBER_POINTS = 5;
 const AGENCY_POINTS = 10;
-const FPS = 120; // Increased FPS significantly to make snake much faster
+const FPS = 60; // Reduced FPS to improve performance on most devices
 
 let snakePos = [WIDTH / 2, HEIGHT / 2];
 let snakeBody = [[WIDTH / 2, HEIGHT / 2]];
@@ -19,7 +19,7 @@ let direction = 'RIGHT';
 let changeTo = direction;
 let score = 0;
 let gameOver = false;
-let lastUpdateTime = performance.now(); // Initialize with performance.now() for consistent timing
+let lastUpdateTime = performance.now();
 
 const teamMembers = ["Elon Musk", "Donald Trump", "Vivek Ramaswamy", "Russell Vought", "Joni Ernst"];
 const agencies = ["USAID", "CFPB", "Dept. of Education", "FAA", "IRS"];
@@ -41,7 +41,6 @@ function generateRandomPos() {
             Math.floor(Math.random() * (HEIGHT / FOOD_SIZE)) * FOOD_SIZE];
 }
 
-// Ensure food positions don't overlap with snake or each other
 function isPositionValid(pos, excludeFoods = []) {
     for (let bodyPart of snakeBody) {
         if (pos[0] === bodyPart[0] && pos[1] === bodyPart[1]) return false;
@@ -61,7 +60,6 @@ function getNonOverlappingPos(excludeFoods = []) {
     return pos;
 }
 
-// Handle keyboard input
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'ArrowUp':
@@ -82,26 +80,22 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// Draw game elements
 function draw() {
-    // Clear canvas with white background
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    // Draw snake (black) with "D.O.G.E" on head
     ctx.fillStyle = 'black';
     for (let i = 0; i < snakeBody.length; i++) {
         const [x, y] = snakeBody[i];
         ctx.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);
-        if (i === 0) { // Draw "D.O.G.E" on snake head
+        if (i === 0) {
             ctx.fillStyle = 'white';
             ctx.font = '15px Arial';
             ctx.fillText('D.O.G.E', x + 2, y + 12);
-            ctx.fillStyle = 'black'; // Reset fill style for body
+            ctx.fillStyle = 'black';
         }
     }
 
-    // Draw foods (black circles)
     foods.forEach(food => {
         ctx.beginPath();
         ctx.arc(food.pos[0] + FOOD_SIZE / 2, food.pos[1] + FOOD_SIZE / 2, FOOD_SIZE / 2, 0, Math.PI * 2);
@@ -114,55 +108,45 @@ function draw() {
         ctx.fillText(food.name, food.pos[0], food.pos[1] + FOOD_SIZE + 5);
     });
 
-    // Draw reset text (blue, top center)
     ctx.fillStyle = 'blue';
     ctx.font = '30px Arial';
     ctx.fillText('Press SPACE to reset', WIDTH / 2 - 165, 45);
 
-    // Update score display
     scoreDisplay.textContent = `Score: ${score}  Length: ${snakeBody.length}`;
-
-    // Update side panels
     auditedPanel.innerHTML = "Government Organizations Audited:<br>" + Array.from(collectedAgencies).join('<br>');
     teamMembersPanel.innerHTML = "Team Members Found:<br>" + Array.from(collectedTeamMembers).join('<br>');
 }
 
-// Update game state
 function update(currentTime) {
     if (gameOver) return;
 
-    // Frame rate control (limit to FPS)
     if (currentTime - lastUpdateTime < 1000 / FPS) {
         requestAnimationFrame(gameLoop);
         return;
     }
     lastUpdateTime = currentTime;
 
-    // Update direction
     direction = changeTo;
 
-    // Move snake
     if (direction === 'UP') snakePos[1] -= FOOD_SIZE;
     if (direction === 'DOWN') snakePos[1] += FOOD_SIZE;
     if (direction === 'LEFT') snakePos[0] -= FOOD_SIZE;
     if (direction === 'RIGHT') snakePos[0] += FOOD_SIZE;
 
-    // Snake body mechanics
     snakeBody.unshift([snakePos[0], snakePos[1]]);
 
-    // Check for food collision
     let foodEaten = null;
-    foods.forEach((food, index) => {
-        if (snakePos[0] === food.pos[0] && snakePos[1] === food.pos[1]) {
-            foodEaten = { ...food, index };
-            score += food.type === 'Team Member' ? TEAM_MEMBER_POINTS : AGENCY_POINTS;
-            if (food.type === 'Team Member') {
-                collectedTeamMembers.add(food.name);
+    for (let i = 0; i < foods.length; i++) {
+        if (snakePos[0] === foods[i].pos[0] && snakePos[1] === foods[i].pos[1]) {
+            foodEaten = { ...foods[i], index: i };
+            score += foodEaten.type === 'Team Member' ? TEAM_MEMBER_POINTS : AGENCY_POINTS;
+            if (foodEaten.type === 'Team Member') {
+                collectedTeamMembers.add(foodEaten.name);
             } else {
-                collectedAgencies.add(food.name);
+                collectedAgencies.add(foodEaten.name);
             }
         }
-    });
+    }
 
     if (foodEaten) {
         foods.splice(foodEaten.index, 1);
@@ -174,13 +158,11 @@ function update(currentTime) {
         snakeBody.pop();
     }
 
-    // Check borders (kill zones)
     if (snakePos[0] < 0 || snakePos[0] >= WIDTH || snakePos[1] < 0 || snakePos[1] >= HEIGHT) {
         gameOver = true;
     }
 }
 
-// Reset game
 function resetGame() {
     snakePos = [WIDTH / 2, HEIGHT / 2];
     snakeBody = [[WIDTH / 2, HEIGHT / 2]];
@@ -195,11 +177,10 @@ function resetGame() {
         { type: "Agency", name: randomChoice(agencies), pos: getNonOverlappingPos([foods[0]]) },
         { type: "Team Member", name: randomChoice(teamMembers), pos: getNonOverlappingPos(foods) }
     ];
-    lastUpdateTime = performance.now(); // Reset last update time using performance.now() for consistent timing
+    lastUpdateTime = performance.now();
     gameLoop();
 }
 
-// Game loop
 function gameLoop(timestamp) {
     draw();
     if (!gameOver) {
@@ -208,5 +189,4 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-// Start the game
 requestAnimationFrame(gameLoop);
