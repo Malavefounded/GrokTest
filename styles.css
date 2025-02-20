@@ -6,10 +6,12 @@ body {
     height: 100vh;
     background-color: #f0f0f0;
     flex-direction: column;
+    position: relative;
 }
 
 #gameCanvas {
     border: 1px solid black;
+    background-color: white;
 }
 
 #score {
@@ -38,4 +40,31 @@ body {
 
 #businessLink:hover {
     text-decoration: underline;
+}
+
+#sidePanels {
+    display: flex;
+    justify-content: space-between;
+    width: 800px;
+    margin-top: 10px;
+}
+
+#auditedPanel, #teamMembersPanel {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: black;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+#auditedPanel {
+    margin-right: 10px;
+}
+
+#teamMembersPanel {
+    margin-left: 10px;
 }
