@@ -59,9 +59,9 @@ body {
 }
 
 #auditedPanel {
-    left: -220px; /* Position left of canvas, outside border, adjusted for smaller canvas */
+    left: -220px; /* Position left of canvas, outside border */
 }
 
 #teamMembersPanel {
-    right: -220px; /* Position right of canvas, outside border, adjusted for smaller canvas */
+    right: -220px; /* Position right of canvas, outside border */
 }
