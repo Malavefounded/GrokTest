@@ -1,34 +1,34 @@
-// Wait for the DOM to be fully loaded before running the game
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const restartText = document.getElementById('restartText');
     const rulesText = document.getElementById('rulesText');
-    const democratsText = document.getElementById('democratsText'); // Reference to Democrats div
-    const agenciesText = document.getElementById('agenciesText'); // Reference to Agencies div
+    const democratsText = document.getElementById('democratsText');
+    const agenciesText = document.getElementById('agenciesText');
+    const scoreText = document.createElement('div');
+    scoreText.className = 'score-text';
+    scoreText.textContent = 'Score: 0';
+    document.querySelector('.game-container').appendChild(scoreText);
 
-    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText) {
+    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText || !scoreText) {
         console.error('One or more DOM elements not found. Check your HTML.');
         return;
     }
 
     const gridSize = 20;
-    const tileCountX = canvas.width / gridSize;  // 800 / 20 = 40 tiles wide
-    const tileCountY = canvas.height / gridSize; // 500 / 20 = 25 tiles tall
+    const tileCountX = canvas.width / gridSize;  // 40
+    const tileCountY = canvas.height / gridSize; // 25
 
-    let snake = [{ x: 20, y: 12 }]; // Start snake more centrally in wider space
+    let snake = [{ x: 20, y: 12 }];
     let foods = [
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
     ];
-    let democrats = []; // Array to store Democrat blocks (bad - causes instant death) with associated names
-    let audits = []; // Array to store Audit blocks (Federal Agencies) with associated acronyms
-    let dx = 0, dy = 0; // Direction for snake movement
-    let score = 0, gameSpeed = 100, gameActive = true; // Revert to original gameSpeed of 100ms
+    let democrats = [];
+    let dx = 0, dy = 0;
+    let score = 0, gameSpeed = 100, gameActive = true;
 
-    // Good food types: Audits (red, +3 size, +30 points) and Team Members (green, +1 size, +10 points)
-    // Bad blocks: Democrats (blue, instant death on contact)
     const democratNames = [
         "Kamala Harris", "Joe Biden", "Chuck Schumer", "Hakeem Jeffries", "Elizabeth Warren",
         "Bernie Sanders", "Brian Schatz", "Patty Murray", "Ron Wyden", "Maxine Waters",
@@ -38,27 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
         "Tammy Baldwin", "Michael Bennet", "Cory Booker", "Chris Coons", "Tammy Duckworth",
         "Anthony Fauci", "Francis Collins", "Bill Gates", "Clifford Lane", "Hillary Clinton", "Barack Obama"
     ];
-    let usedDemocratNames = new Set(); // Track used Democrat names to prevent duplicates
-    let democratList = []; // Track all Democrat names that have appeared
+    let usedDemocratNames = new Set();
+    let democratList = [];
 
     const agencyAcronyms = [
         "USAID", "CFPB", "EPA", "Treasury", "DOD", "IRS", "DOE", "SSA", "FEMA", "USPS",
         "HUD", "GSA", "STATE", "SBA", "DOI", "NPS", "OMB", "ED", "OPM", "DOJ",
         "NASA", "VA", "USDA", "FAA", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC"
     ];
-    const agencyFullNames = [
-        "U.S. Agency for International Development", "Consumer Financial Protection Bureau", "Environmental Protection Agency", 
-        "U.S. Department of the Treasury", "Department of Defense", "Internal Revenue Service", "Department of Energy", 
-        "Social Security Administration", "Federal Emergency Management Agency", "United States Postal Service",
-        "Department of Housing and Urban Development", "General Services Administration", "Department of State", 
-        "Small Business Administration", "Department of the Interior", "National Park Service", "Office of Management and Budget", 
-        "Department of Education", "Office of Personnel Management", "Department of Justice",
-        "National Aeronautics and Space Administration", "Department of Veterans Affairs", "U.S. Department of Agriculture", 
-        "Federal Aviation Administration", "Department of Transportation", "Centers for Disease Control and Prevention", 
-        "National Institutes of Health", "Food and Drug Administration", "Drug Enforcement Administration", "Securities and Exchange Commission"
-    ];
-    let usedAgencyAcronyms = new Set(); // Track used agency acronyms to prevent duplicates
-    let agencyList = []; // Track all agency acronyms that have appeared
+    let usedAgencyAcronyms = new Set();
+    let agencyList = [];
+
+    // Initial Democrat spawn
+    addDemocrat();
 
     document.addEventListener('keydown', handleKeyPress);
 
@@ -71,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             restartGame();
             return;
         }
-
         if (!gameActive) return;
 
         if (keyPressed === LEFT_KEY && !goingRight) { dx = -1; dy = 0; }
@@ -80,26 +71,50 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; }
     }
 
+    function addAudit() {
+        if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
+        const acronym = agencyAcronyms.find(a => !usedAgencyAcronyms.has(a));
+        usedAgencyAcronyms.add(acronym);
+        agencyList.push(acronym); // Use only acronyms, not full names
+        updateUIText();
+    }
+
+    function addDemocrat() {
+        if (usedDemocratNames.size >= democratNames.length) return;
+        const name = democratNames.find(n => !usedDemocratNames.has(n));
+        usedDemocratNames.add(name);
+        democratList.push(name);
+        democrats.push({
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY),
+            name
+        });
+        updateUIText();
+    }
+
+    function updateUIText() {
+        democratsText.innerHTML = `Democrats Against you:\n${democratList.join('\n') || 'None yet'}`;
+        agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.join('\n') || 'None yet'}`;
+    }
+
     function drawGame() {
+        if (!gameActive) return;
+
         // Move snake
         const head = { x: snake[0].x + dx, y: snake[0].y + dy };
         snake.unshift(head);
 
-        // Check if snake ate any good food (Audits or Team Members) or hit a Democrat
+        // Check food collisions
         let foodEaten = false;
         for (let i = 0; i < foods.length; i++) {
             if (head.x === foods[i].x && head.y === foods[i].y) {
-                // Good food consumption: Increases size and score
-                if (foods[i].type === 'audit') { // Red Audits (Federal Agencies, good)
-                    score += 30; // Higher score for Audits
-                    for (let j = 0; j < 3; j++) {
-                        snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
-                    }
-                    // Add new Audit block with unique acronym
+                if (foods[i].type === 'audit') {
+                    score += 30;
+                    for (let j = 0; j < 3; j++) snake.push({ ...snake[snake.length - 1] });
                     addAudit();
-                } else if (foods[i].type === 'team') { // Green Team Members (good)
-                    score += 10; // Lower score for Team Members
-                    snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
+                } else if (foods[i].type === 'team') {
+                    score += 10;
+                    snake.push({ ...snake[snake.length - 1] });
                 }
                 foods.splice(i, 1);
                 foods.push({
@@ -111,23 +126,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             }
         }
-
         if (!foodEaten) snake.pop();
 
-        // Check collisions with walls and self
+        // Check collisions
         if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
             gameOver();
             return;
         }
-
         for (let i = 1; i < snake.length; i++) {
             if (head.x === snake[i].x && head.y === snake[i].y) {
                 gameOver();
                 return;
             }
         }
-
-        // Check collisions with Democrats (blue blocks)
         for (let i = 0; i < democrats.length; i++) {
             if (head.x === democrats[i].x && head.y === democrats[i].y) {
                 gameOver();
@@ -135,22 +146,76 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Draw everything, with strict and isolated color management to ensure blue Democrats and red Audits
-        ctx.fillStyle = 'black'; // Reset background to black explicitly
+        // Draw everything
+        ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = 'lime'; // Ensure snake is lime green
+        // Snake (lime green) with "D.O.G.E" label
+        ctx.fillStyle = 'lime';
         snake.forEach(segment => ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2));
+        ctx.fillStyle = 'white';
+        ctx.font = '12px Arial';
+        ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
 
-        // Draw good foods (Audits and Team Members)
+        // Foods (red Audits, green Team Members)
         foods.forEach(food => {
-            ctx.fillStyle = food.type === 'audit' ? 'red' : 'green'; // Red Audits, Green Team Members (good)
+            ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-            if (food.type === 'audit' && food.acronym) { // Ensure acronym exists to avoid "undefined"
-                // Draw Audit acronym under the red block in small, legible white text
-                ctx.fillStyle = 'white'; // Acronyms in white for contrast against red blocks
-                ctx.font = '10px Arial'; // Small but legible text
-                const acronym = food.acronym;
-                const acronymWidth = ctx.measureText(acronym).width;
-                const acronymX = food.x * gridSize + (gridSize - acronymWidth) / 2; // Center the acronym under the block
-                const acronym
+            if (food.type === 'audit' && usedAgencyAcronyms.size > 0) {
+                const acronym = agencyList[agencyList.length - 1];
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                const textX = food.x * gridSize + (gridSize - ctx.measureText(acronym).width) / 2;
+                ctx.fillText(acronym, textX, food.y * gridSize + gridSize + 10);
+            }
+        });
+
+        // Democrats (blue blocks)
+        democrats.forEach(democrat => {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
+            ctx.fillStyle = 'white';
+            ctx.font = '10px Arial';
+            const textX = democrat.x * gridSize + (gridSize - ctx.measureText(democrat.name).width) / 2;
+            ctx.fillText(democrat.name, textX, democrat.y * gridSize + gridSize + 10);
+        });
+
+        // Update score
+        scoreText.textContent = `Score: ${score}`;
+
+        // Spawn new Democrat periodically
+        if (Math.random() < 0.01) addDemocrat();
+
+        setTimeout(drawGame, gameSpeed);
+    }
+
+    function gameOver() {
+        gameActive = false;
+        restartText.style.display = 'block';
+    }
+
+    function restartGame() {
+        snake = [{ x: 20, y: 12 }];
+        foods = [
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
+        ];
+        democrats = [];
+        dx = 0;
+        dy = 0;
+        score = 0;
+        gameActive = true;
+        usedDemocratNames.clear();
+        usedAgencyAcronyms.clear();
+        democratList = [];
+        agencyList = [];
+        addDemocrat();
+        updateUIText();
+        restartText.style.display = 'none';
+        drawGame();
+    }
+
+    // Start the game
+    drawGame();
+});
