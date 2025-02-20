@@ -4,13 +4,12 @@ const scoreElement = document.getElementById('score');
 const programsLeftElement = document.getElementById('programsLeft');
 const namesCollectedElement = document.getElementById('namesCollected');
 const teamMembersElement = document.getElementById('teamMembers');
+const resetText = document.getElementById('resetText');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let snake = [
-    { x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }
-];
+let snake = [];
 let dx = 0;
 let dy = 0;
 let foods = [];
@@ -20,6 +19,8 @@ let programsLeft = 52;
 let fruitEatenCount = 0;
 let collectedNames = [];
 let teamMembersFound = [];
+let killZones = [];
+let gameActive = false;
 
 const governmentPrograms = [
     "EPA Regulations", "NASA Funding", "DHS Grants", "DOE Projects", "NOAA Research", "FEMA Aid", 
@@ -27,8 +28,6 @@ const governmentPrograms = [
 ];
 
 const teamMembers = ["Elon Musk", "Donald Trump", "Marco Rubio", "Scott Bessent", "Russell Vought", "Stephen Miller", "Vivek Ramaswamy"];
-
-let killZones = [];
 
 function initFoods() {
     foods = [
@@ -107,6 +106,8 @@ function doZonesOverlap(zone1, zone2) {
 }
 
 function drawSnake() {
+    if (!gameActive) return;
+
     ctx.fillStyle = 'green';
     ctx.font = '16px Arial';
     ctx.textAlign = 'center';
@@ -130,6 +131,8 @@ function drawSnake() {
 }
 
 function drawFoods() {
+    if (!gameActive) return;
+
     foods.forEach(food => {
         if (food.isProgram) {
             ctx.fillStyle = 'red';
@@ -162,6 +165,8 @@ function drawFoods() {
 }
 
 function drawKillZones() {
+    if (!gameActive) return;
+
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 2;
     killZones.forEach(zone => {
@@ -198,7 +203,7 @@ function drawKillZones() {
 }
 
 function moveSnake() {
-    if (dx === 0 && dy === 0) return;
+    if (!gameActive || dx === 0 && dy === 0) return;
 
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
@@ -255,7 +260,12 @@ function moveSnake() {
 }
 
 function gameOver() {
+    gameActive = false;
+    resetText.style.display = 'block';
     alert(`Game Over! Score: ${score}`);
+}
+
+function resetGame() {
     snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }];
     dx = 0;
     dy = 0;
@@ -266,12 +276,16 @@ function gameOver() {
     teamMembersFound = [];
     foods = [];
     killZones = [];
+
     scoreElement.textContent = `Score: ${score}`;
     programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
     updateNamesCollectedDisplay();
     updateTeamMembersDisplay();
     initFoods();
     initKillZones();
+    gameActive = true;
+    resetText.style.display = 'none';
+    draw();
 }
 
 function updateNamesCollectedDisplay() {
@@ -286,13 +300,22 @@ function draw() {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawSnake();
-    drawFoods();
-    drawKillZones();
-    moveSnake();
+    if (gameActive) {
+        drawSnake();
+        drawFoods();
+        drawKillZones();
+        moveSnake();
+    }
 }
 
 document.addEventListener('keydown', (e) => {
+    if (e.key === ' ') {
+        resetGame();
+        return;
+    }
+
+    if (!gameActive) return;
+
     switch (e.key) {
         case 'ArrowUp':
             if (dy === 0) { dx = 0; dy = -20; }
@@ -310,7 +333,9 @@ document.addEventListener('keydown', (e) => {
 });
 
 function initGame() {
-    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }];
+    gameActive = false;
+    resetText.style.display = 'block';
+    snake = [];
     dx = 0;
     dy = 0;
     score = 0;
@@ -325,9 +350,6 @@ function initGame() {
     programsLeftElement.textContent = `Government Programs Left to Audit: ${programsLeft}`;
     updateNamesCollectedDisplay();
     updateTeamMembersDisplay();
-    initFoods();
-    initKillZones();
-    draw();
 }
 
 window.onload = () => {
