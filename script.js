@@ -8,13 +8,13 @@ const teamMembersElement = document.getElementById('teamMembers');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Ensure snake starts in the exact center-middle, snapped to 20x20 grid
+// Ensure snake starts in the exact center-middle, snapped to 20x20 grid, labeled "D.O.G.E"
 let snake = [
     { x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }
 ];
 let dx = 0; // Start completely stationary, no movement until key press
 let dy = 0;
-let foods = []; // Array to hold 3 items (government programs and team members)
+let foods = []; // Array to hold exactly 2 items (government program and team member)
 let score = 0;
 let gameSpeed = 100; // milliseconds between moves
 let programsLeft = 52; // Total government programs to audit
@@ -22,56 +22,50 @@ let fruitEatenCount = 0; // Track number of items eaten for name addition
 let collectedNames = []; // Track eaten food items (programs/figures and team members)
 let teamMembersFound = []; // Track names added to snake
 
-// Government programs and figures Elon Musk/DOGE are targeting (including Kamala Harris and Joe Biden)
+// Government programs Elon Musk/DOGE will audit (simplified list for 2 items)
 const governmentPrograms = [
-    "USPS", "EPA Regulations", "NASA Funding", "DHS Grants", "DOE Projects", "NOAA Research", "FEMA Aid", 
-    "HUD Programs", "Medicaid Expansion", "SNAP Benefits", "Kamala Harris", "Joe Biden", 
-    "Department of Education", "Small Business Administration (SBA)", "Consumer Financial Protection Bureau (CFPB)", 
-    "General Services Administration (GSA)", "National Endowment for Democracy", "Federal Aviation Administration (FAA)", 
-    "Federal Bureau of Investigation (FBI)", "Office of Personnel Management (OPM)", "Treasury Payment Systems", 
-    "Institute of Education Sciences (IES)", "Diversity, Equity, and Inclusion (DEI) Programs", "Foreign Aid Programs", 
-    "Humanitarian Aid Programs", "Development Programs", "Security Programs", "State Department Programs", 
-    "Federal Student Loan Programs", "Federal Research Contracts", "Federal Workforce Programs", 
-    "Environmental Protection Agency (EPA) Programs", "Department of Labor Programs", 
-    "Department of Health and Human Services (HHS) Programs", "Department of Agriculture Programs", 
-    "Department of Energy Programs", "Department of Commerce Programs", "Department of Defense Programs", 
-    "Department of Justice Programs", "Department of Transportation Programs", "Department of Housing and Urban Development (HUD) Programs", 
-    "Department of the Interior Programs", "Department of Veterans Affairs (VA) Programs", "National Science Foundation (NSF) Programs", 
-    "National Institutes of Health (NIH) Programs", "Federal Communications Commission (FCC) Programs", 
-    "Federal Trade Commission (FTC) Programs", "Securities and Exchange Commission (SEC) Programs", 
-    "Federal Reserve Programs", "Amtrak Programs", "Public Broadcasting Service (PBS) Funding", 
-    "National Park Service Programs", "Food and Drug Administration (FDA) Programs", "Centers for Disease Control and Prevention (CDC) Programs"
+    "EPA Regulations", "NASA Funding", "DHS Grants", "DOE Projects", "NOAA Research", "FEMA Aid", 
+    "HUD Programs", "Medicaid Expansion", "SNAP Benefits", "Kamala Harris", "Joe Biden"
 ];
 
-// Key team members Elon Musk is happy working with
+// Key team members in Donald Trump’s current team that Elon trusts and is happy with (as of February 2025)
 const teamMembers = ["Elon Musk", "Donald Trump", "Marco Rubio", "Scott Bessent", "Russell Vought", "Stephen Miller", "Vivek Ramaswamy"];
 
 let killZones = []; // Array to hold 3 kill zones
 
 function initFoods() {
-    while (foods.length < 3) {
-        let newFood = {
+    // Ensure exactly 2 food items: one government program, one team member
+    foods = [
+        {
             x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
             y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
-            isProgram: Math.random() < 0.7, // 70% chance for government program, 30% for team member
-            item: Math.random() < 0.7 ? 
-                governmentPrograms[Math.floor(Math.random() * governmentPrograms.length)] : 
-                teamMembers[Math.floor(Math.random() * teamMembers.length)]
-        };
-        // Ensure food doesn’t spawn on snake, kill zones, or overlap other food
-        if (!snake.some(segment => segment.x === newFood.x && segment.y === newFood.y) &&
-            !foods.some(food => food.x === newFood.x && food.y === newFood.y) &&
-            !killZones.some(zone => isPointInKillZone(newFood.x, newFood.y, zone))) {
-            foods.push(newFood);
+            isProgram: true,
+            item: governmentPrograms[Math.floor(Math.random() * governmentPrograms.length)]
+        },
+        {
+            x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
+            y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
+            isProgram: false,
+            item: teamMembers[Math.floor(Math.random() * teamMembers.length)]
         }
-    }
+    ];
+
+    // Ensure foods don’t spawn on snake, kill zones, or overlap each other
+    foods.forEach(food => {
+        while (snake.some(segment => segment.x === food.x && segment.y === food.y) ||
+               foods.some(f => f !== food && f.x === food.x && f.y === food.y) ||
+               killZones.some(zone => isPointInKillZone(food.x, food.y, zone))) {
+            food.x = Math.floor(Math.random() * (canvas.width / 20)) * 20;
+            food.y = Math.floor(Math.random() * (canvas.height / 20)) * 20;
+        }
+    });
 }
 
 function initKillZones() {
     killZones = [];
     const centerX = Math.floor(canvas.width / 40) * 20;
     const centerY = Math.floor(canvas.height / 40) * 20;
-    const minDistance = 200; // Increased distance to ensure kill zones are far from center
+    const minDistance = 200; // Ensure kill zones are far from center
 
     while (killZones.length < 3) {
         let zone = generateRandomKillZone();
@@ -178,15 +172,15 @@ function drawSnake() {
         // Draw thick snake segment (20x20 pixels)
         ctx.fillRect(segment.x, segment.y, 20, 20);
 
-        // Always show "Doge" as the main name on every segment
+        // Always show "D.O.G.E" as the main name on every segment
         ctx.fillStyle = 'white';
-        ctx.fillText("Doge", segment.x + 10, segment.y + 10);
+        ctx.fillText("D.O.G.E", segment.x + 10, segment.y + 10);
 
         // Add additional names every 4 items eaten, on the fourth added segment
         if (fruitEatenCount >= 4 && (snake.length - 4 * Math.floor(fruitEatenCount / 4)) === index + 1) {
             const nameIndex = (Math.floor(fruitEatenCount / 4) - 1) % teamMembers.length;
             const name = teamMembers[nameIndex];
-            ctx.fillText(name, segment.x + 10, segment.y + 10 + 15); // Offset below "Doge"
+            ctx.fillText(name, segment.x + 10, segment.y + 10 + 15); // Offset below "D.O.G.E"
             if (!teamMembersFound.includes(name)) {
                 teamMembersFound.push(name);
                 updateTeamMembersDisplay();
@@ -204,7 +198,7 @@ function drawFoods() {
             ctx.fill();
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
-            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below apple
+            ctx.fillText("Gov Programs the Elon will audit", food.x + 10, food.y + 25); // Label below apple
         } else {
             ctx.fillStyle = 'blue'; // Team members (stars)
             ctx.beginPath();
@@ -222,7 +216,7 @@ function drawFoods() {
             ctx.fill();
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
-            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below star
+            ctx.fillText("Team Members in Donald Trump’s current team, that Elon trusts and is happy with", food.x + 10, food.y + 25); // Label below star
         }
     });
 }
@@ -263,10 +257,10 @@ function moveSnake() {
         if (head.x === food.x && head.y === food.y) {
             if (food.isProgram) {
                 score += 5; // 5 points for government programs
-                for (let i = 0; i < 5; i++) snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y }); // 5 size increase
+                for (let i = 0; i < 5; i++) snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y }); // +5 size increase
             } else {
                 score += 10; // 10 points for team members
-                snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y }); // 1 size increase
+                for (let i = 0; i < 10; i++) snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y }); // +10 size increase
             }
             scoreElement.textContent = `Score: ${score}`;
             if (food.isProgram) {
@@ -283,7 +277,7 @@ function moveSnake() {
     });
 
     if (foodEaten) {
-        initFoods(); // Add new food to maintain 3 items
+        initFoods(); // Add new food to maintain 2 items
     } else {
         snake.pop(); // Remove tail if no food eaten
     }
@@ -312,11 +306,3 @@ function gameOver() {
 function updateNamesCollectedDisplay() {
     namesCollectedElement.innerHTML = 'Names Collected (Food Items)<br>' + collectedNames.map(name => `<div>${name}</div>`).join('');
 }
-
-function updateTeamMembersDisplay() {
-    teamMembersElement.innerHTML = 'Team Members Found (Names on Snake)<br>' + teamMembersFound.map(name => `<div>${name}</div>`).join('');
-}
-
-function draw() {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0,
