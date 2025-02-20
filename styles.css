@@ -16,24 +16,24 @@ body {
 
 #score {
     font-family: Arial, sans-serif;
-    font-size: 30px; /* Increased font size for larger canvas */
+    font-size: 30px;
     margin-top: 15px;
     color: black;
 }
 
 #resetText {
     font-family: Arial, sans-serif;
-    font-size: 30px; /* Increased font size for larger canvas */
+    font-size: 30px;
     color: blue;
     margin-bottom: 15px;
 }
 
 #businessLink {
     position: absolute;
-    bottom: 15px; /* Adjusted for larger canvas */
-    left: 15px; /* Adjusted for larger canvas */
+    bottom: 15px;
+    left: 15px;
     font-family: Arial, sans-serif;
-    font-size: 24px; /* Increased font size for larger canvas */
+    font-size: 24px;
     color: white;
     text-decoration: none;
 }
@@ -44,13 +44,13 @@ body {
 
 #auditedPanel, #teamMembersPanel {
     font-family: Arial, sans-serif;
-    font-size: 24px; /* Increased font size for larger canvas */
+    font-size: 24px;
     color: black;
-    padding: 15px; /* Increased padding for larger canvas */
+    padding: 15px;
     background-color: #e0e0f0; /* Light blue for visibility */
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 300px; /* Increased width for larger canvas */
+    width: 300px;
     box-sizing: border-box;
     position: absolute;
     top: 50%;
@@ -59,9 +59,9 @@ body {
 }
 
 #auditedPanel {
-    left: 15px; /* Adjusted for larger canvas */
+    left: 15px;
 }
 
 #teamMembersPanel {
-    right: 15px; /* Adjusted for larger canvas */
+    right: 15px;
 }
