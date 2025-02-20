@@ -16,24 +16,24 @@ body {
 
 #score {
     font-family: Arial, sans-serif;
-    font-size: 30px;
-    margin-top: 15px;
+    font-size: 20px;
+    margin-top: 10px;
     color: black;
 }
 
 #resetText {
     font-family: Arial, sans-serif;
-    font-size: 30px;
+    font-size: 20px;
     color: blue;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 #businessLink {
     position: absolute;
-    bottom: 15px;
-    left: 15px;
+    bottom: 10px;
+    left: 10px;
     font-family: Arial, sans-serif;
-    font-size: 24px;
+    font-size: 16px;
     color: white;
     text-decoration: none;
 }
@@ -44,13 +44,13 @@ body {
 
 #auditedPanel, #teamMembersPanel {
     font-family: Arial, sans-serif;
-    font-size: 24px;
+    font-size: 16px;
     color: black;
-    padding: 15px;
+    padding: 10px;
     background-color: #e0e0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 300px;
+    width: 200px;
     box-sizing: border-box;
     position: absolute;
     top: 25%;
@@ -59,9 +59,9 @@ body {
 }
 
 #auditedPanel {
-    left: 15px;
+    left: -220px; /* Position left of canvas, outside border, adjusted for smaller canvas */
 }
 
 #teamMembersPanel {
-    right: 15px;
+    right: -220px; /* Position right of canvas, outside border, adjusted for smaller canvas */
 }
