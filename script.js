@@ -1,7 +1,7 @@
 // Wait for the DOM to be fully loaded before running the game
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: false }); // Disable willReadFrequently to optimize performance and avoid color issues
+    const ctx = canvas.getContext('2d');
     const restartText = document.getElementById('restartText');
     const rulesText = document.getElementById('rulesText');
 
@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         "Alexandria Ocasio-Cortez", "Pramila Jayapal", "Ilhan Omar", "Greg Casar", "Jamie Raskin",
         "Ro Khanna", "Melanie Stansbury", "Maxwell Alejandro Frost", "Becca Balint", "Chris Murphy",
         "Lisa Blunt Rochester", "Jared Golden", "Gerry Connolly", "Don Beyer", "Scott Peters",
-        "Tammy Baldwin", "Michael Bennet", "Cory Booker", "Chris Coons", "Tammy Duckworth"
+        "Tammy Baldwin", "Michael Bennet", "Cory Booker", "Chris Coons", "Tammy Duckworth",
+        "Anthony Fauci", "Francis Collins", "Bill Gates", "Clifford Lane", "Hillary Clinton", "Barack Obama"
     ];
     let usedNames = new Set(); // Track used names to prevent duplicates
 
@@ -125,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Draw bad Democrats blocks (blue, instant death) with names underneath in white
         ctx.save(); // Save the current context state
-        ctx.fillStyle = 'blue'; // Forcefully set blue for Democrat blocks, isolated from other styles
+        ctx.fillStyle = 'blue'; // Forcefully set blue for all Democrat blocks, isolated from other styles
         democrats.forEach(democrat => {
             ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2); // Draw blue block
         });
@@ -142,18 +143,18 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(name, nameX, nameY); // Draw only text, no rectangle
         });
 
-        // Draw "Democrats against you" message and name in bottom-right corner only when a new Democrat appears
+        // Draw "Democrats Against you" message and name outside the playable area, on the left of the border, below the canvas
         if (democrats.length > 0 && democrats[democrats.length - 1].newlyAdded) {
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial'; // Slightly larger but still small for legibility
-            const message = `Democrats against you\n${democrats[democrats.length - 1].name}`;
+            const message = `Democrats Against you\n${democrats[democrats.length - 1].name}`;
             const lines = message.split('\n');
             const lineHeight = 14; // Space between lines
-            const textX = canvas.width - 10; // Bottom-right corner, slight padding
-            const textY = canvas.height - 10 - (lines.length - 1) * lineHeight; // Position at bottom-right, adjusted for multiple lines
+            const textX = -10; // Position left of the border, slight padding outside canvas
+            const textY = canvas.height + 10 + (lines.length - 1) * lineHeight; // Position below the canvas, adjusted for multiple lines
             lines.forEach((line, index) => {
                 const lineWidth = ctx.measureText(line).width;
-                ctx.fillText(line, textX - lineWidth, textY + index * lineHeight);
+                ctx.fillText(line, textX, textY - index * lineHeight); // Draw from bottom up for readability
             });
             // Mark the Democrat as no longer newly added after displaying
             democrats[democrats.length - 1].newlyAdded = false;
@@ -213,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Select a unique Democrat name (no duplicates at the same time)
         let availableNames = democratNames.filter(name => !usedNames.has(name));
         if (availableNames.length === 0) {
-            usedNames.clear(); // Reset if all names are used (though unlikely with 30 names)
+            usedNames.clear(); // Reset if all names are used (though unlikely with 36 names)
             availableNames = democratNames;
         }
         const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
