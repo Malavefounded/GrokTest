@@ -19,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const tileCountX = canvas.width / gridSize;  // 40
     const tileCountY = canvas.height / gridSize; // 25
 
-    let snake = [{ x: 20, y: 12 }];
+    let snake = [{ x: 20, y: 12 }]; // Start "D.O.G.E" centrally
     let foods = [
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
     ];
     let democrats = []; // Start with no Democrats
-    let dx = 0, dy = 0;
+    let dx = 0, dy = 0; // Direction for snake movement
     let score = 0, gameSpeed = 100, gameActive = true;
 
     const democratNames = [
@@ -49,6 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let usedAgencyAcronyms = new Set();
     let agencyList = [];
 
+    function getRandomAgencyAcronym() {
+        if (usedAgencyAcronyms.size >= agencyAcronyms.length) return null;
+        let acronym;
+        do {
+            acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)];
+        } while (usedAgencyAcronyms.has(acronym));
+        usedAgencyAcronyms.add(acronym);
+        agencyList.push(acronym);
+        updateUIText();
+        return acronym;
+    }
+
     document.addEventListener('keydown', handleKeyPress);
 
     function handleKeyPress(event) {
@@ -70,25 +82,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addAudit() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
-        const acronym = agencyAcronyms.find(a => !usedAgencyAcronyms.has(a));
-        usedAgencyAcronyms.add(acronym);
-        agencyList.push(acronym); // Use only acronyms, not full names
-        updateUIText();
+        const acronym = getRandomAgencyAcronym();
+        if (acronym) {
+            agencyList.push(acronym); // Ensure unique acronym is added
+            updateUIText();
+        }
     }
 
     function addDemocrat() {
-        if (usedDemocratNames.size >= democratNames.length) return;
-        const name = democratNames[Math.floor(Math.random() * democratNames.length)]; // Random selection
-        if (!usedDemocratNames.has(name)) {
-            usedDemocratNames.add(name);
-            democratList.push(name);
-            democrats.push({
+        if (usedDemocratNames.size >= democratNames.length) {
+            console.warn('No more unique Democrat names available.');
+            return; // Prevent freezing if no names left
+        }
+        let name;
+        let attempts = 0;
+        const maxAttempts = 10; // Prevent infinite loop
+        do {
+            name = democratNames[Math.floor(Math.random() * democratNames.length)]; // Random selection
+            attempts++;
+            if (attempts > maxAttempts) {
+                console.error('Failed to find unique Democrat name after max attempts.');
+                return; // Exit to prevent freezing
+            }
+        } while (usedDemocratNames.has(name));
+        usedDemocratNames.add(name);
+        democratList.push(name);
+        // Check for valid spawn location (not overlapping snake, foods, or other Democrats)
+        let validPosition = false;
+        let newDemocrat;
+        attempts = 0;
+        do {
+            newDemocrat = {
                 x: Math.floor(Math.random() * tileCountX),
                 y: Math.floor(Math.random() * tileCountY),
                 name
-            });
-            updateUIText();
-        }
+            };
+            validPosition = !snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) &&
+                           !foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) &&
+                           !democrats.some(d => d.x === newDemocrat.x && d.y === newDemocrat.y);
+            attempts++;
+            if (attempts > maxAttempts) {
+                console.warn('Could not find valid position for Democrat, skipping spawn.');
+                return; // Skip spawn to prevent freezing
+            }
+        } while (!validPosition);
+        democrats.push(newDemocrat);
+        updateUIText();
     }
 
     function updateUIText() {
@@ -205,28 +244,4 @@ document.addEventListener('DOMContentLoaded', () => {
         dx = 0;
         dy = 0;
         score = 0;
-        gameActive = true;
-        usedDemocratNames.clear();
-        usedAgencyAcronyms.clear();
-        democratList = [];
-        agencyList = [];
-        updateUIText();
-        restartText.style.display = 'none';
-        drawGame();
-    }
-
-    function getRandomAgencyAcronym() {
-        if (usedAgencyAcronyms.size >= agencyAcronyms.length) return null;
-        let acronym;
-        do {
-            acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)];
-        } while (usedAgencyAcronyms.has(acronym));
-        usedAgencyAcronyms.add(acronym);
-        agencyList.push(acronym);
-        updateUIText();
-        return acronym;
-    }
-
-    // Start the game
-    drawGame();
-});
+       
