@@ -1,4 +1,4 @@
-// Global variables (outside DOMContentLoaded)
+// Global variables
 const democratNames = [
     "Kamala Harris", "Joe Biden", "Chuck Schumer", "Hakeem Jeffries", "Elizabeth Warren",
     "Bernie Sanders", "Brian Schatz", "Patty Murray", "Ron Wyden", "Maxine Waters",
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let foodEaten = false;
             for (let i = 0; i < foods.length; i++) {
-                if (head.x === foods[i].x && head.y === foods[i].y) {
+                if (head.x === foods[i]?.x && head.y === foods[i]?.y) { // Use optional chaining for safety
                     if (foods[i].type === 'audit') {
                         score += 30; for (let j = 0; j < 3; j++) snake.push({...snake[snake.length - 1]});
                         addAudit();
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             for (let i = 0; i < foods.length; i++) {
-                if (head.x === foods[i].x && head.y === foods[i].y) continue; // Red/green only grow/score, not kill
+                if (head.x === foods[i]?.x && head.y === foods[i]?.y) continue; // Red/green only grow/score, not kill
             }
 
             ctx.fillStyle = 'black';
@@ -230,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
 
             foods.forEach(food => {
+                if (!food || !food.type) return; // Skip if food is undefined or missing type
                 ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
                 ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
                 if (food.type === 'audit' && food.acronym) {
