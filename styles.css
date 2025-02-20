@@ -12,6 +12,20 @@ body {
     background-color: black; /* Ensure container background is black */
 }
 
+#rulesText {
+    position: absolute;
+    top: -60px; /* Position above the canvas with more space */
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px; /* Smaller font to fit the text */
+    text-align: center;
+    width: 800px; /* Match canvas width for centering */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide any overflow */
+}
+
 #restartText {
     position: absolute;
     top: -30px; /* Position above the canvas */
