@@ -14,9 +14,19 @@ body {
     z-index: 1;
 }
 
-#score {
+#resetText {
     position: absolute;
     top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: blue;
+    font-size: 24px;
+    z-index: 2;
+}
+
+#score {
+    position: absolute;
+    top: 50px;
     left: 10px;
     color: white;
     font-size: 24px;
@@ -25,7 +35,7 @@ body {
 
 #rules {
     position: absolute;
-    top: 50px;
+    top: 90px;
     left: 10px;
     color: white;
     font-size: 18px;
@@ -36,7 +46,7 @@ body {
 
 #programsLeft {
     position: absolute;
-    top: 10px;
+    top: 50px;
     right: 10px;
     color: white;
     font-size: 18px;
