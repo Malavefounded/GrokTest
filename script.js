@@ -8,10 +8,10 @@ const teamMembersPanel = document.getElementById('teamMembersPanel');
 // Game settings
 const WIDTH = 800;
 const HEIGHT = 600;
-const FOOD_SIZE = 10; // Reduced food size for smaller canvas
+const FOOD_SIZE = 10;
 const TEAM_MEMBER_POINTS = 5;
 const AGENCY_POINTS = 10;
-const FPS = 120; // Increased FPS significantly to make snake much faster
+const FPS = 120; // High FPS for fast snake movement
 
 let snakePos = [WIDTH / 2, HEIGHT / 2];
 let snakeBody = [[WIDTH / 2, HEIGHT / 2]];
@@ -92,7 +92,7 @@ function draw() {
         if (i === 0) {
             ctx.fillStyle = 'black';
             ctx.font = '10px Arial';
-            ctx.fillText('D.O.G.E', x + 1, y + 9); // Adjusted for smaller canvas and visibility
+            ctx.fillText('D.O.G.E', x + 1, y + 9);
             ctx.fillStyle = 'blue'; // Reset fill style for body
         }
     }
@@ -117,6 +117,8 @@ function draw() {
 
     // Update score display
     scoreDisplay.textContent = `Score: ${score}  Length: ${snakeBody.length}`;
+
+    // Update side panels
     auditedPanel.innerHTML = "Government Organizations Audited:<br>" + Array.from(collectedAgencies).join('<br>');
     teamMembersPanel.innerHTML = "Team Members Found:<br>" + Array.from(collectedTeamMembers).join('<br>');
 }
