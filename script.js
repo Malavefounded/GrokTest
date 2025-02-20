@@ -2,14 +2,15 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const gridSize = 20;
-const tileCount = canvas.width / gridSize;
+const tileCountX = canvas.width / gridSize;  // 800 / 20 = 40 tiles wide
+const tileCountY = canvas.height / gridSize; // 500 / 20 = 25 tiles tall
 
 let snake = [
-    { x: 10, y: 10 },
+    { x: 20, y: 12 }, // Start snake more centrally in wider space
 ];
 let food = {
-    x: Math.floor(Math.random() * tileCount),
-    y: Math.floor(Math.random() * tileCount)
+    x: Math.floor(Math.random() * tileCountX),
+    y: Math.floor(Math.random() * tileCountY)
 };
 let dx = 0;
 let dy = 0;
@@ -58,15 +59,15 @@ function drawGame() {
         score += 10;
         gameSpeed = Math.max(50, gameSpeed - 2); // Increase speed
         food = {
-            x: Math.floor(Math.random() * tileCount),
-            y: Math.floor(Math.random() * tileCount)
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY)
         };
     } else {
         snake.pop();
     }
 
     // Check collision with walls
-    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+    if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
         gameOver();
         return;
     }
