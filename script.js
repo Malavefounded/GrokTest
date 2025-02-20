@@ -14,7 +14,8 @@ let democratList = [];
 const agencyAcronyms = [
     "USAID", "CFPB", "EPA", "Treasury", "DOD", "IRS", "DOE", "SSA", "FEMA", "USPS",
     "HUD", "GSA", "STATE", "SBA", "DOI", "NPS", "OMB", "ED", "OPM", "DOJ",
-    "NASA", "VA", "USDA", "FAA", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC"
+    "NASA", "VA", "USDA", "FAA", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC",
+    "DHS", "DOC", "DOEd", "DOL", "DOT", "DVA" // Added more acronyms to ensure enough names
 ];
 const agencyFullNames = {
     "USAID": "United States Agency for International Development",
@@ -46,7 +47,12 @@ const agencyFullNames = {
     "NIH": "National Institutes of Health",
     "FDA": "Food and Drug Administration",
     "DEA": "Drug Enforcement Administration",
-    "SEC": "Securities and Exchange Commission"
+    "SEC": "Securities and Exchange Commission",
+    "DHS": "United States Department of Homeland Security",
+    "DOC": "United States Department of Commerce",
+    "DOEd": "United States Department of Education",
+    "DOL": "United States Department of Labor",
+    "DVA": "United States Department of Veterans Affairs"
 };
 let usedAgencyAcronyms = new Set();
 let agencyList = [];
@@ -57,7 +63,9 @@ const teamMemberNames = [
     "Scott Bessent", "Pam Bondi", "Sean Duffy", "Lee Zeldin", "Elise Stefanik",
     "John Ratcliffe", "Mike Waltz", "Steve Witkoff", "Doug Collins", "Kristi Noem",
     "Ben Carson", "Linda McMahon", "Stephen Miller", "Tom Homan", "Brendan Carr",
-    "Pete Hoekstra", "Mike Huckabee", "Karoline Leavitt", "Chris LaCivita", "James Blair"
+    "Pete Hoekstra", "Mike Huckabee", "Karoline Leavitt", "Chris LaCivita", "James Blair",
+    "Vivek Ramaswamy", "Ronna McDaniel", "Reince Priebus", "Kellyanne Conway", "Sean Spicer"
+    // Added more Republican names to ensure enough for red/green blocks
 ];
 let usedTeamMemberNames = new Set();
 let teamMemberList = [];
