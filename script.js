@@ -20,12 +20,22 @@ document.addEventListener('DOMContentLoaded', () => {
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
     ];
-    let democrats = []; // Array to store Democrat blocks (bad - causes instant death)
+    let democrats = []; // Array to store Democrat blocks (bad - causes instant death) with associated names
     let dx = 0, dy = 0; // Direction for snake movement
     let score = 0, gameSpeed = 100, gameActive = true; // Revert to original gameSpeed of 100ms
 
     // Good food types: Audits (red, +3 size, +30 points) and Team Members (green, +1 size, +10 points)
     // Bad blocks: Democrats (blue, instant death on contact)
+    const democratNames = [
+        "Kamala Harris", "Joe Biden", "Chuck Schumer", "Hakeem Jeffries", "Elizabeth Warren",
+        "Bernie Sanders", "Brian Schatz", "Patty Murray", "Ron Wyden", "Maxine Waters",
+        "Alexandria Ocasio-Cortez", "Pramila Jayapal", "Ilhan Omar", "Greg Casar", "Jamie Raskin",
+        "Ro Khanna", "Melanie Stansbury", "Maxwell Alejandro Frost", "Becca Balint", "Chris Murphy",
+        "Lisa Blunt Rochester", "Jared Golden", "Gerry Connolly", "Don Beyer", "Scott Peters",
+        "Tammy Baldwin", "Michael Bennet", "Cory Booker", "Chris Coons", "Tammy Duckworth"
+    ];
+    let usedNames = new Set(); // Track used names to prevent duplicates
+
     document.addEventListener('keydown', handleKeyPress);
 
     function handleKeyPress(event) {
@@ -71,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     y: Math.floor(Math.random() * tileCountY),
                     type: Math.random() < 0.5 ? 'audit' : 'team'
                 });
-                // After eating good food, add a bad Democrat block
+                // After eating good food, add a bad Democrat block with a unique name
                 addDemocrat();
                 foodEaten = true;
                 break;
@@ -113,9 +123,36 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
         });
 
-        // Draw bad Democrats blocks (blue, instant death)
+        // Draw bad Democrats blocks (blue, instant death) with names underneath
         ctx.fillStyle = 'blue';
-        democrats.forEach(democrat => ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2));
+        democrats.forEach(democrat => {
+            ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
+            // Draw Democrat name under the block in small, legible text
+            ctx.fillStyle = 'white';
+            ctx.font = '10px Arial'; // Small but legible text
+            const name = democrat.name;
+            const nameWidth = ctx.measureText(name).width;
+            const nameX = democrat.x * gridSize + (gridSize - nameWidth) / 2; // Center the name under the block
+            const nameY = democrat.y * gridSize + gridSize + 12; // Position below the block with slight offset
+            ctx.fillText(name, nameX, nameY);
+        });
+
+        // Draw "Democrats against you" message and name in bottom-right corner only when a new Democrat appears
+        if (democrats.length > 0 && democrats[democrats.length - 1].newlyAdded) {
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial'; // Slightly larger but still small for legibility
+            const message = `Democrats against you\n${democrats[democrats.length - 1].name}`;
+            const lines = message.split('\n');
+            const lineHeight = 14; // Space between lines
+            const textX = canvas.width - 10; // Bottom-right corner, slight padding
+            const textY = canvas.height - 10 - (lines.length - 1) * lineHeight; // Position at bottom-right, adjusted for multiple lines
+            lines.forEach((line, index) => {
+                const lineWidth = ctx.measureText(line).width;
+                ctx.fillText(line, textX - lineWidth, textY + index * lineHeight);
+            });
+            // Mark the Democrat as no longer newly added after displaying
+            democrats[democrats.length - 1].newlyAdded = false;
+        }
 
         // Draw "D.O.G.E" above the snake's head
         ctx.fillStyle = 'white';
@@ -153,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
         ];
         democrats = []; // Clear bad Democrats blocks on restart
+        usedNames.clear(); // Clear used names on restart
         dx = dy = 0; score = 0; gameSpeed = 100; gameActive = true;
         restartText.style.display = 'none'; // Hide restart text
         drawGame(); // Start the game loop with setTimeout
@@ -163,12 +201,4 @@ document.addEventListener('DOMContentLoaded', () => {
         do {
             newDemocrat = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
             // Ensure the new bad Democrat block doesn't overlap with the snake, good foods, or other bad Democrats
-        } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
-                 foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
-                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
-        democrats.push(newDemocrat);
-    }
-
-    // Start the game with the original setTimeout-based loop
-    drawGame();
-});
+        } while
