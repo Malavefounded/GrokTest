@@ -244,4 +244,16 @@ document.addEventListener('DOMContentLoaded', () => {
         dx = 0;
         dy = 0;
         score = 0;
-       
+        gameActive = true;
+        usedDemocratNames.clear();
+        usedAgencyAcronyms.clear();
+        democratList = [];
+        agencyList = [];
+        updateUIText();
+        restartText.style.display = 'none';
+        drawGame();
+    }
+
+    // Start the game
+    drawGame();
+});
