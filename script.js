@@ -175,4 +175,58 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
                 ctx.fillStyle = 'white';
                 ctx.font = '10px Arial';
-                const textX = democrat.x * gridSize + (gridSize -
+                const textX = democrat.x * gridSize + (gridSize - ctx.measureText(democrat.name).width) / 2;
+                ctx.fillText(democrat.name, textX, democrat.y * gridSize + gridSize + 10);
+            });
+
+            // Update score
+            scoreText.textContent = `Score: ${score}`;
+
+            setTimeout(drawGame, gameSpeed);
+        } catch (error) {
+            console.error('Error in drawGame:', error);
+            gameOver(); // Force game over if an error occurs to prevent freezing
+        }
+    }
+
+    function gameOver() {
+        gameActive = false;
+        restartText.style.display = 'block';
+    }
+
+    function restartGame() {
+        snake = [{ x: 20, y: 12 }];
+        foods = [
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
+        ];
+        democrats = []; // No Democrats at start
+        dx = 0;
+        dy = 0;
+        score = 0;
+        gameActive = true;
+        usedDemocratNames.clear();
+        usedAgencyAcronyms.clear();
+        democratList = [];
+        agencyList = [];
+        updateUIText();
+        restartText.style.display = 'none';
+        drawGame();
+    }
+
+    function getRandomAgencyAcronym() {
+        if (usedAgencyAcronyms.size >= agencyAcronyms.length) return null;
+        let acronym;
+        do {
+            acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)];
+        } while (usedAgencyAcronyms.has(acronym));
+        usedAgencyAcronyms.add(acronym);
+        agencyList.push(acronym);
+        updateUIText();
+        return acronym;
+    }
+
+    // Start the game
+    drawGame();
+});
