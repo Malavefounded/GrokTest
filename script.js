@@ -201,4 +201,23 @@ document.addEventListener('DOMContentLoaded', () => {
         do {
             newDemocrat = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
             // Ensure the new bad Democrat block doesn't overlap with the snake, good foods, or other bad Democrats
-        } while
+        } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
+                 foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
+                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
+
+        // Select a unique Democrat name (no duplicates at the same time)
+        let availableNames = democratNames.filter(name => !usedNames.has(name));
+        if (availableNames.length === 0) {
+            usedNames.clear(); // Reset if all names are used (though unlikely with 30 names)
+            availableNames = democratNames;
+        }
+        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
+        usedNames.add(randomName);
+        newDemocrat.name = randomName;
+        newDemocrat.newlyAdded = true; // Mark as newly added for displaying the message
+        democrats.push(newDemocrat);
+    }
+
+    // Start the game with the original setTimeout-based loop
+    drawGame();
+});
