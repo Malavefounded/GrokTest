@@ -185,3 +185,73 @@ document.addEventListener('DOMContentLoaded', () => {
             // Draw everything
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Snake (lime green) with "D.O.G.E" label
+            ctx.fillStyle = 'lime';
+            snake.forEach(segment => ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2));
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
+
+            // Foods (red Audits, green Team Members)
+            foods.forEach(food => {
+                ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
+                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+                if (food.type === 'audit' && food.acronym) {
+                    // Use the acronym assigned to this specific food object
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    const textX = food.x * gridSize + (gridSize - ctx.measureText(food.acronym).width) / 2;
+                    ctx.fillText(food.acronym, textX, food.y * gridSize + gridSize + 10);
+                }
+            });
+
+            // Democrats (blue blocks)
+            democrats.forEach(democrat => {
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                const textX = democrat.x * gridSize + (gridSize - ctx.measureText(democrat.name).width) / 2;
+                ctx.fillText(democrat.name, textX, democrat.y * gridSize + gridSize + 10);
+            });
+
+            // Update score
+            scoreText.textContent = `Score: ${score}`;
+
+            setTimeout(drawGame, gameSpeed);
+        } catch (error) {
+            console.error('Error in drawGame:', error);
+            gameOver(); // Force game over if an error occurs to prevent freezing
+        }
+    }
+
+    function gameOver() {
+        gameActive = false;
+        restartText.style.display = 'block';
+    }
+
+    function restartGame() {
+        snake = [{ x: 20, y: 12 }];
+        foods = [
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
+        ];
+        democrats = []; // No Democrats at start
+        dx = 0;
+        dy = 0;
+        score = 0;
+        gameActive = true;
+        usedDemocratNames.clear();
+        usedAgencyAcronyms.clear();
+        democratList = [];
+        agencyList = [];
+        updateUIText();
+        restartText.style.display = 'none';
+        drawGame();
+    }
+
+    // Start the game
+    drawGame();
+});
