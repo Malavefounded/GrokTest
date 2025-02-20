@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Draw everything
+        // Draw everything, ensuring proper color management
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Draw bad Democrats blocks (blue, instant death) with names underneath in white
-        ctx.fillStyle = 'blue'; // Explicitly set blue for Democrat blocks
+        ctx.fillStyle = 'blue'; // Explicitly set blue for all Democrat blocks
         democrats.forEach(democrat => {
             ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2); // Draw blue block
             // Draw Democrat name under the block in small, legible white text
