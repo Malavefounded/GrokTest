@@ -1,4 +1,3 @@
-
 // Initialize the canvas
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -7,12 +6,12 @@ const auditedPanel = document.getElementById('auditedPanel');
 const teamMembersPanel = document.getElementById('teamMembersPanel');
 
 // Game settings
-const WIDTH = 800;
-const HEIGHT = 600;
-const FOOD_SIZE = 10;
+const WIDTH = 1200;
+const HEIGHT = 900;
+const FOOD_SIZE = 15; // Increased food size for larger canvas
 const TEAM_MEMBER_POINTS = 5;
 const AGENCY_POINTS = 10;
-const FPS = 15; // Fixed frames per second to control speed
+const FPS = 30; // Increased FPS to make snake faster
 
 let snakePos = [WIDTH / 2, HEIGHT / 2];
 let snakeBody = [[WIDTH / 2, HEIGHT / 2]];
@@ -96,8 +95,8 @@ function draw() {
         ctx.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);
         if (i === 0) { // Draw "D.O.G.E" on snake head
             ctx.fillStyle = 'white';
-            ctx.font = '10px Arial';
-            ctx.fillText('D.O.G.E', x + 2, y + 8);
+            ctx.font = '15px Arial'; // Increased font size for larger canvas
+            ctx.fillText('D.O.G.E', x + 3, y + 12); // Adjusted position for larger canvas
             ctx.fillStyle = 'black'; // Reset fill style for body
         }
     }
@@ -111,14 +110,14 @@ function draw() {
         ctx.closePath();
 
         ctx.fillStyle = 'black';
-        ctx.font = '16px Arial';
-        ctx.fillText(food.name, food.pos[0], food.pos[1] + FOOD_SIZE + 15);
+        ctx.font = '20px Arial'; // Increased font size for larger canvas
+        ctx.fillText(food.name, food.pos[0], food.pos[1] + FOOD_SIZE + 10); // Moved text up, adjusted for larger canvas
     });
 
     // Draw reset text (blue, top center)
     ctx.fillStyle = 'blue';
-    ctx.font = '20px Arial';
-    ctx.fillText('Press SPACE to reset', WIDTH / 2 - 110, 30);
+    ctx.font = '30px Arial'; // Increased font size for larger canvas
+    ctx.fillText('Press SPACE to reset', WIDTH / 2 - 165, 45); // Adjusted position for larger canvas
 
     // Update score display
     scoreDisplay.textContent = `Score: ${score}  Length: ${snakeBody.length}`;
@@ -152,62 +151,4 @@ function update(currentTime) {
     snakeBody.unshift([snakePos[0], snakePos[1]]);
 
     // Check for food collision
-    let foodEaten = null;
-    foods.forEach((food, index) => {
-        if (snakePos[0] === food.pos[0] && snakePos[1] === food.pos[1]) {
-            foodEaten = { ...food, index };
-            score += food.type === 'Team Member' ? TEAM_MEMBER_POINTS : AGENCY_POINTS;
-            if (food.type === 'Team Member') {
-                collectedTeamMembers.add(food.name);
-            } else {
-                collectedAgencies.add(food.name);
-            }
-        }
-    });
-
-    if (foodEaten) {
-        foods.splice(foodEaten.index, 1);
-        const newFoodType = foodEaten.type === 'Team Member' ? 'Team Member' : 'Agency';
-        const newFoodName = randomChoice(newFoodType === 'Team Member' ? teamMembers : agencies);
-        const newPos = getNonOverlappingPos(foods);
-        foods.push({ type: newFoodType, name: newFoodName, pos: newPos });
-    } else {
-        snakeBody.pop();
-    }
-
-    // Check borders (kill zones)
-    if (snakePos[0] < 0 || snakePos[0] >= WIDTH || snakePos[1] < 0 || snakePos[1] >= HEIGHT) {
-        gameOver = true;
-    }
-}
-
-// Reset game
-function resetGame() {
-    snakePos = [WIDTH / 2, HEIGHT / 2];
-    snakeBody = [[WIDTH / 2, HEIGHT / 2]];
-    direction = 'RIGHT';
-    changeTo = direction;
-    score = 0;
-    gameOver = false;
-    collectedTeamMembers.clear();
-    collectedAgencies.clear();
-    foods = [
-        { type: "Agency", name: randomChoice(agencies), pos: getNonOverlappingPos() },
-        { type: "Agency", name: randomChoice(agencies), pos: getNonOverlappingPos([foods[0]]) },
-        { type: "Team Member", name: randomChoice(teamMembers), pos: getNonOverlappingPos(foods) }
-    ];
-    lastUpdateTime = performance.now(); // Reset last update time using performance.now() for consistent timing
-    gameLoop();
-}
-
-// Game loop
-function gameLoop(timestamp) {
-    draw();
-    if (!gameOver) {
-        update(timestamp);
-    }
-    requestAnimationFrame(gameLoop);
-}
-
-// Start the game
-requestAnimationFrame(gameLoop);
+    let
