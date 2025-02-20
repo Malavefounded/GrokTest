@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         addAudit();
                     } else if (foods[i].type === 'team') {
                         score += 10; snake.push({...snake[snake.length - 1]});
-                        addTeamMember(foods[i].name);
+                        addTeamMember(foods[i].name || ''); // Fallback if name is undefined
                     }
                     foods.splice(i, 1);
                     foods.push({
