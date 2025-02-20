@@ -42,13 +42,6 @@ body {
     text-decoration: underline;
 }
 
-#sidePanels {
-    display: flex;
-    justify-content: space-between;
-    width: 800px;
-    margin-top: 10px;
-}
-
 #auditedPanel, #teamMembersPanel {
     font-family: Arial, sans-serif;
     font-size: 16px;
@@ -59,13 +52,16 @@ body {
     border-radius: 5px;
     width: 200px;
     box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     visibility: visible; /* Ensure panels are visible */
 }
 
 #auditedPanel {
-    margin-right: 10px;
+    left: 10px; /* Position left of canvas, outside border */
 }
 
 #teamMembersPanel {
-    margin-left: 10px;
+    right: 10px; /* Position right of canvas, outside border */
 }
