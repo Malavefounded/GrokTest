@@ -14,7 +14,7 @@ body {
 
 #rulesText {
     position: absolute;
-    top: -100px; /* Position above the playable area */
+    top: -300px; /* Position above the playable area */
     left: 50%;
     transform: translateX(-50%);
     color: white;
