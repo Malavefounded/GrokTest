@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const restartText = document.getElementById('restartText');
     const rulesText = document.getElementById('rulesText');
+    const democratsText = document.getElementById('democratsText'); // Reference to the new div
 
-    if (!canvas || !ctx || !restartText || !rulesText) {
+    if (!canvas || !ctx || !restartText || !rulesText || !democratsText) {
         console.error('One or more DOM elements not found. Check your HTML.');
         return;
     }
@@ -143,21 +144,19 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(name, nameX, nameY); // Draw only text, no rectangle
         });
 
-        // Draw "Democrats Against you" message and name outside the playable area, on the left of the border, below the canvas
+        // Update "Democrats Against you" text in the HTML div (outside playable area, left of border, below canvas)
         if (democrats.length > 0 && democrats[democrats.length - 1].newlyAdded) {
-            ctx.fillStyle = 'white';
-            ctx.font = '12px Arial'; // Slightly larger but still small for legibility
             const message = `Democrats Against you\n${democrats[democrats.length - 1].name}`;
-            const lines = message.split('\n');
-            const lineHeight = 14; // Space between lines
-            const textX = -10; // Position left of the border, slight padding outside canvas
-            const textY = canvas.height + 10 + (lines.length - 1) * lineHeight; // Position below the canvas, adjusted for multiple lines
-            lines.forEach((line, index) => {
-                const lineWidth = ctx.measureText(line).width;
-                ctx.fillText(line, textX, textY - index * lineHeight); // Draw from bottom up for readability
-            });
+            democratsText.textContent = message; // Set the text content of the div
+            democratsText.style.display = 'block'; // Show the text
+            // Hide the text after a short delay (e.g., 3 seconds) to match the temporary nature of the message
+            setTimeout(() => {
+                democratsText.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
             // Mark the Democrat as no longer newly added after displaying
             democrats[democrats.length - 1].newlyAdded = false;
+        } else {
+            democratsText.style.display = 'none'; // Hide if no new Democrat
         }
 
         // Draw "D.O.G.E" above the snake's head
@@ -199,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         usedNames.clear(); // Clear used names on restart
         dx = dy = 0; score = 0; gameSpeed = 100; gameActive = true;
         restartText.style.display = 'none'; // Hide restart text
+        democratsText.style.display = 'none'; // Hide "Democrats Against you" text on restart
         drawGame(); // Start the game loop with setTimeout
     }
 
@@ -209,21 +209,4 @@ document.addEventListener('DOMContentLoaded', () => {
             // Ensure the new bad Democrat block doesn't overlap with the snake, good foods, or other bad Democrats
         } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
                  foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
-                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
-
-        // Select a unique Democrat name (no duplicates at the same time)
-        let availableNames = democratNames.filter(name => !usedNames.has(name));
-        if (availableNames.length === 0) {
-            usedNames.clear(); // Reset if all names are used (though unlikely with 36 names)
-            availableNames = democratNames;
-        }
-        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
-        usedNames.add(randomName);
-        newDemocrat.name = randomName;
-        newDemocrat.newlyAdded = true; // Mark as newly added for displaying the message
-        democrats.push(newDemocrat);
-    }
-
-    // Start the game with the original setTimeout-based loop
-    drawGame();
-});
+                 democrats.some(dem => dem.x === newDemocrat.x &&
