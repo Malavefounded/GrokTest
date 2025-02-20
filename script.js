@@ -8,11 +8,11 @@ const teamMembersElement = document.getElementById('teamMembers');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Ensure snake starts in the exact center middle, snapped to grid
+// Ensure snake starts in the exact center-middle, snapped to 20x20 grid
 let snake = [
-    { x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 } // Center middle, snapped to grid
+    { x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }
 ];
-let dx = 0; // Start stationary, controlled by keys
+let dx = 0; // Start completely stationary, no movement until key press
 let dy = 0;
 let foods = []; // Array to hold 3 items (government programs and team members)
 let score = 0;
@@ -71,7 +71,7 @@ function initKillZones() {
     killZones = [];
     const centerX = Math.floor(canvas.width / 40) * 20;
     const centerY = Math.floor(canvas.height / 40) * 20;
-    const minDistance = 100; // Ensure kill zones are far from center
+    const minDistance = 200; // Increased distance to ensure kill zones are far from center
 
     while (killZones.length < 3) {
         let zone = generateRandomKillZone();
@@ -94,7 +94,7 @@ function generateRandomKillZone() {
     do {
         x = Math.floor(Math.random() * (canvas.width / 20 - (shape.width / 20))) * 20;
         y = Math.floor(Math.random() * (canvas.height / 20 - (shape.height / 20))) * 20;
-    } while (Math.abs(x - Math.floor(canvas.width / 40) * 20) < 100 && Math.abs(y - Math.floor(canvas.height / 40) * 20) < 100);
+    } while (Math.abs(x - Math.floor(canvas.width / 40) * 20) < 200 && Math.abs(y - Math.floor(canvas.height / 40) * 20) < 200);
 
     return { x, y, width: shape.width, height: shape.height, type: shape.type };
 }
@@ -110,14 +110,32 @@ function drawKillZones() {
             ctx.lineTo(zone.x + zone.width, zone.y + zone.height);
             ctx.moveTo(zone.x + zone.width, zone.y);
             ctx.lineTo(zone.x + zone.width - zone.height, zone.y);
+            // Draw collision box (rectangle around the L-shape)
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
+            ctx.fillStyle = 'red';
+            ctx.font = '16px Arial';
+            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
         } else if (zone.type === 'T') {
             ctx.moveTo(zone.x + zone.width / 2, zone.y);
             ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
             ctx.moveTo(zone.x, zone.y + zone.height / 2);
             ctx.lineTo(zone.x + zone.width, zone.y + zone.height / 2);
+            // Draw collision box (rectangle around the T-shape)
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
+            ctx.fillStyle = 'red';
+            ctx.font = '16px Arial';
+            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
         } else if (zone.type === 'I') {
             ctx.moveTo(zone.x + zone.width / 2, zone.y);
             ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
+            // Draw collision box (rectangle around the I-shape)
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
+            ctx.fillStyle = 'red';
+            ctx.font = '16px Arial';
+            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
         }
         ctx.stroke();
     });
@@ -273,7 +291,7 @@ function moveSnake() {
 
 function gameOver() {
     alert(`Game Over! Score: ${score}`);
-    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }]; // Reset to center middle, snapped to grid
+    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }]; // Reset to exact center-middle, snapped to grid
     dx = 0;
     dy = 0;
     score = 0;
@@ -301,46 +319,4 @@ function updateTeamMembersDisplay() {
 
 function draw() {
     ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    drawSnake();
-    drawFoods();
-    drawKillZones();
-    moveSnake();
-}
-
-document.addEventListener('keydown', (e) => {
-    switch (e.key) {
-        case 'ArrowUp':
-            if (dy === 0) { dx = 0; dy = -20; }
-            break;
-        case 'ArrowDown':
-            if (dy === 0) { dx = 0; dy = 20; }
-            break;
-        case 'ArrowLeft':
-            if (dx === 0) { dx = -20; dy = 0; }
-            break;
-        case 'ArrowRight':
-            if (dx === 0) { dx = 20; dy = 0; }
-            break;
-    }
-});
-
-initFoods();
-initKillZones();
-updateNamesCollectedDisplay();
-updateTeamMembersDisplay();
-setInterval(draw, gameSpeed);
-
-// Handle window resize
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    snake = [{ x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }]; // Reset snake position to center middle, snapped to grid
-    dx = 0;
-    dy = 0;
-    foods = [];
-    killZones = [];
-    initFoods();
-    initKillZones();
-});
+    ctx.fillRect(0,
