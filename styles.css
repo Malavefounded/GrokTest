@@ -4,9 +4,25 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-color: black; /* Changed to black for the entire page */
+}
+
+.game-container {
+    position: relative;
+    background-color: black; /* Ensure container background is black */
+}
+
+#restartText {
+    position: absolute;
+    top: -30px; /* Position above the canvas */
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    display: none; /* Hidden by default, shown only on game over */
 }
 
 #gameCanvas {
-    border: 1px solid black;
+    border: 2px solid white; /* White border around the game field */
 }
