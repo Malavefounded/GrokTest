@@ -123,18 +123,18 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
         });
 
-        // Draw bad Democrats blocks (blue, instant death) with names underneath in white
+        // Draw bad Democrats blocks (blue, instant death) with names underneath in white (no white blocks)
         ctx.fillStyle = 'blue'; // Ensure Democrats blocks are drawn in blue
         democrats.forEach(democrat => {
             ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
-            // Draw Democrat name under the block in small, legible white text
+            // Draw Democrat name under the block in small, legible white text (no fillRect, just text)
             ctx.fillStyle = 'white'; // Names in white for contrast against blue blocks
             ctx.font = '10px Arial'; // Small but legible text
             const name = democrat.name;
             const nameWidth = ctx.measureText(name).width;
             const nameX = democrat.x * gridSize + (gridSize - nameWidth) / 2; // Center the name under the block
             const nameY = democrat.y * gridSize + gridSize + 12; // Position below the block with slight offset
-            ctx.fillText(name, nameX, nameY);
+            ctx.fillText(name, nameX, nameY); // Draw only text, no rectangle
         });
 
         // Draw "Democrats against you" message and name in bottom-right corner only when a new Democrat appears
