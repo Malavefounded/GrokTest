@@ -96,17 +96,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (!foodEaten) {
-            snake.pop();
-        }
+        if (!foodEaten) snake.pop();
 
-        // Check collision with walls
+        // Check collisions - optimize with spatial checks or bounding boxes if performance degrades with many elements
         if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
             gameOver();
             return;
         }
 
-        // Check collision with self - optimize with early exit if possible
         for (let i = 1; i < snake.length; i++) {
             if (head.x === snake[i].x && head.y === snake[i].y) {
                 gameOver();
@@ -114,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Check collision with bad Democrats blocks
         for (let i = 0; i < democrats.length; i++) {
             if (head.x === democrats[i].x && head.y === democrats[i].y) {
                 gameOver();
@@ -122,8 +118,73 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Draw everything - batch drawing for performance
+        // Batch drawing for better performance
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctxSorry about that, something didn't go as planned. Please try again, and if you're still seeing this message, go ahead and restart the app.
+        // Draw snake (good, lime green)
+        ctx.fillStyle = 'lime';
+        snake.forEach(segment => ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2));
+
+        // Draw good foods (Audits and Team Members)
+        foods.forEach(food => {
+            ctx.fillStyle = food.type === 'audit' ? 'red' : 'green'; // Red Audits, Green Team Members (good)
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+        });
+
+        // Draw bad Democrats blocks (blue, instant death)
+        ctx.fillStyle = 'blue';
+        democrats.forEach(democrat => ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2));
+
+        // Draw "D.O.G.E" above the snake's head - cache text metrics if performance becomes an issue
+        ctx.fillStyle = 'white';
+        ctx.font = '15px Arial';
+        const nameWidth = ctx.measureText('D.O.G.E').width;
+        const nameX = snake[0].x * gridSize + (gridSize - nameWidth) / 2;
+        const nameY = snake[0].y * gridSize - 5;
+        ctx.fillText('D.O.G.E', nameX, nameY);
+
+        // Draw score - consider off-screen canvas for static text if performance lags
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText(`Score: ${score}`, 10, 30);
+    }
+
+    function gameOver() {
+        gameActive = false;
+        ctx.fillStyle = 'white';
+        ctx.font = '40px Arial';
+        const gameOverWidth = ctx.measureText('Game Over!').width;
+        const scoreWidth = ctx.measureText(`Score: ${score}`).width;
+        ctx.fillText('Game Over!', (canvas.width - gameOverWidth) / 2, canvas.height / 2 - 20);
+        ctx.fillText(`Score: ${score}`, (canvas.width - scoreWidth) / 2, canvas.height / 2 + 20);
+        restartText.style.display = 'block'; // Show restart text
+    }
+
+    function restartGame() {
+        snake = [{ x: 20, y: 12 }];
+        foods = [
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
+        ];
+        democrats = []; // Clear bad Democrats blocks on restart
+        dx = dy = 0; score = 0; gameSpeed = 100; gameActive = true;
+        restartText.style.display = 'none'; // Hide restart text
+        requestAnimationFrame(gameLoop);
+    }
+
+    function addDemocrat() {
+        let newDemocrat;
+        do {
+            newDemocrat = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
+            // Ensure the new bad Democrat block doesn't overlap with the snake, good foods, or other bad Democrats
+        } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
+                 foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
+                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
+        democrats.push(newDemocrat);
+    }
+
+    // Start the game with optimized animation loop
+    requestAnimationFrame(gameLoop);
+});
