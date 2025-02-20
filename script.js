@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let snake = [{ x: 20, y: 12 }];
     let foods = [
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
     ];
     let democrats = []; // Start with no Democrats
     let dx = 0, dy = 0;
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const head = { x: snake[0].x + dx, y: snake[0].y + dy };
             snake.unshift(head);
 
-            // Check food collisions (grow, don’t die on red/green)
+            // Check food collisions (grow, don’t die on red—only Audits now)
             let foodEaten = false;
             for (let i = 0; i < foods.length; i++) {
                 if (head.x === foods[i].x && head.y === foods[i].y) {
@@ -112,16 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         score += 30;
                         for (let j = 0; j < 3; j++) snake.push({ ...snake[snake.length - 1] });
                         addAudit();
-                    } else if (foods[i].type === 'team') {
-                        score += 10;
-                        snake.push({ ...snake[snake.length - 1] });
                     }
                     foods.splice(i, 1);
                     foods.push({
                         x: Math.floor(Math.random() * tileCountX),
                         y: Math.floor(Math.random() * tileCountY),
-                        type: Math.random() < 0.5 ? 'audit' : 'team',
-                        acronym: foods[i].type === 'audit' ? agencyList[agencyList.length - 1] : null // Assign unique acronym to new Audit
+                        type: 'audit', // Only red Audits now
+                        acronym: agencyList[agencyList.length - 1] // Assign unique acronym to new Audit
                     });
                     foodEaten = true;
                     // Ensure a new Democrat appears every time food is eaten
@@ -160,12 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.font = '12px Arial';
             ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
 
-            // Foods (red Audits, green Team Members)—don’t kill snake
+            // Foods (only red Audits now)—don’t kill snake
             foods.forEach(food => {
-                ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
+                ctx.fillStyle = 'red'; // Only red blocks now
                 ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
                 if (food.type === 'audit' && food.acronym) {
-                    // Use the acronym assigned to this specific food object
                     ctx.fillStyle = 'white';
                     ctx.font = '10px Arial';
                     const textX = food.x * gridSize + (gridSize - ctx.measureText(food.acronym).width) / 2;
@@ -179,46 +175,4 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
                 ctx.fillStyle = 'white';
                 ctx.font = '10px Arial';
-                const textX = democrat.x * gridSize + (gridSize - ctx.measureText(democrat.name).width) / 2;
-                ctx.fillText(democrat.name, textX, democrat.y * gridSize + gridSize + 10);
-            });
-
-            // Update score
-            scoreText.textContent = `Score: ${score}`;
-
-            setTimeout(drawGame, gameSpeed);
-        } catch (error) {
-            console.error('Error in drawGame:', error);
-            gameOver(); // Force game over if an error occurs to prevent freezing
-        }
-    }
-
-    function gameOver() {
-        gameActive = false;
-        restartText.style.display = 'block';
-    }
-
-    function restartGame() {
-        snake = [{ x: 20, y: 12 }];
-        foods = [
-            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
-            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
-            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
-        ];
-        democrats = []; // No Democrats at start
-        dx = 0;
-        dy = 0;
-        score = 0;
-        gameActive = true;
-        usedDemocratNames.clear();
-        usedAgencyAcronyms.clear();
-        democratList = [];
-        agencyList = [];
-        updateUIText();
-        restartText.style.display = 'none';
-        drawGame();
-    }
-
-    // Start the game
-    drawGame();
-});
+                const textX = democrat.x * gridSize + (gridSize -
