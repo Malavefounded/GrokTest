@@ -151,13 +151,13 @@ function drawGame() {
             ctx.fillStyle = 'red';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
         } else if (food.type === 'team') {
-            ctx.fillStyle = 'green'; // Changed from blue to green for Team Members
+            ctx.fillStyle = 'green';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
         }
     });
 
-    // Draw Democrats (red blocks)
-    ctx.fillStyle = 'red';
+    // Draw Democrats (blue blocks)
+    ctx.fillStyle = 'blue';
     democrats.forEach(democrat => {
         ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
     });
@@ -225,7 +225,7 @@ function addDemocrat() {
             x: Math.floor(Math.random() * tileCountX),
             y: Math.floor(Math.random() * tileCountY)
         };
-        // Ensure the new Democrat doesn't overlap with the snake or existing foods/democrats
+        // Ensure the new Democrat doesn't overlap with the snake, existing foods, or other Democrats
     } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
              foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
              democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
