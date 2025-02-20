@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!foodEaten) snake.pop();
 
-            // Check collisions—snake dies only on blue blocks (Democrats), borders, or itself
+            // Check collisions—snake dies ONLY on blue blocks (Democrats), borders, or itself, NOT red/green
             if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
                 gameOver();
                 return;
@@ -146,6 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (head.x === democrats[i].x && head.y === democrats[i].y) {
                     gameOver();
                     return;
+                }
+            }
+            // Explicitly ensure foods (red/green) don’t kill—already handled above as growth
+            for (let i = 0; i < foods.length; i++) {
+                if (head.x === foods[i].x && head.y === foods[i].y) {
+                    continue; // Skip, already handled as food (growth/score)
                 }
             }
 
