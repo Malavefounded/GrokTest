@@ -5,12 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const rulesText = document.getElementById('rulesText');
     const democratsText = document.getElementById('democratsText');
     const agenciesText = document.getElementById('agenciesText');
+    const teamMembersText = document.getElementById('teamMembersText');
     const scoreText = document.createElement('div');
     scoreText.className = 'score-text';
     scoreText.textContent = 'Score: 0';
     document.querySelector('.game-container').appendChild(scoreText);
 
-    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText || !scoreText) {
+    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText || !teamMembersText || !scoreText) {
         console.error('One or more DOM elements not found. Check your HTML.');
         return;
     }
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let snake = [{ x: 20, y: 12 }];
     let foods = [
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'team' },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'team', name: getRandomTeamMember() },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
     ];
     let democrats = []; // Start with no Democrats
@@ -46,20 +47,51 @@ document.addEventListener('DOMContentLoaded', () => {
         "HUD", "GSA", "STATE", "SBA", "DOI", "NPS", "OMB", "ED", "OPM", "DOJ",
         "NASA", "VA", "USDA", "FAA", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC"
     ];
+    const agencyFullNames = {
+        "USAID": "United States Agency for International Development",
+        "CFPB": "Consumer Financial Protection Bureau",
+        "EPA": "Environmental Protection Agency",
+        "Treasury": "United States Department of the Treasury",
+        "DOD": "United States Department of Defense",
+        "IRS": "Internal Revenue Service",
+        "DOE": "United States Department of Energy",
+        "SSA": "Social Security Administration",
+        "FEMA": "Federal Emergency Management Agency",
+        "USPS": "United States Postal Service",
+        "HUD": "United States Department of Housing and Urban Development",
+        "GSA": "General Services Administration",
+        "STATE": "United States Department of State",
+        "SBA": "Small Business Administration",
+        "DOI": "United States Department of the Interior",
+        "NPS": "National Park Service",
+        "OMB": "Office of Management and Budget",
+        "ED": "United States Department of Education",
+        "OPM": "Office of Personnel Management",
+        "DOJ": "United States Department of Justice",
+        "NASA": "National Aeronautics and Space Administration",
+        "VA": "United States Department of Veterans Affairs",
+        "USDA": "United States Department of Agriculture",
+        "FAA": "Federal Aviation Administration",
+        "DOT": "United States Department of Transportation",
+        "CDC": "Centers for Disease Control and Prevention",
+        "NIH": "National Institutes of Health",
+        "FDA": "Food and Drug Administration",
+        "DEA": "Drug Enforcement Administration",
+        "SEC": "Securities and Exchange Commission"
+    };
     let usedAgencyAcronyms = new Set();
     let agencyList = [];
 
-    function getRandomAgencyAcronym() {
-        if (usedAgencyAcronyms.size >= agencyAcronyms.length) return null;
-        let acronym;
-        do {
-            acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)];
-        } while (usedAgencyAcronyms.has(acronym));
-        usedAgencyAcronyms.add(acronym);
-        agencyList.push(acronym);
-        updateUIText();
-        return acronym;
-    }
+    const teamMemberNames = [
+        "Susie Wiles", "Lara Trump", "Michael Whatley", "Marco Rubio", "Pete Hegseth",
+        "JD Vance", "Elon Musk", "Robert F. Kennedy Jr.", "Tulsi Gabbard", "Howard Lutnick",
+        "Scott Bessent", "Pam Bondi", "Sean Duffy", "Lee Zeldin", "Elise Stefanik",
+        "John Ratcliffe", "Mike Waltz", "Steve Witkoff", "Doug Collins", "Kristi Noem",
+        "Ben Carson", "Linda McMahon", "Stephen Miller", "Tom Homan", "Brendan Carr",
+        "Pete Hoekstra", "Mike Huckabee", "Karoline Leavitt", "Chris LaCivita", "James Blair"
+    ];
+    let usedTeamMemberNames = new Set();
+    let teamMemberList = [];
 
     document.addEventListener('keydown', handleKeyPress);
 
@@ -80,18 +112,38 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; }
     }
 
+    function getRandomAgencyAcronym() {
+        if (usedAgencyAcronyms.size >= agencyAcronyms.length) {
+            usedAgencyAcronyms.clear(); // Reset if we run out, to reuse acronyms
+            agencyList = [];
+        }
+        let acronym;
+        do { acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)]; } 
+        while (usedAgencyAcronyms.has(acronym));
+        usedAgencyAcronyms.add(acronym); agencyList.push(acronym); updateUIText(); return acronym;
+    }
+
+    function getRandomTeamMember() {
+        if (usedTeamMemberNames.size >= teamMemberNames.length) {
+            usedTeamMemberNames.clear(); // Reset if we run out, to reuse names
+            teamMemberList = [];
+        }
+        let name;
+        do { name = teamMemberNames[Math.floor(Math.random() * teamMemberNames.length)]; } 
+        while (usedTeamMemberNames.has(name));
+        usedTeamMemberNames.add(name); return name;
+    }
+
     function addAudit() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
         const acronym = getRandomAgencyAcronym();
-        if (acronym) {
-            agencyList.push(acronym); // Ensure unique acronym is added
-            updateUIText();
-        }
+        if (acronym) agencyList.push(agencyFullNames[acronym]); // Use full formal name
+        updateUIText();
     }
 
     function addDemocrat() {
         if (usedDemocratNames.size >= democratNames.length) return;
-        const name = democratNames[Math.floor(Math.random() * democratNames.length)]; // Random selection
+        const name = democratNames[Math.floor(Math.random() * democratNames.length)];
         if (!usedDemocratNames.has(name)) {
             usedDemocratNames.add(name);
             democratList.push(name);
@@ -104,82 +156,78 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function addTeamMember(name) {
+        if (!usedTeamMemberNames.has(name)) {
+            usedTeamMemberNames.add(name);
+            teamMemberList.push(name);
+            updateUIText();
+        }
+    }
+
     function updateUIText() {
-        democratsText.innerHTML = `Democrats Against you:\n${democratList.join('\n') || ''}`; // Empty if no Democrats
-        agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.join('\n') || ''}`; // Empty if no Agencies
+        democratsText.innerHTML = `Democrats Against you:\n${democratList.join('\n') || ''}`;
+        agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.join('\n') || ''}`;
+        teamMembersText.innerHTML = `Collected Team Members:\n${teamMemberList.map(name => `<span style="margin-right: 15px; display: inline-block;">${name}</span>`).join('') || ''}`;
     }
 
     function drawGame() {
         if (!gameActive) return;
 
         try {
-            // Move snake
             const head = { x: snake[0].x + dx, y: snake[0].y + dy };
             snake.unshift(head);
 
-            // Check food collisions (grow, don’t die on red/green)
             let foodEaten = false;
             for (let i = 0; i < foods.length; i++) {
                 if (head.x === foods[i].x && head.y === foods[i].y) {
                     if (foods[i].type === 'audit') {
-                        score += 30;
-                        for (let j = 0; j < 3; j++) snake.push({ ...snake[snake.length - 1] });
+                        score += 30; for (let j = 0; j < 3; j++) snake.push({...snake[snake.length - 1]});
                         addAudit();
                     } else if (foods[i].type === 'team') {
-                        score += 10;
-                        snake.push({ ...snake[snake.length - 1] });
+                        score += 10; snake.push({...snake[snake.length - 1]});
+                        addTeamMember(foods[i].name);
                     }
                     foods.splice(i, 1);
                     foods.push({
                         x: Math.floor(Math.random() * tileCountX),
                         y: Math.floor(Math.random() * tileCountY),
                         type: Math.random() < 0.5 ? 'audit' : 'team',
-                        acronym: foods[i].type === 'audit' ? getRandomAgencyAcronym() || agencyList[agencyList.length - 1] : null // Ensure unique acronym for Audits
+                        acronym: foods[i].type === 'audit' ? getRandomAgencyAcronym() : null,
+                        name: foods[i].type === 'team' ? getRandomTeamMember() : null
                     });
                     foodEaten = true;
-                    // Ensure a new Democrat appears every time food is eaten
                     addDemocrat();
                     break;
                 }
             }
             if (!foodEaten) snake.pop();
 
-            // Check collisions—snake dies ONLY on blue blocks (Democrats), borders, or itself, NOT red/green
             if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
-                gameOver();
-                return;
+                gameOver(); return;
             }
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
-                    gameOver();
-                    return;
+                    gameOver(); return;
                 }
             }
             for (let i = 0; i < democrats.length; i++) {
                 if (head.x === democrats[i].x && head.y === democrats[i].y) {
-                    gameOver();
-                    return;
+                    gameOver(); return;
                 }
             }
-            // Explicitly ensure foods (red/green) don’t kill—already handled above as growth
             for (let i = 0; i < foods.length; i++) {
-                if (head.x === foods[i].x && head.y === foods[i].y) {
-                    continue; // Skip, already handled as food (growth/score)
-                }
+                if (head.x === foods[i].x && head.y === foods[i].y) continue; // Red/green only grow/score, not kill
             }
 
-            // Draw everything
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Snake (lime green) with "D.O.G.E" label
             ctx.fillStyle = 'lime';
             snake.forEach(segment => ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2));
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
             ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
 
-            // Foods (red Audits, green Team Members)—don’t kill snake
             foods.forEach(food => {
                 ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
                 ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
@@ -189,9 +237,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const textX = food.x * gridSize + (gridSize - ctx.measureText(food.acronym).width) / 2;
                     ctx.fillText(food.acronym, textX, food.y * gridSize + gridSize + 10);
                 }
+                if (food.type === 'team' && food.name) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    const textX = food.x * gridSize + (gridSize - ctx.measureText(food.name).width) / 2;
+                    ctx.fillText(food.name, textX, food.y * gridSize + gridSize + 10);
+                }
             });
 
-            // Democrats (blue blocks)—only these kill
             democrats.forEach(democrat => {
                 ctx.fillStyle = 'blue';
                 ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
@@ -201,13 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillText(democrat.name, textX, democrat.y * gridSize + gridSize + 10);
             });
 
-            // Update score
             scoreText.textContent = `Score: ${score}`;
 
             setTimeout(drawGame, gameSpeed);
         } catch (error) {
             console.error('Error in drawGame:', error);
-            gameOver(); // Force game over if an error occurs to prevent freezing
+            gameOver();
         }
     }
 
@@ -220,23 +272,24 @@ document.addEventListener('DOMContentLoaded', () => {
         snake = [{ x: 20, y: 12 }];
         foods = [
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
-            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'team', name: getRandomTeamMember() },
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
         ];
-        democrats = []; // No Democrats at start
+        democrats = [];
         dx = 0;
         dy = 0;
         score = 0;
         gameActive = true;
         usedDemocratNames.clear();
         usedAgencyAcronyms.clear();
+        usedTeamMemberNames.clear();
         democratList = [];
         agencyList = [];
+        teamMemberList = [];
         updateUIText();
         restartText.style.display = 'none';
         drawGame();
     }
 
-    // Start the game
     drawGame();
 });
