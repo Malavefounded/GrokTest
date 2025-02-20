@@ -93,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateUIText() {
-        democratsText.innerHTML = `Democrats Against you:\n${democratList.join('\n') || 'None yet'}`;
-        agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.join('\n') || 'None yet'}`;
+        democratsText.innerHTML = `Democrats Against you:\n${democratList.join('\n') || ''}`; // Empty if no Democrats
+        agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.join('\n') || ''}`; // Empty if no Agencies
     }
 
     function drawGame() {
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: Math.random() < 0.5 ? 'audit' : 'team'
                 });
                 foodEaten = true;
-                // Spawn a new Democrat when food is eaten
+                // Ensure a new Democrat appears every time food is eaten
                 addDemocrat();
                 break;
             }
@@ -163,7 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
         foods.forEach(food => {
             ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-            if (food.type === 'audit' && usedAgencyAcronyms.size > 0) {
+            if (food.type === 'audit' && agencyList.length > 0) {
+                // Use the last unique acronym added to ensure no duplicates
                 const acronym = agencyList[agencyList.length - 1];
                 ctx.fillStyle = 'white';
                 ctx.font = '10px Arial';
