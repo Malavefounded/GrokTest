@@ -4,86 +4,70 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: black; /* Black background for the entire page */
+    background-color: black;
 }
 
 .game-container {
     position: relative;
-    background-color: black; /* Ensure container background is black */
+    background-color: black;
 }
 
 #rulesText {
     position: absolute;
-    top: -120px; /* Position above the playable area */
+    top: -120px;
     left: 50%;
     transform: translateX(-50%);
     color: white;
     font-family: Arial, sans-serif;
-    font-size: 16px; /* Maintain readability */
+    font-size: 16px;
     text-align: center;
-    width: 800px; /* Match canvas width for centering */
-    white-space: normal; /* Allow text to wrap if needed */
-    line-height: 1.5; /* Maintain line spacing for readability */
-    overflow: hidden; /* Hide any overflow */
+    width: 800px;
+    white-space: normal;
+    line-height: 1.5;
+    overflow: hidden;
 }
 
 #restartText {
     position: absolute;
-    top: 30px; /* Position below the border */
+    top: 30px;
     left: 50%;
     transform: translateX(-50%);
-    color: red; /* Red text for "Press Space to Restart" as in the screenshot */
+    color: red;
     font-family: Arial, sans-serif;
     font-size: 16px;
-    display: none; /* Hidden by default, shown only on game over */
+    display: none;
 }
 
 #democratsText {
     position: absolute;
-    right: -150px; /* Move to bottom-right, outside right border for symmetry */
-    bottom: -10px; /* Position under the bottom of the canvas, outside the border */
+    right: -150px; /* Outside right border, bottom-right */
+    bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
-    font-size: 12px; /* Small but legible text */
+    font-size: 12px;
     text-align: left;
-    white-space: pre-line; /* Preserve line breaks for vertical listing */
-    display: block; /* Always visible */
-    z-index: 10; /* Ensure text is above other elements */
+    white-space: pre-line;
+    display: block;
+    z-index: 10;
 }
 
 #agenciesText {
     position: absolute;
-    left: -150px; /* Move to bottom-left, outside left border for symmetry */
-    bottom: -10px; /* Position under the bottom of the canvas, outside the border */
+    left: -150px; /* Outside left border, bottom-left */
+    bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
-    font-size: 12px; /* Small but legible text */
+    font-size: 12px;
     text-align: left;
-    white-space: pre-line; /* Preserve line breaks for vertical listing */
-    display: block; /* Always visible */
-    z-index: 10; /* Ensure text is above other elements */
-}
-
-#teamMembersText {
-    position: absolute;
-    left: 250px; /* Revert to perfect position, ~400px right of Democrats’ old position */
-    bottom: -10px; /* Position under the bottom of the canvas, outside the border */
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 12px; /* Match Audits/Democrats size */
-    text-align: left;
-    display: flex; /* Use flex for horizontal stacking */
-    flex-wrap: wrap; /* Wrap to new line when exceeding border */
-    gap: 15px; /* 15px horizontal gap between names */
-    align-items: flex-start; /* Prevent vertical overlap */
-    z-index: 10; /* Ensure text is above other elements */
+    white-space: pre-line;
+    display: block;
+    z-index: 10;
 }
 
 #gameCanvas {
-    border: 2px solid white; /* White border around the game field */
+    border: 2px solid white;
 }
 
-/* Added for score display */
 .score-text {
     position: absolute;
     top: 10px;
