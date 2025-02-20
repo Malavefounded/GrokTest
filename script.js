@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
     ];
-    let democrats = [];
+    let democrats = []; // Start with no Democrats
     let dx = 0, dy = 0;
     let score = 0, gameSpeed = 100, gameActive = true;
 
@@ -48,9 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     let usedAgencyAcronyms = new Set();
     let agencyList = [];
-
-    // Initial Democrat spawn
-    addDemocrat();
 
     document.addEventListener('keydown', handleKeyPress);
 
@@ -81,7 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addDemocrat() {
         if (usedDemocratNames.size >= democratNames.length) return;
-        const name = democratNames.find(n => !usedDemocratNames.has(n));
+        // Randomly select a Democrat name, excluding "Kamala Harris" if it's the first spawn
+        let name;
+        do {
+            name = democratNames[Math.floor(Math.random() * democratNames.length)];
+        } while (usedDemocratNames.has(name));
         usedDemocratNames.add(name);
         democratList.push(name);
         democrats.push({
@@ -98,7 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function drawGame() {
-        if (!gameActive) return;
+        if (!gameActive) {
+            return; // Prevent game loop if not active
+        }
 
         // Move snake
         const head = { x: snake[0].x + dx, y: snake[0].y + dy };
@@ -124,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     acronym: foods[i].type === 'audit' ? agencyList[agencyList.length - 1] : null // Assign unique acronym to new Audit
                 });
                 foodEaten = true;
-                // Ensure a new Democrat appears every time food is eaten
+                // Spawn a new Democrat when food is eaten
                 addDemocrat();
                 break;
             }
@@ -201,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
         ];
-        democrats = [];
+        democrats = []; // Start with no Democrats
         dx = 0;
         dy = 0;
         score = 0;
@@ -210,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         usedAgencyAcronyms.clear();
         democratList = [];
         agencyList = [];
-        addDemocrat();
         updateUIText();
         restartText.style.display = 'none';
         drawGame();
