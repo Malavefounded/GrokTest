@@ -1,74 +1,132 @@
 // Global variables
 const democratNames = [
-    "Kamala Harris", "Joe Biden", "Chuck Schumer", "Hakeem Jeffries", "Elizabeth Warren",
-    "Bernie Sanders", "Brian Schatz", "Patty Murray", "Ron Wyden", "Maxine Waters",
-    "Alexandria Ocasio-Cortez", "Pramila Jayapal", "Ilhan Omar", "Greg Casar", "Jamie Raskin",
-    "Ro Khanna", "Melanie Stansbury", "Maxwell Alejandro Frost", "Becca Balint", "Chris Murphy",
-    "Lisa Blunt Rochester", "Jared Golden", "Gerry Connolly", "Don Beyer", "Scott Peters",
-    "Tammy Baldwin", "Michael Bennet", "Cory Booker", "Chris Coons", "Tammy Duckworth",
-    "Anthony Fauci", "Francis Collins", "Bill Gates", "Clifford Lane", "Hillary Clinton", "Barack Obama"
+    "Tim Walz", "Kamala Harris", "Joe Biden", "Chuck Schumer", "Elizabeth Warren",
+    "Bernie Sanders", "Cory Booker", "Chris Coons", "Dick Durbin", "Mark Kelly",
+    "Tammy Baldwin", "Jon Ossoff", "Pramila Jayapal", "Alexandria Ocasio-Cortez", "Ilhan Omar",
+    "Nancy Pelosi", "Melanie Stansbury", "Eleanor Holmes Norton", "Jamie Raskin", "Bennie Thompson",
+    "Anthony Fauci", "Volodymyr Zelensky", "Ketanji Brown Jackson", "Sonia Sotomayor", "Elena Kagan",
+    "Merrick Garland", "Janet Yellen", "Xavier Becerra", "Pete Buttigieg", "Gina Raimondo",
+    "Deb Haaland", "Tom Vilsack", "Lloyd Austin", "Antony Blinken", "Jennifer Granholm",
+    "Marty Walsh", "Miguel Cardona", "Rochelle Walensky", "Robert Califf", "Lina Khan",
+    "Jessica Rosenworcel", "Christopher Wray", "Avril Haines", "Michael Regan", "Shalanda Young",
+    "Rohit Chopra", "Julie Su", "Eric Lander", "John Kerry", "Al Gore"
 ];
-let usedDemocratNames = new Set();
-let democratList = [];
+const democratDetails = {
+    "Tim Walz": "(MN Governor) – Opposes efficiency cuts to progressive programs, per web",
+    "Kamala Harris": "(VP, CA) – Opposes audits undermining Biden’s policies, per web",
+    "Joe Biden": "(President, DE) – Opposes audits threatening Democratic priorities, per web",
+    "Chuck Schumer": "(NY, Senator) – Opposes audits cutting social programs, per web",
+    "Elizabeth Warren": "(MA, Senator) – Opposes audits on consumer protections, per web",
+    "Bernie Sanders": "(VT, Senator) – Opposes efficiency cuts to safety nets, per web",
+    "Cory Booker": "(NJ, Senator) – Opposes audits on housing/education, per web",
+    "Chris Coons": "(DE, Senator) – Opposes audits weakening foreign aid, per web",
+    "Dick Durbin": "(IL, Senator) – Opposes cuts to judicial/labor, per web",
+    "Mark Kelly": "(AZ, Senator) – Opposes audits on space/veterans, per web",
+    "Tammy Baldwin": "(WI, Senator) – Opposes cuts to healthcare/labor, per web",
+    "Jon Ossoff": "(GA, Senator) – Opposes audits on tech/infrastructure, per web",
+    "Pramila Jayapal": "(WA, House Rep) – Opposes efficiency cuts to progressives, per web",
+    "Alexandria Ocasio-Cortez": "(NY, House Rep) – Opposes audits on Green New Deal, per web",
+    "Ilhan Omar": "(MN, House Rep) – Opposes audits reducing social justice, per web",
+    "Nancy Pelosi": "(CA, Former Speaker) – Opposes audits cutting Democratic priorities, per web",
+    "Melanie Stansbury": "(NM, House Rep) – Opposes cuts to working-class programs, per web",
+    "Eleanor Holmes Norton": "(DC, House Delegate) – Opposes audits harming D.C. programs, per web",
+    "Jamie Raskin": "(MD, House Rep) – Opposes audits on Jan. 6 work, per web",
+    "Bennie Thompson": "(MS, House Rep) – Opposes audits threatening Jan. 6 findings, per web",
+    "Anthony Fauci": "(Former NIAID Director) – Opposes audits of COVID response, per web",
+    "Volodymyr Zelensky": "(Ukraine President) – Opposes audits cutting Ukraine aid, per web",
+    "Ketanji Brown Jackson": "(U.S. Supreme Court Justice) – Opposes audits on judiciary, per web",
+    "Sonia Sotomayor": "(U.S. Supreme Court Justice) – Opposes audits on social programs, per web",
+    "Elena Kagan": "(U.S. Supreme Court Justice) – Opposes audits politicizing judiciary, per web",
+    "Merrick Garland": "(U.S. Attorney General) – Opposes audits of DOJ, per web",
+    "Janet Yellen": "(U.S. Treasury Secretary) – Opposes Fed audits/cuts, per web",
+    "Xavier Becerra": "(U.S. HHS Secretary) – Opposes audits of health programs, per web",
+    "Pete Buttigieg": "(U.S. Transportation Secretary) – Opposes audits on infrastructure, per web",
+    "Gina Raimondo": "(U.S. Commerce Secretary) – Opposes audits on commerce, per web",
+    "Deb Haaland": "(U.S. Interior Secretary) – Opposes cuts to environmental programs, per web",
+    "Tom Vilsack": "(U.S. Agriculture Secretary) – Opposes audits of USDA, per web",
+    "Lloyd Austin": "(U.S. Defense Secretary) – Opposes audits of DOD, per web",
+    "Antony Blinken": "(U.S. State Secretary) – Opposes audits on foreign aid, per web",
+    "Jennifer Granholm": "(U.S. Energy Secretary) – Opposes audits on energy, per web",
+    "Marty Walsh": "(Former U.S. Labor Secretary) – Opposes cuts to labor, per web",
+    "Miguel Cardona": "(U.S. Education Secretary) – Opposes audits of education, per web",
+    "Rochelle Walensky": "(Former CDC Director) – Opposes audits of COVID response, per web",
+    "Robert Califf": "(FDA Commissioner) – Opposes audits of health agencies, per web",
+    "Lina Khan": "(FTC Chair) – Opposes audits on consumer protections, per web",
+    "Jessica Rosenworcel": "(FCC Chair) – Opposes audits on communications, per web",
+    "Christopher Wray": "(FBI Director) – Opposes audits of FBI, per web",
+    "Avril Haines": "(U.S. DNI Director) – Opposes audits on intelligence, per web",
+    "Michael Regan": "(EPA Administrator) – Opposes cuts to environmental programs, per web",
+    "Shalanda Young": "(OMB Director) – Opposes audits of budgeting, per web",
+    "Rohit Chopra": "(CFPB Director) – Opposes audits on consumer finance, per web",
+    "Julie Su": "(U.S. Acting Labor Secretary) – Opposes cuts to labor, per web",
+    "Eric Lander": "(Former OSTP Director) – Opposes audits of science, per web",
+    "John Kerry": "(Former Special Envoy) – Opposes audits on climate, per web",
+    "Al Gore": "(Former VP) – Opposes audits reducing climate action, per web"
+};
 
 const agencyAcronyms = [
-    "USAID", "CFPB", "EPA", "Treasury", "DOD", "IRS", "DOE", "SSA", "FEMA", "USPS",
-    "HUD", "GSA", "STATE", "SBA", "DOI", "NPS", "OMB", "ED", "OPM", "DOJ",
-    "NASA", "VA", "USDA", "FAA", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC",
-    "DHS", "DOC", "DOEd", "DOL", "DOT", "DVA" // Added more acronyms to ensure enough names
+    "FEMA", "CIA", "FBI", "HUD", "USDA", "DOD", "DOE", "STATE", "Treasury", "DOJ",
+    "NASA", "VA", "EPA", "IRS", "SSA", "USPS", "NPS", "GSA", "USAID", "OPM",
+    "SBA", "DOI", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC", "DHS", "DOC",
+    "ED", "DOL", "TSA", "BOP", "NRC", "ATF", "FAA", "FTC", "FCC", "OSHA",
+    "HHS", "OMB", "CFPB", "NCIS", "ICE", "CBP", "USCG", "AMTRAK", "NSF", "Smithsonian"
 ];
 const agencyFullNames = {
-    "USAID": "United States Agency for International Development",
-    "CFPB": "Consumer Financial Protection Bureau",
-    "EPA": "Environmental Protection Agency",
-    "Treasury": "United States Department of the Treasury",
-    "DOD": "United States Department of Defense",
-    "IRS": "Internal Revenue Service",
-    "DOE": "United States Department of Energy",
-    "SSA": "Social Security Administration",
     "FEMA": "Federal Emergency Management Agency",
-    "USPS": "United States Postal Service",
-    "HUD": "United States Department of Housing and Urban Development",
-    "GSA": "General Services Administration",
-    "STATE": "United States Department of State",
-    "SBA": "Small Business Administration",
-    "DOI": "United States Department of the Interior",
-    "NPS": "National Park Service",
-    "OMB": "Office of Management and Budget",
-    "ED": "United States Department of Education",
-    "OPM": "Office of Personnel Management",
-    "DOJ": "United States Department of Justice",
+    "CIA": "Central Intelligence Agency",
+    "FBI": "Federal Bureau of Investigation",
+    "HUD": "U.S. Department of Housing and Urban Development",
+    "USDA": "U.S. Department of Agriculture",
+    "DOD": "U.S. Department of Defense",
+    "DOE": "U.S. Department of Energy",
+    "STATE": "U.S. Department of State",
+    "Treasury": "U.S. Department of the Treasury",
+    "DOJ": "U.S. Department of Justice",
     "NASA": "National Aeronautics and Space Administration",
-    "VA": "United States Department of Veterans Affairs",
-    "USDA": "United States Department of Agriculture",
-    "FAA": "Federal Aviation Administration",
-    "DOT": "United States Department of Transportation",
+    "VA": "U.S. Department of Veterans Affairs",
+    "EPA": "Environmental Protection Agency",
+    "IRS": "Internal Revenue Service",
+    "SSA": "Social Security Administration",
+    "USPS": "United States Postal Service",
+    "NPS": "National Park Service",
+    "GSA": "General Services Administration",
+    "USAID": "U.S. Agency for International Development",
+    "OPM": "Office of Personnel Management",
+    "SBA": "Small Business Administration",
+    "DOI": "U.S. Department of the Interior",
+    "DOT": "U.S. Department of Transportation",
     "CDC": "Centers for Disease Control and Prevention",
     "NIH": "National Institutes of Health",
     "FDA": "Food and Drug Administration",
     "DEA": "Drug Enforcement Administration",
     "SEC": "Securities and Exchange Commission",
-    "DHS": "United States Department of Homeland Security",
-    "DOC": "United States Department of Commerce",
-    "DOEd": "United States Department of Education",
-    "DOL": "United States Department of Labor",
-    "DVA": "United States Department of Veterans Affairs"
+    "DHS": "U.S. Department of Homeland Security",
+    "DOC": "U.S. Department of Commerce",
+    "ED": "U.S. Department of Education",
+    "DOL": "U.S. Department of Labor",
+    "TSA": "Transportation Security Administration",
+    "BOP": "Bureau of Prisons",
+    "NRC": "Nuclear Regulatory Commission",
+    "ATF": "Bureau of Alcohol, Tobacco, Firearms and Explosives",
+    "FAA": "Federal Aviation Administration",
+    "FTC": "Federal Trade Commission",
+    "FCC": "Federal Communications Commission",
+    "OSHA": "Occupational Safety and Health Administration",
+    "HHS": "U.S. Department of Health and Human Services",
+    "OMB": "Office of Management and Budget",
+    "CFPB": "Consumer Financial Protection Bureau",
+    "NCIS": "Naval Criminal Investigative Service",
+    "ICE": "U.S. Immigration and Customs Enforcement",
+    "CBP": "U.S. Customs and Border Protection",
+    "USCG": "United States Coast Guard",
+    "AMTRAK": "National Railroad Passenger Corporation",
+    "NSF": "National Science Foundation",
+    "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
 let agencyList = [];
-
-const teamMemberNames = [
-    "Susie Wiles", "Lara Trump", "Michael Whatley", "Marco Rubio", "Pete Hegseth",
-    "JD Vance", "Elon Musk", "Robert F. Kennedy Jr.", "Tulsi Gabbard", "Howard Lutnick",
-    "Scott Bessent", "Pam Bondi", "Sean Duffy", "Lee Zeldin", "Elise Stefanik",
-    "John Ratcliffe", "Mike Waltz", "Steve Witkoff", "Doug Collins", "Kristi Noem",
-    "Ben Carson", "Linda McMahon", "Stephen Miller", "Tom Homan", "Brendan Carr",
-    "Pete Hoekstra", "Mike Huckabee", "Karoline Leavitt", "Chris LaCivita", "James Blair",
-    "Vivek Ramaswamy", "Ronna McDaniel", "Reince Priebus", "Kellyanne Conway", "Sean Spicer"
-    // Added more Republican names to ensure enough for red/green blocks
-];
-let usedTeamMemberNames = new Set();
-let teamMemberList = [];
+let usedDemocratNames = new Set();
+let democratList = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
@@ -77,13 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const rulesText = document.getElementById('rulesText');
     const democratsText = document.getElementById('democratsText');
     const agenciesText = document.getElementById('agenciesText');
-    const teamMembersText = document.getElementById('teamMembersText');
     const scoreText = document.createElement('div');
     scoreText.className = 'score-text';
     scoreText.textContent = 'Score: 0';
     document.querySelector('.game-container').appendChild(scoreText);
 
-    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText || !teamMembersText || !scoreText) {
+    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText || !scoreText) {
         console.error('One or more DOM elements not found. Check your HTML.');
         return;
     }
@@ -95,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let snake = [{ x: 20, y: 12 }];
     let foods = [
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'team', name: getRandomTeamMember() },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
     ];
     let democrats = []; // Start with no Democrats
@@ -123,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getRandomAgencyAcronym() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) {
-            usedAgencyAcronyms.clear(); // Reset if we run out, to reuse acronyms
+            usedAgencyAcronyms.clear(); // Reset on exhaustion, allowing duplicates after restart
             agencyList = [];
         }
         let acronym;
@@ -132,15 +189,15 @@ document.addEventListener('DOMContentLoaded', () => {
         usedAgencyAcronyms.add(acronym); agencyList.push(acronym); updateUIText(); return acronym;
     }
 
-    function getRandomTeamMember() {
-        if (usedTeamMemberNames.size >= teamMemberNames.length) {
-            usedTeamMemberNames.clear(); // Reset if we run out, to reuse names
-            teamMemberList = [];
+    function getRandomDemocrat() {
+        if (usedDemocratNames.size >= democratNames.length) {
+            usedDemocratNames.clear(); // Reset on exhaustion, allowing duplicates after restart
+            democratList = [];
         }
         let name;
-        do { name = teamMemberNames[Math.floor(Math.random() * teamMemberNames.length)]; } 
-        while (usedTeamMemberNames.has(name));
-        usedTeamMemberNames.add(name); return name;
+        do { name = democratNames[Math.floor(Math.random() * democratNames.length)]; } 
+        while (usedDemocratNames.has(name));
+        usedDemocratNames.add(name); democratList.push(name); updateUIText(); return name;
     }
 
     function addAudit() {
@@ -152,10 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addDemocrat() {
         if (usedDemocratNames.size >= democratNames.length) return;
-        const name = democratNames[Math.floor(Math.random() * democratNames.length)];
+        const name = getRandomDemocrat();
         if (!usedDemocratNames.has(name)) {
-            usedDemocratNames.add(name);
-            democratList.push(name);
             democrats.push({
                 x: Math.floor(Math.random() * tileCountX),
                 y: Math.floor(Math.random() * tileCountY),
@@ -165,18 +220,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function addTeamMember(name) {
-        if (!usedTeamMemberNames.has(name)) {
-            usedTeamMemberNames.add(name);
-            teamMemberList.push(name);
-            updateUIText();
-        }
-    }
-
     function updateUIText() {
-        democratsText.innerHTML = `Democrats Against you:\n${democratList.join('\n') || ''}`;
+        democratsText.innerHTML = `Democrats Against you:\n${democratList.map(name => `${name} ${democratDetails[name] || ''}`).join('\n') || ''}`;
         agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.join('\n') || ''}`;
-        teamMembersText.innerHTML = `Collected Team Members:\n${teamMemberList.map(name => `<span style="margin-right: 15px; display: inline-block;">${name || ''}</span>`).join('') || ''}`;
     }
 
     function drawGame() {
@@ -188,21 +234,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let foodEaten = false;
             for (let i = 0; i < foods.length; i++) {
-                if (head.x === foods[i]?.x && head.y === foods[i]?.y) { // Use optional chaining for safety
+                if (head.x === foods[i]?.x && head.y === foods[i]?.y) { // Safety check
                     if (foods[i].type === 'audit') {
                         score += 30; for (let j = 0; j < 3; j++) snake.push({...snake[snake.length - 1]});
                         addAudit();
-                    } else if (foods[i].type === 'team') {
-                        score += 10; snake.push({...snake[snake.length - 1]});
-                        addTeamMember(foods[i].name || ''); // Fallback if name is undefined
                     }
                     foods.splice(i, 1);
                     foods.push({
                         x: Math.floor(Math.random() * tileCountX),
                         y: Math.floor(Math.random() * tileCountY),
-                        type: Math.random() < 0.5 ? 'audit' : 'team',
-                        acronym: foods[i].type === 'audit' ? getRandomAgencyAcronym() : null,
-                        name: foods[i].type === 'team' ? getRandomTeamMember() : null
+                        type: 'audit',
+                        acronym: getRandomAgencyAcronym()
                     });
                     foodEaten = true;
                     addDemocrat();
@@ -225,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             for (let i = 0; i < foods.length; i++) {
-                if (head.x === foods[i]?.x && head.y === foods[i]?.y) continue; // Red/green only grow/score, not kill
+                if (head.x === foods[i]?.x && head.y === foods[i]?.y) continue; // Red only grow/score, not kill
             }
 
             ctx.fillStyle = 'black';
@@ -238,27 +280,17 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
 
             foods.forEach(food => {
-                if (!food || !food.type) return; // Skip if food is undefined or missing type
-                ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
+                if (!food || !food.type) return; // Skip invalid food
+                ctx.fillStyle = 'red';
                 ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+                if (food.type === 'audit' && !food.acronym) {
+                    food.acronym = getRandomAgencyAcronym(); // Ensure acronym
+                }
                 if (food.type === 'audit' && food.acronym) {
                     ctx.fillStyle = 'white';
                     ctx.font = '10px Arial';
                     const textX = food.x * gridSize + (gridSize - ctx.measureText(food.acronym).width) / 2;
                     ctx.fillText(food.acronym, textX, food.y * gridSize + gridSize + 10);
-                }
-                if (food.type === 'team' && food.name) {
-                    ctx.fillStyle = 'white';
-                    ctx.font = '10px Arial';
-                    const textX = food.x * gridSize + (gridSize - ctx.measureText(food.name).width) / 2;
-                    ctx.fillText(food.name, textX, food.y * gridSize + gridSize + 10);
-                } else if (food.type === 'team' && !food.name) {
-                    console.warn('Green block missing name, assigning default');
-                    food.name = getRandomTeamMember(); // Assign a name if missing
-                    ctx.fillStyle = 'white';
-                    ctx.font = '10px Arial';
-                    const textX = food.x * gridSize + (gridSize - ctx.measureText(food.name).width) / 2;
-                    ctx.fillText(food.name, textX, food.y * gridSize + gridSize + 10);
                 }
             });
 
@@ -289,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
         snake = [{ x: 20, y: 12 }];
         foods = [
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
-            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'team', name: getRandomTeamMember() },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
         ];
         democrats = [];
@@ -297,12 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
         dy = 0;
         score = 0;
         gameActive = true;
-        usedDemocratNames.clear();
         usedAgencyAcronyms.clear();
-        usedTeamMemberNames.clear();
-        democratList = [];
+        usedDemocratNames.clear();
         agencyList = [];
-        teamMemberList = [];
+        democratList = [];
         updateUIText();
         restartText.style.display = 'none';
         drawGame();
