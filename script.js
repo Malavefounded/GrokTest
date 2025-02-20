@@ -19,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const tileCountX = canvas.width / gridSize;  // 40
     const tileCountY = canvas.height / gridSize; // 25
 
-    let snake = [{ x: 20, y: 12 }];
+    let snake = [{ x: 20, y: 12 }]; // Start "D.O.G.E" centrally
     let foods = [
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'team' },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
     ];
     let democrats = []; // Start with no Democrats
-    let dx = 0, dy = 0;
+    let dx = 0, dy = 0; // Direction for snake movement
     let score = 0, gameSpeed = 100, gameActive = true;
 
     const democratNames = [
