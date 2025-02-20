@@ -18,3 +18,24 @@ body {
     margin-top: 10px;
     color: black;
 }
+
+#resetText {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    color: blue;
+    margin-bottom: 10px;
+}
+
+#businessLink {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: white;
+    text-decoration: none;
+}
+
+#businessLink:hover {
+    text-decoration: underline;
+}
