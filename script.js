@@ -1,43 +1,17 @@
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: black; /* Changed to black for the entire page */
-}
+// Wait for the DOM to be fully loaded before running the game
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d'); // Revert to default context (no alpha: false for simplicity)
+    const restartText = document.getElementById('restartText');
+    const rulesText = document.getElementById('rulesText');
 
-.game-container {
-    position: relative;
-    background-color: black; /* Ensure container background is black */
-}
+    if (!canvas || !ctx || !restartText || !rulesText) {
+        console.error('One or more DOM elements not found. Check your HTML.');
+        return;
+    }
 
-#rulesText {
-    position: absolute;
-    top: -100px; /* Move further up to ensure it’s above the playable area */
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 16px; /* Maintain readability */
-    text-align: center;
-    width: 800px; /* Match canvas width for centering */
-    white-space: normal; /* Allow text to wrap if needed */
-    line-height: 1.5; /* Maintain line spacing for readability */
-    overflow: hidden; /* Hide any overflow */
-}
+    const gridSize = 20;
+    const tileCountX = canvas.width / gridSize;  // 800 / 20 = 40 tiles wide
+    const tileCountY = canvas.height / gridSize; // 500 / 20 = 25 tiles tall
 
-#restartText {
-    position: absolute;
-    top: -30px; /* Position above the canvas */
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    display: none; /* Hidden by default, shown only on game over */
-}
-
-#gameCanvas {
-    border: 2px solid white; /* White border around the game field */
-}
+    let snake = [{ x: 20, y: 12 }]; // Start snake more
