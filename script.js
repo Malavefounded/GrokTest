@@ -123,12 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
         });
 
-        // Draw bad Democrats blocks (blue, instant death) with names underneath in white (no white blocks)
-        ctx.fillStyle = 'blue'; // Ensure Democrats blocks are drawn in blue
+        // Draw bad Democrats blocks (blue, instant death) with names underneath in white
+        ctx.fillStyle = 'blue'; // Explicitly set blue for Democrat blocks
         democrats.forEach(democrat => {
-            ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
-            // Draw Democrat name under the block in small, legible white text (no fillRect, just text)
-            ctx.fillStyle = 'white'; // Names in white for contrast against blue blocks
+            ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2); // Draw blue block
+            // Draw Democrat name under the block in small, legible white text
+            ctx.fillStyle = 'white'; // Ensure names are white for contrast against blue blocks
             ctx.font = '10px Arial'; // Small but legible text
             const name = democrat.name;
             const nameWidth = ctx.measureText(name).width;
