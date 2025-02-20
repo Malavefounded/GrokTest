@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const head = { x: snake[0].x + dx, y: snake[0].y + dy };
         snake.unshift(head);
 
-        // Check if snake ate any good food (Audits or Team Members)
+        // Check if snake ate any good food (Audits or Team Members) or hit a Democrat
         let foodEaten = false;
         for (let i = 0; i < foods.length; i++) {
             if (head.x === foods[i].x && head.y === foods[i].y) {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!foodEaten) snake.pop();
 
-        // Check collisions
+        // Check collisions with walls and self
         if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
             gameOver();
             return;
@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Check collisions with Democrats (blue blocks)
         for (let i = 0; i < democrats.length; i++) {
             if (head.x === democrats[i].x && head.y === democrats[i].y) {
                 gameOver();
@@ -145,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         foods.forEach(food => {
             ctx.fillStyle = food.type === 'audit' ? 'red' : 'green'; // Red Audits, Green Team Members (good)
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-            if (food.type === 'audit') {
+            if (food.type === 'audit' && food.acronym) { // Ensure acronym exists to avoid "undefined"
                 // Draw Audit acronym under the red block in small, legible white text
                 ctx.fillStyle = 'white'; // Acronyms in white for contrast against red blocks
                 ctx.font = '10px Arial'; // Small but legible text
@@ -162,19 +163,16 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = 'blue'; // Forcefully set blue for all Democrat blocks, isolated from other styles
         democrats.forEach(democrat => {
             ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2); // Draw blue block
-        });
-        ctx.restore(); // Restore context state before drawing names
-
-        // Draw Democrat names under the blocks in white, ensuring no color interference
-        ctx.fillStyle = 'white'; // Ensure names are white for contrast against blue blocks
-        ctx.font = '10px Arial'; // Small but legible text
-        democrats.forEach(democrat => {
+            // Draw Democrat name under the block in small, legible white text
+            ctx.fillStyle = 'white'; // Names in white for contrast against blue blocks
+            ctx.font = '10px Arial'; // Small but legible text
             const name = democrat.name;
             const nameWidth = ctx.measureText(name).width;
             const nameX = democrat.x * gridSize + (gridSize - nameWidth) / 2; // Center the name under the block
             const nameY = democrat.y * gridSize + gridSize + 12; // Position below the block with slight offset
             ctx.fillText(name, nameX, nameY); // Draw only text, no rectangle
         });
+        ctx.restore(); // Restore context state after drawing Democrats
 
         // Update "Democrats Against you" text in the HTML div (always visible, updated with all Democrat names vertically)
         if (democrats.length > 0) {
@@ -190,7 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
             agencyList = [...new Set(audits.map(a => a.acronym))]; // Track all unique agency acronyms that have appeared
             const fullNameList = agencyList.map(acronym => {
                 const index = agencyAcronyms.indexOf(acronym);
-                return agencyFullNames[index]; // Map acronym to full name
+                if (index !== -1) return agencyFullNames[index]; // Map acronym to full name, ensure index exists
+                return acronym; // Fallback in case of error
             }).join('\n'); // Join full names with newlines for vertical listing
             agenciesText.textContent = `Federal Agencies to Audit:\n${fullNameList}`; // Always show the list of full names vertically
         } else {
@@ -229,71 +228,4 @@ document.addEventListener('DOMContentLoaded', () => {
         snake = [{ x: 20, y: 12 }];
         foods = [
             { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
-            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
-            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
-        ];
-        democrats = []; // Clear bad Democrats blocks on restart
-        audits = []; // Clear Audit blocks on restart
-        usedDemocratNames.clear(); // Clear used Democrat names on restart
-        usedAgencyAcronyms.clear(); // Clear used agency acronyms on restart
-        democratList = []; // Clear the list of Democrat names on restart
-        agencyList = []; // Clear the list of agency acronyms on restart
-        dx = dy = 0; score = 0; gameSpeed = 100; gameActive = true;
-        restartText.style.display = 'none'; // Hide restart text
-        democratsText.textContent = 'Democrats Against you:'; // Reset to initial state on restart
-        agenciesText.textContent = 'Federal Agencies to Audit:'; // Reset to initial state on restart
-        drawGame(); // Start the game loop with setTimeout
-    }
-
-    function addDemocrat() {
-        let newDemocrat;
-        do {
-            newDemocrat = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
-            // Ensure the new bad Democrat block doesn't overlap with the snake, good foods, or other bad Democrats/Audits
-        } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
-                 foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
-                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y) ||
-                 audits.some(audit => audit.x === newDemocrat.x && audit.y === newDemocrat.y));
-
-        // Select a unique Democrat name (no duplicates at the same time)
-        let availableNames = democratNames.filter(name => !usedDemocratNames.has(name));
-        if (availableNames.length === 0) {
-            usedDemocratNames.clear(); // Reset if all names are used (though unlikely with 36 names)
-            availableNames = democratNames;
-        }
-        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
-        usedDemocratNames.add(randomName);
-        newDemocrat.name = randomName;
-        democrats.push(newDemocrat);
-    }
-
-    function addAudit() {
-        let newAudit;
-        do {
-            newAudit = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
-            // Ensure the new Audit block doesn't overlap with the snake, good foods, or other Audits/Democrats
-        } while (snake.some(segment => segment.x === newAudit.x && segment.y === newAudit.y) ||
-                 foods.some(food => food.x === newAudit.x && food.y === newAudit.y) ||
-                 audits.some(audit => audit.x === newAudit.x && audit.y === newAudit.y) ||
-                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
-
-        // Select a unique agency acronym (no duplicates at the same time)
-        let availableAcronyms = agencyAcronyms.filter(acronym => !usedAgencyAcronyms.has(acronym));
-        if (availableAcronyms.length === 0) {
-            usedAgencyAcronyms.clear(); // Reset if all acronyms are used (though unlikely with 30 acronyms)
-            availableAcronyms = agencyAcronyms;
-        }
-        const randomAcronym = availableAcronyms[Math.floor(Math.random() * availableAcronyms.length)];
-        usedAgencyAcronyms.add(randomAcronym);
-        newAudit.acronym = randomAcronym;
-        // Update the foods array to include the acronym for display
-        const index = foods.findIndex(f => f.type === 'audit' && f.x === newAudit.x && f.y === newAudit.y);
-        if (index !== -1) {
-            foods[index].acronym = randomAcronym;
-        }
-        audits.push(newAudit);
-    }
-
-    // Start the game with the original setTimeout-based loop
-    drawGame();
-});
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random
