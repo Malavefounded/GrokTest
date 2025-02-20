@@ -1,7 +1,7 @@
 // Wait for the DOM to be fully loaded before running the game
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d'); // Revert to default context (no alpha: false for simplicity)
+    const ctx = canvas.getContext('2d');
     const restartText = document.getElementById('restartText');
     const rulesText = document.getElementById('rulesText');
 
@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Good food types: Audits (red, +3 size, +30 points) and Team Members (green, +1 size, +10 points)
     // Bad blocks: Democrats (blue, instant death on contact)
     document.addEventListener('keydown', handleKeyPress);
-    document.addEventListener('keyup', handleKeyUp); // Keep keyup for clean input handling
 
     function handleKeyPress(event) {
         const LEFT_KEY = 37, RIGHT_KEY = 39, UP_KEY = 38, DOWN_KEY = 40, SPACE_KEY = 32;
@@ -45,11 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (keyPressed === RIGHT_KEY && !goingLeft) { dx = 1; dy = 0; }
         else if (keyPressed === UP_KEY && !goingDown) { dx = 0; dy = -1; }
         else if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; }
-    }
-
-    function handleKeyUp(event) {
-        // Optional: Clear direction if needed, but not necessary for this simple game
-        // Keeping it for consistency with previous versions
     }
 
     function drawGame() {
@@ -136,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = '20px Arial';
         ctx.fillText(`Score: ${score}`, 10, 30);
 
-        // Use setTimeout to control speed (revert to original behavior)
+        // Use setTimeout to control speed (revert to original behavior, 100ms per move)
         setTimeout(drawGame, gameSpeed);
     }
 
