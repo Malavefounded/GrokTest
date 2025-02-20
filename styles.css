@@ -64,6 +64,21 @@ body {
     z-index: 10; /* Ensure text is above other elements */
 }
 
+#teamMembersText {
+    position: absolute;
+    left: -130px; /* Bottom-left, 20px right of Democrats to avoid overlap */
+    bottom: -10px; /* Position under the bottom of the canvas, outside the border */
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 12px; /* Match Audits/Democrats size */
+    text-align: left;
+    display: flex; /* Use flex for horizontal stacking */
+    flex-wrap: wrap; /* Wrap to new line when exceeding border */
+    gap: 15px; /* 15px horizontal gap between names */
+    align-items: flex-start; /* Prevent vertical overlap */
+    z-index: 10; /* Ensure text is above other elements */
+}
+
 #gameCanvas {
     border: 2px solid white; /* White border around the game field */
 }
