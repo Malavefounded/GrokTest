@@ -14,7 +14,7 @@ body {
 
 #rulesText {
     position: absolute;
-    top: -100px; /* Move further up to ensure it’s above the playable area */
+    top: -100px; /* Position above the playable area */
     left: 50%;
     transform: translateX(-50%);
     color: white;
@@ -29,7 +29,7 @@ body {
 
 #restartText {
     position: absolute;
-    top: -30px; /* Position above the canvas */
+    top: -20px; /* Lowered slightly from -30px to -20px (moved down a bit) */
     left: 50%;
     transform: translateX(-50%);
     color: white;
