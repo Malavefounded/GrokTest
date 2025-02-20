@@ -11,7 +11,7 @@ const HEIGHT = 600;
 const FOOD_SIZE = 10;
 const TEAM_MEMBER_POINTS = 5;
 const AGENCY_POINTS = 10;
-const FPS = 15; // Frames per second to control speed
+const FPS = 15; // Fixed frames per second to control speed
 
 let snakePos = [WIDTH / 2, HEIGHT / 2];
 let snakeBody = [[WIDTH / 2, HEIGHT / 2]];
@@ -88,10 +88,17 @@ function draw() {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    // Draw snake (black)
+    // Draw snake (black) with "D.O.G.E" on head
     ctx.fillStyle = 'black';
-    for (let pos of snakeBody) {
-        ctx.fillRect(pos[0], pos[1], FOOD_SIZE, FOOD_SIZE);
+    for (let i = 0; i < snakeBody.length; i++) {
+        const [x, y] = snakeBody[i];
+        ctx.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);
+        if (i === 0) { // Draw "D.O.G.E" on snake head
+            ctx.fillStyle = 'white';
+            ctx.font = '10px Arial';
+            ctx.fillText('D.O.G.E', x + 2, y + 8);
+            ctx.fillStyle = 'black'; // Reset fill style for body
+        }
     }
 
     // Draw foods (black circles)
@@ -188,7 +195,7 @@ function resetGame() {
         { type: "Agency", name: randomChoice(agencies), pos: getNonOverlappingPos([foods[0]]) },
         { type: "Team Member", name: randomChoice(teamMembers), pos: getNonOverlappingPos(foods) }
     ];
-    lastUpdateTime = 0; // Reset last update time
+    lastUpdateTime = 0; // Reset last update time to ensure consistent speed
     gameLoop();
 }
 
