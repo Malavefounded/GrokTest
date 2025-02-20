@@ -1,76 +1,14 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const restartText = document.getElementById('restartText');
-
-const gridSize = 20;
-const tileCountX = canvas.width / gridSize;  // 800 / 20 = 40 tiles wide
-const tileCountY = canvas.height / gridSize; // 500 / 20 = 25 tiles tall
-
-let snake = [
-    { x: 20, y: 12 }, // Start snake more centrally in wider space
-];
-let foods = [
-    {
-        x: Math.floor(Math.random() * tileCountX),
-        y: Math.floor(Math.random() * tileCountY),
-        type: Math.random() < 0.5 ? 'audit' : 'team'
-    },
-    {
-        x: Math.floor(Math.random() * tileCountX),
-        y: Math.floor(Math.random() * tileCountY),
-        type: Math.random() < 0.5 ? 'audit' : 'team'
-    },
-    {
-        x: Math.floor(Math.random() * tileCountX),
-        y: Math.floor(Math.random() * tileCountY),
-        type: Math.random() < 0.5 ? 'audit' : 'team'
-    }
-];
-let dx = 0;
-let dy = 0;
-let score = 0;
-let gameSpeed = 100;
-let gameActive = true;
-
-document.addEventListener('keydown', handleKeyPress);
-
-function handleKeyPress(event) {
-    const LEFT_KEY = 37;
-    const RIGHT_KEY = 39;
-    const UP_KEY = 38;
-    const DOWN_KEY = 40;
-    const SPACE_KEY = 32;
-
-    const keyPressed = event.keyCode;
-    const goingUp = dy === -1;
-    const goingDown = dy === 1;
-    const goingRight = dx === 1;
-    const goingLeft = dx === -1;
-
-    if (keyPressed === SPACE_KEY && !gameActive) {
-        restartGame();
-        return;
-    }
-
-    if (!gameActive) return;
-
-    if (keyPressed === LEFT_KEY && !goingRight) {
-        dx = -1;
-        dy = 0;
-    }
-    if (keyPressed === UP_KEY && !goingDown) {
-        dx = 0;
-        dy = -1;
-    }
-    if (keyPressed === RIGHT_KEY && !goingLeft) {
-        dx = 1;
-        dy = 0;
-    }
-    if (keyPressed === DOWN_KEY && !goingUp) {
-        dx = 0;
-        dy = 1;
-    }
-}
-
-function drawGame() {
-    if (!gameActive) return;
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div id="restartText">Press Space to Restart</div>
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
