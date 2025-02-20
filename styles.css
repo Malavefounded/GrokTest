@@ -4,7 +4,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: black; /* Changed to black for the entire page */
+    background-color: black; /* Black background for the entire page */
 }
 
 .game-container {
@@ -32,7 +32,7 @@ body {
     top: 30px; /* Position below the border */
     left: 50%;
     transform: translateX(-50%);
-    color: white;
+    color: red; /* Red text for "Press Space to Restart" as in the screenshot */
     font-family: Arial, sans-serif;
     font-size: 16px;
     display: none; /* Hidden by default, shown only on game over */
@@ -66,4 +66,14 @@ body {
 
 #gameCanvas {
     border: 2px solid white; /* White border around the game field */
+}
+
+/* Added for score display */
+.score-text {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
 }
