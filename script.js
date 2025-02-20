@@ -9,11 +9,23 @@ const tileCountY = canvas.height / gridSize; // 500 / 20 = 25 tiles tall
 let snake = [
     { x: 20, y: 12 }, // Start snake more centrally in wider space
 ];
-let food = {
-    x: Math.floor(Math.random() * tileCountX),
-    y: Math.floor(Math.random() * tileCountY),
-    type: Math.random() < 0.5 ? 'audit' : 'team' // Randomly choose food type
-};
+let foods = [
+    {
+        x: Math.floor(Math.random() * tileCountX),
+        y: Math.floor(Math.random() * tileCountY),
+        type: Math.random() < 0.5 ? 'audit' : 'team'
+    },
+    {
+        x: Math.floor(Math.random() * tileCountX),
+        y: Math.floor(Math.random() * tileCountY),
+        type: Math.random() < 0.5 ? 'audit' : 'team'
+    },
+    {
+        x: Math.floor(Math.random() * tileCountX),
+        y: Math.floor(Math.random() * tileCountY),
+        type: Math.random() < 0.5 ? 'audit' : 'team'
+    }
+];
 let dx = 0;
 let dy = 0;
 let score = 0;
@@ -67,27 +79,34 @@ function drawGame() {
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
     snake.unshift(head);
 
-    // Check if snake ate food
-    if (head.x === food.x && head.y === food.y) {
-        if (food.type === 'audit') {
-            score += 30; // Higher score for audits
-            // Increase snake size by 3 for audits
-            for (let i = 0; i < 3; i++) {
+    // Check if snake ate any food
+    let foodEaten = false;
+    for (let i = 0; i < foods.length; i++) {
+        if (head.x === foods[i].x && head.y === foods[i].y) {
+            if (foods[i].type === 'audit') {
+                score += 30; // Higher score for audits
+                // Increase snake size by 3 for audits
+                for (let j = 0; j < 3; j++) {
+                    snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
+                }
+            } else if (foods[i].type === 'team') {
+                score += 10; // Lower score for team members
+                // Increase snake size by 1 for team members
                 snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
             }
-        } else if (food.type === 'team') {
-            score += 10; // Lower score for team members
-            // Increase snake size by 1 for team members
-            snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
+            // Remove the eaten food and add a new one
+            foods.splice(i, 1);
+            foods.push({
+                x: Math.floor(Math.random() * tileCountX),
+                y: Math.floor(Math.random() * tileCountY),
+                type: Math.random() < 0.5 ? 'audit' : 'team'
+            });
+            foodEaten = true;
+            break;
         }
-        gameSpeed = Math.max(50, gameSpeed - 2); // Increase speed slightly
-        // Generate new food with random type
-        food = {
-            x: Math.floor(Math.random() * tileCountX),
-            y: Math.floor(Math.random() * tileCountY),
-            type: Math.random() < 0.5 ? 'audit' : 'team'
-        };
-    } else {
+    }
+
+    if (!foodEaten) {
         snake.pop();
     }
 
@@ -114,14 +133,16 @@ function drawGame() {
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
     });
 
-    // Draw food based on type
-    if (food.type === 'audit') {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-    } else if (food.type === 'team') {
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-    }
+    // Draw foods based on type
+    foods.forEach(food => {
+        if (food.type === 'audit') {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+        } else if (food.type === 'team') {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+        }
+    });
 
     // Draw "D.O.G.E" above the snake's head
     ctx.fillStyle = 'white';
@@ -143,18 +164,32 @@ function gameOver() {
     gameActive = false;
     ctx.fillStyle = 'white';
     ctx.font = '40px Arial';
-    ctx.fillText('Game Over!', canvas.width/4, canvas.height/2);
-    ctx.fillText(`Score: ${score}`, canvas.width/3.5, canvas.height/2 + 40);
+    const gameOverWidth = ctx.measureText('Game Over!').width;
+    const scoreWidth = ctx.measureText(`Score: ${score}`).width;
+    ctx.fillText('Game Over!', (canvas.width - gameOverWidth) / 2, canvas.height / 2 - 20); // Center horizontally and vertically
+    ctx.fillText(`Score: ${score}`, (canvas.width - scoreWidth) / 2, canvas.height / 2 + 20); // Center horizontally, below Game Over
     restartText.style.display = 'block'; // Show restart text
 }
 
 function restartGame() {
     snake = [{ x: 20, y: 12 }];
-    food = {
-        x: Math.floor(Math.random() * tileCountX),
-        y: Math.floor(Math.random() * tileCountY),
-        type: Math.random() < 0.5 ? 'audit' : 'team'
-    };
+    foods = [
+        {
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY),
+            type: Math.random() < 0.5 ? 'audit' : 'team'
+        },
+        {
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY),
+            type: Math.random() < 0.5 ? 'audit' : 'team'
+        },
+        {
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY),
+            type: Math.random() < 0.5 ? 'audit' : 'team'
+        }
+    ];
     dx = 0;
     dy = 0;
     score = 0;
