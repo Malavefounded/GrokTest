@@ -40,14 +40,14 @@ body {
 
 #democratsText {
     position: absolute;
-    left: -120px; /* Position left of the border, aligning with yellow X */
-    bottom: 20px; /* Position below the canvas, aligning with yellow X */
+    left: -150px; /* Moved further left from 10px to -150px to prevent clipping of longer names into the playable area */
+    bottom: -10px; /* Position under the bottom of the canvas, outside the border */
     color: white;
     font-family: Arial, sans-serif;
     font-size: 12px; /* Small but legible text */
     text-align: left;
-    white-space: pre-line; /* Preserve line breaks */
-    display: block; /* Always visible now */
+    white-space: pre-line; /* Preserve line breaks for vertical listing */
+    display: block; /* Always visible */
     z-index: 10; /* Ensure text is above other elements */
 }
 
