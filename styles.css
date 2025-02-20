@@ -53,7 +53,7 @@ body {
     width: 300px;
     box-sizing: border-box;
     position: absolute;
-    top: 50%;
+    top: 25%; /* Moved panels higher (from 50% to 25%) */
     transform: translateY(-50%);
     visibility: visible; /* Ensure panels are visible */
 }
