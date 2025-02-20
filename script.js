@@ -1,3 +1,67 @@
+// Global variables (outside DOMContentLoaded)
+const democratNames = [
+    "Kamala Harris", "Joe Biden", "Chuck Schumer", "Hakeem Jeffries", "Elizabeth Warren",
+    "Bernie Sanders", "Brian Schatz", "Patty Murray", "Ron Wyden", "Maxine Waters",
+    "Alexandria Ocasio-Cortez", "Pramila Jayapal", "Ilhan Omar", "Greg Casar", "Jamie Raskin",
+    "Ro Khanna", "Melanie Stansbury", "Maxwell Alejandro Frost", "Becca Balint", "Chris Murphy",
+    "Lisa Blunt Rochester", "Jared Golden", "Gerry Connolly", "Don Beyer", "Scott Peters",
+    "Tammy Baldwin", "Michael Bennet", "Cory Booker", "Chris Coons", "Tammy Duckworth",
+    "Anthony Fauci", "Francis Collins", "Bill Gates", "Clifford Lane", "Hillary Clinton", "Barack Obama"
+];
+let usedDemocratNames = new Set();
+let democratList = [];
+
+const agencyAcronyms = [
+    "USAID", "CFPB", "EPA", "Treasury", "DOD", "IRS", "DOE", "SSA", "FEMA", "USPS",
+    "HUD", "GSA", "STATE", "SBA", "DOI", "NPS", "OMB", "ED", "OPM", "DOJ",
+    "NASA", "VA", "USDA", "FAA", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC"
+];
+const agencyFullNames = {
+    "USAID": "United States Agency for International Development",
+    "CFPB": "Consumer Financial Protection Bureau",
+    "EPA": "Environmental Protection Agency",
+    "Treasury": "United States Department of the Treasury",
+    "DOD": "United States Department of Defense",
+    "IRS": "Internal Revenue Service",
+    "DOE": "United States Department of Energy",
+    "SSA": "Social Security Administration",
+    "FEMA": "Federal Emergency Management Agency",
+    "USPS": "United States Postal Service",
+    "HUD": "United States Department of Housing and Urban Development",
+    "GSA": "General Services Administration",
+    "STATE": "United States Department of State",
+    "SBA": "Small Business Administration",
+    "DOI": "United States Department of the Interior",
+    "NPS": "National Park Service",
+    "OMB": "Office of Management and Budget",
+    "ED": "United States Department of Education",
+    "OPM": "Office of Personnel Management",
+    "DOJ": "United States Department of Justice",
+    "NASA": "National Aeronautics and Space Administration",
+    "VA": "United States Department of Veterans Affairs",
+    "USDA": "United States Department of Agriculture",
+    "FAA": "Federal Aviation Administration",
+    "DOT": "United States Department of Transportation",
+    "CDC": "Centers for Disease Control and Prevention",
+    "NIH": "National Institutes of Health",
+    "FDA": "Food and Drug Administration",
+    "DEA": "Drug Enforcement Administration",
+    "SEC": "Securities and Exchange Commission"
+};
+let usedAgencyAcronyms = new Set();
+let agencyList = [];
+
+const teamMemberNames = [
+    "Susie Wiles", "Lara Trump", "Michael Whatley", "Marco Rubio", "Pete Hegseth",
+    "JD Vance", "Elon Musk", "Robert F. Kennedy Jr.", "Tulsi Gabbard", "Howard Lutnick",
+    "Scott Bessent", "Pam Bondi", "Sean Duffy", "Lee Zeldin", "Elise Stefanik",
+    "John Ratcliffe", "Mike Waltz", "Steve Witkoff", "Doug Collins", "Kristi Noem",
+    "Ben Carson", "Linda McMahon", "Stephen Miller", "Tom Homan", "Brendan Carr",
+    "Pete Hoekstra", "Mike Huckabee", "Karoline Leavitt", "Chris LaCivita", "James Blair"
+];
+let usedTeamMemberNames = new Set();
+let teamMemberList = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -29,69 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let democrats = []; // Start with no Democrats
     let dx = 0, dy = 0;
     let score = 0, gameSpeed = 100, gameActive = true;
-
-    const democratNames = [
-        "Kamala Harris", "Joe Biden", "Chuck Schumer", "Hakeem Jeffries", "Elizabeth Warren",
-        "Bernie Sanders", "Brian Schatz", "Patty Murray", "Ron Wyden", "Maxine Waters",
-        "Alexandria Ocasio-Cortez", "Pramila Jayapal", "Ilhan Omar", "Greg Casar", "Jamie Raskin",
-        "Ro Khanna", "Melanie Stansbury", "Maxwell Alejandro Frost", "Becca Balint", "Chris Murphy",
-        "Lisa Blunt Rochester", "Jared Golden", "Gerry Connolly", "Don Beyer", "Scott Peters",
-        "Tammy Baldwin", "Michael Bennet", "Cory Booker", "Chris Coons", "Tammy Duckworth",
-        "Anthony Fauci", "Francis Collins", "Bill Gates", "Clifford Lane", "Hillary Clinton", "Barack Obama"
-    ];
-    let usedDemocratNames = new Set();
-    let democratList = [];
-
-    const agencyAcronyms = [
-        "USAID", "CFPB", "EPA", "Treasury", "DOD", "IRS", "DOE", "SSA", "FEMA", "USPS",
-        "HUD", "GSA", "STATE", "SBA", "DOI", "NPS", "OMB", "ED", "OPM", "DOJ",
-        "NASA", "VA", "USDA", "FAA", "DOT", "CDC", "NIH", "FDA", "DEA", "SEC"
-    ];
-    const agencyFullNames = {
-        "USAID": "United States Agency for International Development",
-        "CFPB": "Consumer Financial Protection Bureau",
-        "EPA": "Environmental Protection Agency",
-        "Treasury": "United States Department of the Treasury",
-        "DOD": "United States Department of Defense",
-        "IRS": "Internal Revenue Service",
-        "DOE": "United States Department of Energy",
-        "SSA": "Social Security Administration",
-        "FEMA": "Federal Emergency Management Agency",
-        "USPS": "United States Postal Service",
-        "HUD": "United States Department of Housing and Urban Development",
-        "GSA": "General Services Administration",
-        "STATE": "United States Department of State",
-        "SBA": "Small Business Administration",
-        "DOI": "United States Department of the Interior",
-        "NPS": "National Park Service",
-        "OMB": "Office of Management and Budget",
-        "ED": "United States Department of Education",
-        "OPM": "Office of Personnel Management",
-        "DOJ": "United States Department of Justice",
-        "NASA": "National Aeronautics and Space Administration",
-        "VA": "United States Department of Veterans Affairs",
-        "USDA": "United States Department of Agriculture",
-        "FAA": "Federal Aviation Administration",
-        "DOT": "United States Department of Transportation",
-        "CDC": "Centers for Disease Control and Prevention",
-        "NIH": "National Institutes of Health",
-        "FDA": "Food and Drug Administration",
-        "DEA": "Drug Enforcement Administration",
-        "SEC": "Securities and Exchange Commission"
-    };
-    let usedAgencyAcronyms = new Set();
-    let agencyList = [];
-
-    const teamMemberNames = [
-        "Susie Wiles", "Lara Trump", "Michael Whatley", "Marco Rubio", "Pete Hegseth",
-        "JD Vance", "Elon Musk", "Robert F. Kennedy Jr.", "Tulsi Gabbard", "Howard Lutnick",
-        "Scott Bessent", "Pam Bondi", "Sean Duffy", "Lee Zeldin", "Elise Stefanik",
-        "John Ratcliffe", "Mike Waltz", "Steve Witkoff", "Doug Collins", "Kristi Noem",
-        "Ben Carson", "Linda McMahon", "Stephen Miller", "Tom Homan", "Brendan Carr",
-        "Pete Hoekstra", "Mike Huckabee", "Karoline Leavitt", "Chris LaCivita", "James Blair"
-    ];
-    let usedTeamMemberNames = new Set();
-    let teamMemberList = [];
 
     document.addEventListener('keydown', handleKeyPress);
 
