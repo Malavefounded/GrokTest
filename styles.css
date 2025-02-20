@@ -53,7 +53,7 @@ body {
 
 #agenciesText {
     position: absolute;
-    right: -150px; /* Position under the bottom-right corner, outside the right border */
+    right: -50px; /* Move further right, ~100px from right edge for better visibility */
     bottom: -10px; /* Position under the bottom of the canvas, outside the border */
     color: white;
     font-family: Arial, sans-serif;
@@ -66,7 +66,7 @@ body {
 
 #teamMembersText {
     position: absolute;
-    left: 0px; /* Move further right, ~150px right of Democrats to avoid overlap */
+    left: 50px; /* Move further right, ~200px right of Democrats to avoid overlap */
     bottom: -10px; /* Position under the bottom of the canvas, outside the border */
     color: white;
     font-family: Arial, sans-serif;
