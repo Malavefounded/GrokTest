@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const head = { x: snake[0].x + dx, y: snake[0].y + dy };
             snake.unshift(head);
 
-            // Check food collisions
+            // Check food collisions (grow, don’t die)
             let foodEaten = false;
             for (let i = 0; i < foods.length; i++) {
                 if (head.x === foods[i].x && head.y === foods[i].y) {
@@ -150,21 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         acronym: foods[i].type === 'audit' ? agencyList[agencyList.length - 1] : null // Assign unique acronym to new Audit
                     });
                     foodEaten = true;
-                    // Ensure a new Democrat appears every time food is eaten
+                    // Spawn a new Democrat when food is eaten
                     addDemocrat();
                     break;
                 }
             }
             if (!foodEaten) snake.pop();
 
-            // Check for overlap with existing Democrats or foods to prevent freezing
-            if (democrats.some(d => d.x === head.x && d.y === head.y) || 
-                foods.some(f => f.x === head.x && f.y === head.y && f !== foods[foods.length - 1])) {
-                gameOver();
-                return;
-            }
-
-            // Check collisions
+            // Check collisions—snake dies only on blue blocks (Democrats), borders, or itself
             if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
                 gameOver();
                 return;
@@ -193,12 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.font = '12px Arial';
             ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
 
-            // Foods (red Audits, green Team Members)
+            // Foods (red Audits, green Team Members)—don’t kill snake
             foods.forEach(food => {
                 ctx.fillStyle = food.type === 'audit' ? 'red' : 'green';
                 ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
                 if (food.type === 'audit' && food.acronym) {
-                    // Use the acronym assigned to this specific food object
                     ctx.fillStyle = 'white';
                     ctx.font = '10px Arial';
                     const textX = food.x * gridSize + (gridSize - ctx.measureText(food.acronym).width) / 2;
@@ -206,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Democrats (blue blocks)
+            // Democrats (blue blocks)—only these kill
             democrats.forEach(democrat => {
                 ctx.fillStyle = 'blue';
                 ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
