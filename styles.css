@@ -29,7 +29,7 @@ body {
 
 #restartText {
     position: absolute;
-    top: 50px; /* Lowered further from 10px to 20px (moved down more for additional space below the border) */
+    top: 20px; /* Lowered further from 10px to 20px (moved down more for additional space below the border) */
     left: 50%;
     transform: translateX(-50%);
     color: white;
