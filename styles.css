@@ -40,7 +40,7 @@ body {
 
 #democratsText {
     position: absolute;
-    left: -150px; /* Position under the bottom-left corner, outside the left border */
+    right: -150px; /* Move to bottom-right, outside right border for symmetry */
     bottom: -10px; /* Position under the bottom of the canvas, outside the border */
     color: white;
     font-family: Arial, sans-serif;
@@ -53,7 +53,7 @@ body {
 
 #agenciesText {
     position: absolute;
-    right: -150px; /* Move to the right of the border, outside the 800px playing area */
+    left: -150px; /* Move to bottom-left, outside left border for symmetry */
     bottom: -10px; /* Position under the bottom of the canvas, outside the border */
     color: white;
     font-family: Arial, sans-serif;
@@ -66,7 +66,7 @@ body {
 
 #teamMembersText {
     position: absolute;
-    left: 250px; /* Revert to perfect position, ~400px right of Democrats */
+    left: 250px; /* Revert to perfect position, ~400px right of Democrats’ old position */
     bottom: -10px; /* Position under the bottom of the canvas, outside the border */
     color: white;
     font-family: Arial, sans-serif;
