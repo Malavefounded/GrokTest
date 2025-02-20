@@ -195,7 +195,7 @@ function resetGame() {
         { type: "Agency", name: randomChoice(agencies), pos: getNonOverlappingPos([foods[0]]) },
         { type: "Team Member", name: randomChoice(teamMembers), pos: getNonOverlappingPos(foods) }
     ];
-    lastUpdateTime = 0; // Reset last update time to ensure consistent speed
+    lastUpdateTime = performance.now(); // Reset last update time using performance.now() for consistent timing
     gameLoop();
 }
 
