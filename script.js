@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Anthony Fauci", "Francis Collins", "Bill Gates", "Clifford Lane", "Hillary Clinton", "Barack Obama"
     ];
     let usedNames = new Set(); // Track used names to prevent duplicates
+    let democratList = []; // Track all Democrat names that have appeared
 
     document.addEventListener('keydown', handleKeyPress);
 
@@ -144,12 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(name, nameX, nameY); // Draw only text, no rectangle
         });
 
-        // Update "Democrats Against you" text in the HTML div (always visible, updated with names when Democrats appear)
+        // Update "Democrats Against you" text in the HTML div (always visible, updated with all Democrat names vertically)
         if (democrats.length > 0) {
-            const lastDemocrat = democrats[democrats.length - 1];
-            democratsText.textContent = `Democrats Against you\n${lastDemocrat.name}`; // Always show the latest Democrat name
+            democratList = democrats.map(d => d.name); // Track all unique Democrat names that have appeared
+            const nameList = democratList.map(name => name).join('\n'); // Join names with newlines for vertical listing
+            democratsText.textContent = `Democrats Against you:\n${nameList}`; // Always show the list of names vertically
         } else {
-            democratsText.textContent = 'Democrats Against you'; // Show only "Democrats Against you" if no Democrats exist
+            democratsText.textContent = 'Democrats Against you:'; // Show only "Democrats Against you:" if no Democrats exist
         }
 
         // Draw "D.O.G.E" above the snake's head
@@ -189,9 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         democrats = []; // Clear bad Democrats blocks on restart
         usedNames.clear(); // Clear used names on restart
+        democratList = []; // Clear the list of Democrat names on restart
         dx = dy = 0; score = 0; gameSpeed = 100; gameActive = true;
         restartText.style.display = 'none'; // Hide restart text
-        democratsText.textContent = 'Democrats Against you'; // Reset to initial state on restart
+        democratsText.textContent = 'Democrats Against you:'; // Reset to initial state on restart
         drawGame(); // Start the game loop with setTimeout
     }
 
@@ -213,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
         usedNames.add(randomName);
         newDemocrat.name = randomName;
-        newDemocrat.newlyAdded = true; // Mark as newly added for potential future use (though not needed here)
+        newDemocrat.newlyAdded = true; // Mark as newly added (though not used here, for consistency)
         democrats.push(newDemocrat);
     }
 
