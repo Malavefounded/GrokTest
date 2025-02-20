@@ -47,15 +47,15 @@ body {
     font-size: 24px;
     color: black;
     padding: 15px;
-    background-color: #e0e0f0; /* Light blue for visibility */
+    background-color: #e0e0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 300px;
     box-sizing: border-box;
     position: absolute;
-    top: 25%; /* Moved panels higher (from 50% to 25%) */
+    top: 25%;
     transform: translateY(-50%);
-    visibility: visible; /* Ensure panels are visible */
+    visibility: visible;
 }
 
 #auditedPanel {
