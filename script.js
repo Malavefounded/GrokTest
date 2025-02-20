@@ -5,19 +5,14 @@ const programsLeftElement = document.getElementById('programsLeft');
 const namesCollectedElement = document.getElementById('namesCollected');
 const teamMembersElement = document.getElementById('teamMembers');
 
-// Ensure canvas is fully initialized before setting dimensions
-if (!canvas || !ctx) {
-    console.error('Canvas or context not found. Check if the canvas element exists in the HTML.');
-} else {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
+// Ensure canvas dimensions are set immediately
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-// Ensure snake starts in the exact center-middle, snapped to 20x20 grid, labeled "D.O.G.E"
 let snake = [
     { x: Math.floor(canvas.width / 40) * 20, y: Math.floor(canvas.height / 40) * 20 }
 ];
-let dx = 0; // Start completely stationary, no movement until key press
+let dx = 0; // Start stationary, no movement until key press
 let dy = 0;
 let foods = []; // Array to hold exactly 2 items (government program and team member)
 let score = 0;
@@ -39,7 +34,6 @@ const teamMembers = ["Elon Musk", "Donald Trump", "Marco Rubio", "Scott Bessent"
 let killZones = []; // Array to hold 3 kill zones
 
 function initFoods() {
-    // Ensure exactly 2 food items: one government program, one team member
     foods = [
         {
             x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
@@ -61,7 +55,7 @@ function initFoods() {
                foods.some(f => f !== food && f.x === food.x && f.y === food.y) ||
                killZones.some(zone => isPointInKillZone(food.x, food.y, zone))) {
             food.x = Math.floor(Math.random() * (canvas.width / 20)) * 20;
-            food.y = Math.floor(Math.random() * (canvas.height / 20)) * 20;
+            food.y = Math.floor(Math.random() * (canvas.height / 20)) * 20);
         }
     });
 }
@@ -98,48 +92,6 @@ function generateRandomKillZone() {
     return { x, y, width: shape.width, height: shape.height, type: shape.type };
 }
 
-function drawKillZones() {
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    killZones.forEach(zone => {
-        ctx.beginPath();
-        if (zone.type === 'L') {
-            ctx.moveTo(zone.x, zone.y);
-            ctx.lineTo(zone.x + zone.width, zone.y);
-            ctx.lineTo(zone.x + zone.width, zone.y + zone.height);
-            ctx.moveTo(zone.x + zone.width, zone.y);
-            ctx.lineTo(zone.x + zone.width - zone.height, zone.y);
-            // Draw collision box (rectangle around the L-shape)
-            ctx.strokeStyle = 'red';
-            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
-            ctx.fillStyle = 'red';
-            ctx.font = '16px Arial';
-            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
-        } else if (zone.type === 'T') {
-            ctx.moveTo(zone.x + zone.width / 2, zone.y);
-            ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
-            ctx.moveTo(zone.x, zone.y + zone.height / 2);
-            ctx.lineTo(zone.x + zone.width, zone.y + zone.height / 2);
-            // Draw collision box (rectangle around the T-shape)
-            ctx.strokeStyle = 'red';
-            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
-            ctx.fillStyle = 'red';
-            ctx.font = '16px Arial';
-            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
-        } else if (zone.type === 'I') {
-            ctx.moveTo(zone.x + zone.width / 2, zone.y);
-            ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
-            // Draw collision box (rectangle around the I-shape)
-            ctx.strokeStyle = 'red';
-            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
-            ctx.fillStyle = 'red';
-            ctx.font = '16px Arial';
-            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
-        }
-        ctx.stroke();
-    });
-}
-
 function isPointInKillZone(x, y, zone) {
     if (zone.type === 'L') {
         return (x >= zone.x && x <= zone.x + zone.width && y >= zone.y && y <= zone.y + zone.height) ||
@@ -154,17 +106,8 @@ function isPointInKillZone(x, y, zone) {
 }
 
 function doZonesOverlap(zone1, zone2) {
-    const overlap = (zone1.x < zone2.x + zone2.width && zone1.x + zone1.width > zone2.x &&
-                     zone1.y < zone2.y + zone2.height && zone1.y + zone1.height > zone2.y);
-    return overlap || 
-           (zone1.type === 'L' && zone2.type === 'L' && checkComplexOverlap(zone1, zone2)) ||
-           (zone1.type === 'T' && zone2.type === 'T' && checkComplexOverlap(zone1, zone2)) ||
-           (zone1.type === 'I' && zone2.type === 'I' && checkComplexOverlap(zone1, zone2));
-}
-
-function checkComplexOverlap(zone1, zone2) {
-    // Simplified overlap check for complex shapes (can be refined if needed)
-    return Math.hypot(zone1.x - zone2.x, zone1.y - zone2.y) < (zone1.width + zone2.width) / 2;
+    return (zone1.x < zone2.x + zone2.width && zone1.x + zone1.width > zone2.x &&
+            zone1.y < zone2.y + zone2.height && zone1.y + zone1.height > zone2.y);
 }
 
 function drawSnake() {
@@ -174,12 +117,76 @@ function drawSnake() {
     ctx.textBaseline = 'middle';
 
     snake.forEach((segment, index) => {
-        // Draw thick snake segment (20x20 pixels)
-        ctx.fillRect(segment.x, segment.y, 20, 20);
-
-        // Always show "D.O.G.E" as the main name on every segment
+        ctx.fillRect(segment.x, segment.y, 20, 20); // Draw thick snake segment
         ctx.fillStyle = 'white';
-        ctx.fillText("D.O.G.E", segment.x + 10, segment.y + 10);
+        ctx.fillText("D.O.G.E", segment.x + 10, segment.y + 10); // Always show "D.O.G.E"
 
         // Add additional names every 4 items eaten, on the fourth added segment
-        if (fruitEatenCount >= 4 && (snake.length - 4 *
+        if (fruitEatenCount >= 4 && (snake.length - 4 * Math.floor(fruitEatenCount / 4)) === index + 1) {
+            const nameIndex = (Math.floor(fruitEatenCount / 4) - 1) % teamMembers.length;
+            const name = teamMembers[nameIndex];
+            ctx.fillText(name, segment.x + 10, segment.y + 10 + 15); // Offset below "D.O.G.E"
+            if (!teamMembersFound.includes(name)) {
+                teamMembersFound.push(name);
+                updateTeamMembersDisplay();
+            }
+        }
+    });
+}
+
+function drawFoods() {
+    foods.forEach(food => {
+        if (food.isProgram) {
+            ctx.fillStyle = 'red'; // Government programs (apples)
+            ctx.beginPath();
+            ctx.arc(food.x + 10, food.y + 10, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below apple
+        } else {
+            ctx.fillStyle = 'blue'; // Team members (stars)
+            ctx.beginPath();
+            ctx.moveTo(food.x + 10, food.y); // Top point
+            ctx.lineTo(food.x + 15, food.y + 10); // Right point
+            ctx.lineTo(food.x + 20, food.y + 10); // Right-middle point
+            ctx.lineTo(food.x + 13, food.y + 15); // Bottom-middle point
+            ctx.lineTo(food.x + 17, food.y + 20); // Bottom point
+            ctx.lineTo(food.x + 10, food.y + 15); // Left-middle point
+            ctx.lineTo(food.x + 3, food.y + 20); // Left-bottom point
+            ctx.lineTo(food.x + 7, food.y + 15); // Left-middle (bottom)
+            ctx.lineTo(food.x, food.y + 10); // Left point
+            ctx.lineTo(food.x + 5, food.y + 10); // Left-middle (top)
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText(food.item, food.x + 10, food.y + 25); // Label below star
+        }
+    });
+}
+
+function drawKillZones() {
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    killZones.forEach(zone => {
+        ctx.beginPath();
+        if (zone.type === 'L') {
+            ctx.moveTo(zone.x, zone.y);
+            ctx.lineTo(zone.x + zone.width, zone.y);
+            ctx.lineTo(zone.x + zone.width, zone.y + zone.height);
+            ctx.moveTo(zone.x + zone.width, zone.y);
+            ctx.lineTo(zone.x + zone.width - zone.height, zone.y);
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height); // Draw collision box
+            ctx.fillStyle = 'red';
+            ctx.font = '16px Arial';
+            ctx.fillText('Killzone', zone.x + zone.width / 2, zone.y + zone.height / 2);
+        } else if (zone.type === 'T') {
+            ctx.moveTo(zone.x + zone.width / 2, zone.y);
+            ctx.lineTo(zone.x + zone.width / 2, zone.y + zone.height);
+            ctx.moveTo(zone.x, zone.y + zone.height / 2);
+            ctx.lineTo(zone.x + zone.width, zone.y + zone.height / 2);
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height); // Draw collision box
+            ctx.fillStyle = 'red';
+            ctx.font = '16px Arial';
+            ctx.fillText('Kill
