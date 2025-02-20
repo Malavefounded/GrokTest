@@ -203,4 +203,97 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameWidth = ctx.measureText('D.O.G.E').width;
         const nameX = snake[0].x * gridSize + (gridSize - nameWidth) / 2;
         const nameY = snake[0].y * gridSize - 5;
-        ctx.fillText('D.O.G.E', nameX, nameY
+        ctx.fillText('D.O.G.E', nameX, nameY);
+
+        // Draw score
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText(`Score: ${score}`, 10, 30);
+
+        // Use setTimeout to control speed (revert to original behavior, 100ms per move)
+        setTimeout(drawGame, gameSpeed);
+    }
+
+    function gameOver() {
+        gameActive = false;
+        ctx.fillStyle = 'white';
+        ctx.font = '40px Arial';
+        const gameOverWidth = ctx.measureText('Game Over!').width;
+        const scoreWidth = ctx.measureText(`Score: ${score}`).width;
+        ctx.fillText('Game Over!', (canvas.width - gameOverWidth) / 2, canvas.height / 2 - 20);
+        ctx.fillText(`Score: ${score}`, (canvas.width - scoreWidth) / 2, canvas.height / 2 + 20);
+        restartText.style.display = 'block'; // Show restart text
+    }
+
+    function restartGame() {
+        snake = [{ x: 20, y: 12 }];
+        foods = [
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: Math.random() < 0.5 ? 'audit' : 'team' }
+        ];
+        democrats = []; // Clear bad Democrats blocks on restart
+        audits = []; // Clear Audit blocks on restart
+        usedDemocratNames.clear(); // Clear used Democrat names on restart
+        usedAgencyAcronyms.clear(); // Clear used agency acronyms on restart
+        democratList = []; // Clear the list of Democrat names on restart
+        agencyList = []; // Clear the list of agency acronyms on restart
+        dx = dy = 0; score = 0; gameSpeed = 100; gameActive = true;
+        restartText.style.display = 'none'; // Hide restart text
+        democratsText.textContent = 'Democrats Against you:'; // Reset to initial state on restart
+        agenciesText.textContent = 'Federal Agencies to Audit:'; // Reset to initial state on restart
+        drawGame(); // Start the game loop with setTimeout
+    }
+
+    function addDemocrat() {
+        let newDemocrat;
+        do {
+            newDemocrat = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
+            // Ensure the new bad Democrat block doesn't overlap with the snake, good foods, or other bad Democrats/Audits
+        } while (snake.some(segment => segment.x === newDemocrat.x && segment.y === newDemocrat.y) ||
+                 foods.some(food => food.x === newDemocrat.x && food.y === newDemocrat.y) ||
+                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y) ||
+                 audits.some(audit => audit.x === newDemocrat.x && audit.y === newDemocrat.y));
+
+        // Select a unique Democrat name (no duplicates at the same time)
+        let availableNames = democratNames.filter(name => !usedDemocratNames.has(name));
+        if (availableNames.length === 0) {
+            usedDemocratNames.clear(); // Reset if all names are used (though unlikely with 36 names)
+            availableNames = democratNames;
+        }
+        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
+        usedDemocratNames.add(randomName);
+        newDemocrat.name = randomName;
+        democrats.push(newDemocrat);
+    }
+
+    function addAudit() {
+        let newAudit;
+        do {
+            newAudit = { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY) };
+            // Ensure the new Audit block doesn't overlap with the snake, good foods, or other Audits/Democrats
+        } while (snake.some(segment => segment.x === newAudit.x && segment.y === newAudit.y) ||
+                 foods.some(food => food.x === newAudit.x && food.y === newAudit.y) ||
+                 audits.some(audit => audit.x === newAudit.x && audit.y === newAudit.y) ||
+                 democrats.some(dem => dem.x === newDemocrat.x && dem.y === newDemocrat.y));
+
+        // Select a unique agency acronym (no duplicates at the same time)
+        let availableAcronyms = agencyAcronyms.filter(acronym => !usedAgencyAcronyms.has(acronym));
+        if (availableAcronyms.length === 0) {
+            usedAgencyAcronyms.clear(); // Reset if all acronyms are used (though unlikely with 30 acronyms)
+            availableAcronyms = agencyAcronyms;
+        }
+        const randomAcronym = availableAcronyms[Math.floor(Math.random() * availableAcronyms.length)];
+        usedAgencyAcronyms.add(randomAcronym);
+        newAudit.acronym = randomAcronym;
+        // Update the foods array to include the acronym for display
+        const index = foods.findIndex(f => f.type === 'audit' && f.x === newAudit.x && f.y === newAudit.y);
+        if (index !== -1) {
+            foods[index].acronym = randomAcronym;
+        }
+        audits.push(newAudit);
+    }
+
+    // Start the game with the original setTimeout-based loop
+    drawGame();
+});
