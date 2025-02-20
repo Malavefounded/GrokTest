@@ -27,13 +27,15 @@ let foods = [
         type: Math.random() < 0.5 ? 'audit' : 'team'
     }
 ];
-let democrats = []; // Array to store Democrat blocks
+let democrats = []; // Array to store Democrat blocks (bad - causes instant death)
 let dx = 0;
 let dy = 0;
 let score = 0;
 let gameSpeed = 100;
 let gameActive = true;
 
+// Good food types: Audits (red, +3 size, +30 points) and Team Members (green, +1 size, +10 points)
+// Bad blocks: Democrats (blue, instant death on contact)
 document.addEventListener('keydown', handleKeyPress);
 
 function handleKeyPress(event) {
@@ -78,89 +80,4 @@ function drawGame() {
     if (!gameActive) return;
 
     // Move snake
-    const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-    snake.unshift(head);
-
-    // Check if snake ate any food
-    let foodEaten = false;
-    for (let i = 0; i < foods.length; i++) {
-        if (head.x === foods[i].x && head.y === foods[i].y) {
-            if (foods[i].type === 'audit') {
-                score += 30; // Higher score for Audits
-                // Increase snake size by 3 for Audits
-                for (let j = 0; j < 3; j++) {
-                    snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
-                }
-            } else if (foods[i].type === 'team') {
-                score += 10; // Lower score for Team Members
-                // Increase snake size by 1 for Team Members
-                snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
-            }
-            // Remove the eaten food and add a new one
-            foods.splice(i, 1);
-            foods.push({
-                x: Math.floor(Math.random() * tileCountX),
-                y: Math.floor(Math.random() * tileCountY),
-                type: Math.random() < 0.5 ? 'audit' : 'team'
-            });
-            // Add one Democrat block after eating food
-            addDemocrat();
-            foodEaten = true;
-            break;
-        }
-    }
-
-    if (!foodEaten) {
-        snake.pop();
-    }
-
-    // Check collision with walls
-    if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
-        gameOver();
-        return;
-    }
-
-    // Check collision with self
-    for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-            gameOver();
-            return;
-        }
-    }
-
-    // Check collision with Democrats
-    for (let i = 0; i < democrats.length; i++) {
-        if (head.x === democrats[i].x && head.y === democrats[i].y) {
-            gameOver();
-            return;
-        }
-    }
-
-    // Draw everything
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'lime';
-    snake.forEach(segment => {
-        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-    });
-
-    // Draw foods based on type
-    foods.forEach(food => {
-        if (food.type === 'audit') {
-            ctx.fillStyle = 'red';
-            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-        } else if (food.type === 'team') {
-            ctx.fillStyle = 'green';
-            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-        }
-    });
-
-    // Draw Democrats (blue blocks)
-    ctx.fillStyle = 'blue';
-    democrats.forEach(democrat => {
-        ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
-    });
-
-    // Draw "D.O.G.E" above the snake's head
-    ctx.fill
+    const head = { x: snake[0].x + dx, y:
