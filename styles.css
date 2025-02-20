@@ -14,16 +14,16 @@ body {
 
 #rulesText {
     position: absolute;
-    top: -80px; /* Move further up to give more space below rules */
+    top: -100px; /* Move further up to ensure it’s above the playable area */
     left: 50%;
     transform: translateX(-50%);
     color: white;
     font-family: Arial, sans-serif;
-    font-size: 16px; /* Increase font size for better readability */
+    font-size: 16px; /* Maintain readability */
     text-align: center;
     width: 800px; /* Match canvas width for centering */
     white-space: normal; /* Allow text to wrap if needed */
-    line-height: 1.5; /* Increase line spacing for better readability */
+    line-height: 1.5; /* Maintain line spacing for readability */
     overflow: hidden; /* Hide any overflow */
 }
 
