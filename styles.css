@@ -42,9 +42,10 @@ body {
     position: absolute;
     right: -150px; /* Outside right border, bottom-right */
     bottom: -10px;
-    color: white;
+    color: blue;
     font-family: Arial, sans-serif;
-    font-size: 12px;
+    font-size: 10px; /* Reduced from 12px */
+    font-weight: bold;
     text-align: left;
     white-space: pre-line;
     display: block;
@@ -55,9 +56,10 @@ body {
     position: absolute;
     left: -150px; /* Outside left border, bottom-left */
     bottom: -10px;
-    color: white;
+    color: red;
     font-family: Arial, sans-serif;
-    font-size: 12px;
+    font-size: 10px; /* Reduced from 12px */
+    font-weight: bold;
     text-align: left;
     white-space: pre-line;
     display: block;
