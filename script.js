@@ -124,7 +124,7 @@ const agencyFullNames = {
     "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
-let agencyList = new Set(); // Use Set to prevent duplicates and match eaten Audits
+let agencyList = new Set(); // Use Set to match eaten Audits exactly
 let usedDemocratNames = new Set();
 let democratList = [];
 
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addAudit() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
         const acronym = getRandomAgencyAcronym();
-        if (acronym) agencyList.add(acronym); // Use Set to match eaten Audits
+        if (acronym) agencyList.add(acronym); // Ensure exact match with eaten Audit
         updateUIText();
         addDemocrat(); // Spawn new Democrat when Audit is eaten
     }
