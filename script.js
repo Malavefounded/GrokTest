@@ -124,7 +124,7 @@ const agencyFullNames = {
     "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
-let agencyList = new Set(); // Use Set to prevent duplicates
+let agencyList = new Set(); // Use Set to prevent duplicates and match eaten Audits
 let usedDemocratNames = new Set();
 let democratList = [];
 
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addAudit() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
         const acronym = getRandomAgencyAcronym();
-        if (acronym) agencyList.add(acronym); // Use Set to prevent duplicates
+        if (acronym) agencyList.add(acronym); // Use Set to match eaten Audits
         updateUIText();
         addDemocrat(); // Spawn new Democrat when Audit is eaten
     }
@@ -220,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateUIText() {
-        democratsText.innerHTML = `<strong style="color: blue;">Democrats Against you:</strong>\n${democratList.map(name => `${name} ${democratDetails[name] || ''}`).join('\n') || ''}`;
-        agenciesText.innerHTML = `<strong style="color: red;">Federal Agencies to Audit:</strong>\n${[...agencyList].map(acronym => agencyFullNames[acronym] || acronym).join('\n') || ''}`;
+        democratsText.innerHTML = `<strong style="color: white;">Democrats Against you:</strong>\n${democratList.map(name => `${name} ${democratDetails[name] || ''}`).join('\n') || ''}`;
+        agenciesText.innerHTML = `<strong style="color: white;">Federal Agencies to Audit:</strong>\n${[...agencyList].map(acronym => agencyFullNames[acronym] || acronym).join('\n') || ''}`;
     }
 
     function drawGame() {
