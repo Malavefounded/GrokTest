@@ -44,7 +44,7 @@ body {
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
-    font-size: 10px;
+    font-size: 15px;
     font-weight: bold;
     text-align: left;
     white-space: pre-line;
@@ -54,11 +54,11 @@ body {
 
 #agenciesText {
     position: absolute;
-    left: -300px; /* Outside left border, bottom-left */
+    left: -600px; /* Outside left border, bottom-left */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
-    font-size: 10px;
+    font-size: 15px;
     font-weight: bold;
     text-align: left;
     white-space: pre-line;
