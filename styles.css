@@ -40,55 +40,55 @@ body {
 
 #democratsText {
     position: absolute;
-    right: -300px; /* Maintained offset for legibility */
-    bottom: -20px; /* Maintained bottom position for space */
+    right: -240px; /* Moved slightly more to the right (from -250px to -240px) */
+    bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
     text-align: left; /* Keep left-aligned, fixed position */
-    max-width: 280px; /* Maintained max-width for legibility */
+    max-width: 240px; /* Reduced max-width to prevent text movement, but allow slight right shift */
     white-space: pre-wrap; /* Allow text to wrap for legibility */
-    line-height: 1.6; /* Maintained increased line height for uniform spacing */
+    line-height: 1.5; /* Maintain spacing for legibility */
     display: block;
     z-index: 10;
     overflow: hidden; /* Prevent text from spilling into canvas */
 }
 
 #democratsText strong {
-    text-decoration: underline; /* Underline only the title, no bullet */
-}
-
-#democratsText span {
-    display: block; /* Ensure each item is on a new line */
-    margin-top: 2px; /* Reverted to small uniform space between all lines */
-}
-
-#democratsText span:before {
-    content: "• "; /* Maintain bullet point before each Democrat entry */
-    margin-right: 5px; /* Space between bullet and text */
+    text-decoration: underline; /* Underline only the title */
 }
 
 #agenciesText {
     position: absolute;
-    left: -300px; /* Maintained offset, as requested to keep perfect */
-    bottom: -20px; /* Maintained bottom position, as requested to keep perfect */
+    left: -240px; /* Moved slightly more to the right (from -250px to -240px) */
+    bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
     text-align: right; /* Keep right-aligned, fixed position */
-    max-width: 280px; /* Maintained max-width, as requested to keep perfect */
+    max-width: 240px; /* Reduced max-width to prevent text movement, but allow slight right shift */
     white-space: pre-wrap; /* Allow text to wrap for legibility */
-    line-height: 1.4; /* Maintained line height, as requested to keep perfect */
+    line-height: 1.2; /* Default line height for agencies */
     display: block;
     z-index: 10;
     overflow: hidden; /* Prevent text from spilling into canvas */
 }
 
 #agenciesText strong {
-    text-decoration: underline; /* Underline only the title, no bullet */
+    text-decoration: underline; /* Underline only the title */
 }
 
-#agenciesText span {
-    display: block; /* Ensure each item is on a new
+#gameCanvas {
+    border: 2px solid white;
+}
+
+.score-text {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+}
