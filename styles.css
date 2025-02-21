@@ -40,30 +40,34 @@ body {
 
 #democratsText {
     position: absolute;
-    right: -200px; /* Increased offset to prevent overlap */
+    right: -250px; /* Increased offset to prevent overlap with longer text */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
-    text-align: left; /* Align left to keep text outside canvas */
-    white-space: pre-line;
+    text-align: left; /* Keep left-aligned, but fixed position */
+    max-width: 250px; /* Increased max-width to accommodate longer text */
+    white-space: pre-wrap; /* Allow text to wrap for legibility */
     display: block;
     z-index: 10;
+    overflow: hidden; /* Prevent text from spilling into canvas */
 }
 
 #agenciesText {
     position: absolute;
-    left: -200px; /* Increased offset to prevent overlap */
+    left: -250px; /* Increased offset to prevent overlap with longer text */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
-    text-align: right; /* Align right to keep text outside canvas and prevent shifting */
-    white-space: pre-line;
+    text-align: right; /* Keep right-aligned, but fixed position */
+    max-width: 250px; /* Increased max-width to accommodate longer text */
+    white-space: pre-wrap; /* Allow text to wrap for legibility */
     display: block;
     z-index: 10;
+    overflow: hidden; /* Prevent text from spilling into canvas */
 }
 
 #gameCanvas {
