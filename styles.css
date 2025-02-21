@@ -40,7 +40,7 @@ body {
 
 #democratsText {
     position: absolute;
-    right: -250px; /* Increased offset to prevent overlap with longer text */
+    right: -225px; /* Moved slightly more to the right */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
@@ -49,14 +49,16 @@ body {
     text-align: left; /* Keep left-aligned, but fixed position */
     max-width: 250px; /* Increased max-width to accommodate longer text */
     white-space: pre-wrap; /* Allow text to wrap for legibility */
+    line-height: 1.5; /* Increased line height for better spacing between Democrats */
     display: block;
     z-index: 10;
     overflow: hidden; /* Prevent text from spilling into canvas */
+    text-decoration: underline; /* Underline the title */
 }
 
 #agenciesText {
     position: absolute;
-    left: -250px; /* Increased offset to prevent overlap with longer text */
+    left: -250px; /* Keep offset to prevent overlap with longer text */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
@@ -65,9 +67,11 @@ body {
     text-align: right; /* Keep right-aligned, but fixed position */
     max-width: 250px; /* Increased max-width to accommodate longer text */
     white-space: pre-wrap; /* Allow text to wrap for legibility */
+    line-height: 1.2; /* Default line height for agencies (optional, can adjust) */
     display: block;
     z-index: 10;
     overflow: hidden; /* Prevent text from spilling into canvas */
+    text-decoration: underline; /* Underline the title */
 }
 
 #gameCanvas {
