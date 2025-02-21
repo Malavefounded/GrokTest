@@ -124,7 +124,7 @@ const agencyFullNames = {
     "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
-let agencyList = new Set(); // Ensure exact tracking of eaten Audits, no duplicates
+let agencyList = new Set(); // Track eaten Audits only
 let usedDemocratNames = new Set();
 let democratList = [];
 
@@ -181,12 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function getRandomAgencyAcronym() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) {
             usedAgencyAcronyms.clear(); // Reset on exhaustion, allowing duplicates after restart
-            agencyList.clear(); // Clear Set for duplicates
+            agencyList.clear(); // Clear Set for duplicates, but only eaten Audits added
         }
         let acronym;
         do { acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)]; } 
         while (usedAgencyAcronyms.has(acronym));
-        usedAgencyAcronyms.add(acronym); agencyList.add(acronym); updateUIText(); return acronym;
+        usedAgencyAcronyms.add(acronym); // Only tracks appearance, not list addition
+        return acronym; // Don’t add to agencyList here—only when eaten
     }
 
     function getRandomDemocrat() {
@@ -202,8 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addAudit() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
-        const acronym = getRandomAgencyAcronym();
-        if (acronym) agencyList.add(acronym); // Add only eaten acronym, no duplicates
+        const acronym = foods.find(food => food.type === 'audit' && snake[0].x === food.x && snake[0].y === food.y)?.acronym;
+        if (acronym) {
+            agencyList.add(acronym); // Add only when eaten, not on appearance
+            usedAgencyAcronyms.add(acronym); // Ensure tracking
+        }
         updateUIText();
         addDemocrat(); // Spawn new Democrat when Audit is eaten
     }
