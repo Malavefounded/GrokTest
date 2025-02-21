@@ -40,7 +40,7 @@ body {
 
 #democratsText {
     position: absolute;
-    right: -240px; /* Moved slightly more to the right (from -250px to -240px) */
+    right: -300px; /* Moved slightly more to the right (from -250px to -240px) */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
