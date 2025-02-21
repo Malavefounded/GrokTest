@@ -92,3 +92,20 @@ body {
     font-family: Arial, sans-serif;
     font-size: 20px;
 }
+
+#adText {
+    position: absolute;
+    bottom: 20px; /* Position below the game border (under 500px height + border) */
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    text-align: center;
+    z-index: 10;
+}
+
+#adText a {
+    color: #00FFFF; /* Cyan for visibility, can adjust */
+    text-decoration: underline;
+}
