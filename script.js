@@ -147,3 +147,194 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const gridSize = 20;
     const tileCountX = canvas.width / gridSize;  // 40
+    const tileCountY = canvas.height / gridSize; // 25
+
+    let snake = [{ x: 20, y: 12 }];
+    let foods = [
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
+    ];
+    let democrats = []; // Start with no Democrats
+    let dx = 0, dy = 0;
+    let score = 0, gameSpeed = 100, gameActive = true;
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    function handleKeyPress(event) {
+        const LEFT_KEY = 37, RIGHT_KEY = 39, UP_KEY = 38, DOWN_KEY = 40, SPACE_KEY = 32;
+        const keyPressed = event.keyCode;
+        const goingUp = dy === -1, goingDown = dy === 1, goingRight = dx === 1, goingLeft = dx === -1;
+
+        if (keyPressed === SPACE_KEY && !gameActive) {
+            restartGame();
+            return;
+        }
+        if (!gameActive) return;
+
+        if (keyPressed === LEFT_KEY && !goingRight) { dx = -1; dy = 0; }
+        else if (keyPressed === RIGHT_KEY && !goingLeft) { dx = 1; dy = 0; }
+        else if (keyPressed === UP_KEY && !goingDown) { dx = 0; dy = -1; }
+        else if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; }
+    }
+
+    function getRandomAgencyAcronym() {
+        if (usedAgencyAcronyms.size >= agencyAcronyms.length) {
+            usedAgencyAcronyms.clear(); // Reset on exhaustion, allowing duplicates after restart
+            agencyList = [];
+        }
+        let acronym;
+        do { acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)]; } 
+        while (usedAgencyAcronyms.has(acronym));
+        usedAgencyAcronyms.add(acronym); agencyList.push(acronym); updateUIText(); return acronym;
+    }
+
+    function getRandomDemocrat() {
+        if (usedDemocratNames.size >= democratNames.length) {
+            usedDemocratNames.clear(); // Reset on exhaustion, allowing duplicates after restart
+            democratList = [];
+        }
+        let name;
+        do { name = democratNames[Math.floor(Math.random() * democratNames.length)]; } 
+        while (usedDemocratNames.has(name));
+        usedDemocratNames.add(name); democratList.push(name); updateUIText(); return name;
+    }
+
+    function addAudit() {
+        if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
+        const acronym = getRandomAgencyAcronym();
+        if (acronym) agencyList.push(agencyFullNames[acronym]); // Use full formal name
+        updateUIText();
+        addDemocrat(); // Spawn new Democrat when Audit is eaten
+    }
+
+    function addDemocrat() {
+        if (usedDemocratNames.size >= democratNames.length) return;
+        const name = getRandomDemocrat();
+        democrats.push({
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY),
+            name
+        });
+        updateUIText();
+    }
+
+    function updateUIText() {
+        democratsText.innerHTML = `Democrats Against you:\n${democratList.map(name => `${name} ${democratDetails[name] || ''}`).join('\n') || ''}`;
+        agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.map(acronym => agencyFullNames[acronym] || acronym).join('\n') || ''}`; // Ensure full names
+    }
+
+    function drawGame() {
+        if (!gameActive) return;
+
+        try {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            snake.unshift(head);
+
+            let foodEaten = false;
+            for (let i = 0; i < foods.length; i++) {
+                if (head.x === foods[i]?.x && head.y === foods[i]?.y) { // Safety check
+                    if (foods[i].type === 'audit') {
+                        score += 30; for (let j = 0; j < 3; j++) snake.push({...snake[snake.length - 1]});
+                        addAudit();
+                    }
+                    foods.splice(i, 1);
+                    foods.push({
+                        x: Math.floor(Math.random() * tileCountX),
+                        y: Math.floor(Math.random() * tileCountY),
+                        type: 'audit',
+                        acronym: getRandomAgencyAcronym()
+                    });
+                    foodEaten = true;
+                    break;
+                }
+            }
+            if (!foodEaten) snake.pop();
+
+            if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
+                gameOver(); return;
+            }
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    gameOver(); return;
+                }
+            }
+            for (let i = 0; i < democrats.length; i++) {
+                if (head.x === democrats[i].x && head.y === democrats[i].y) {
+                    gameOver(); return;
+                }
+            }
+            for (let i = 0; i < foods.length; i++) {
+                if (head.x === foods[i]?.x && head.y === foods[i]?.y) continue; // Red only grow/score
+            }
+
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'lime';
+            snake.forEach(segment => ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2));
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
+
+            foods.forEach(food => {
+                if (!food || !food.type || food.type !== 'audit') return; // Skip invalid or non-audit food
+                ctx.fillStyle = 'red';
+                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+                if (food.type === 'audit' && !food.acronym) {
+                    food.acronym = getRandomAgencyAcronym(); // Ensure acronym
+                }
+                if (food.type === 'audit' && food.acronym) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    const textX = food.x * gridSize + (gridSize - ctx.measureText(food.acronym).width) / 2;
+                    ctx.fillText(food.acronym, textX, food.y * gridSize + gridSize + 10);
+                }
+            });
+
+            democrats.forEach(democrat => {
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(democrat.x * gridSize, democrat.y * gridSize, gridSize - 2, gridSize - 2);
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                const textX = democrat.x * gridSize + (gridSize - ctx.measureText(democrat.name).width) / 2;
+                ctx.fillText(democrat.name, textX, democrat.y * gridSize + gridSize + 10);
+            });
+
+            scoreText.textContent = `Score: ${score}`;
+
+            setTimeout(drawGame, gameSpeed);
+        } catch (error) {
+            console.error('Error in drawGame:', error);
+            gameOver();
+        }
+    }
+
+    function gameOver() {
+        gameActive = false;
+        restartText.style.display = 'block';
+    }
+
+    function restartGame() {
+        snake = [{ x: 20, y: 12 }];
+        foods = [
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+            { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
+        ];
+        democrats = [];
+        dx = 0;
+        dy = 0;
+        score = 0;
+        gameActive = true;
+        usedAgencyAcronyms.clear();
+        usedDemocratNames.clear();
+        agencyList = [];
+        democratList = [];
+        updateUIText();
+        restartText.style.display = 'none';
+        drawGame();
+    }
+
+    drawGame();
+});
