@@ -124,7 +124,7 @@ const agencyFullNames = {
     "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
-let agencyList = new Set(); // Ensure exact tracking of eaten Audits
+let agencyList = new Set(); // Ensure exact tracking of eaten Audits, no duplicates
 let usedDemocratNames = new Set();
 let democratList = [];
 
