@@ -40,38 +40,44 @@ body {
 
 #democratsText {
     position: absolute;
-    right: -225px; /* Moved slightly more to the right */
+    right: -240px; /* Moved slightly more to the right (from -250px to -240px) */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
-    text-align: left; /* Keep left-aligned, but fixed position */
-    max-width: 250px; /* Increased max-width to accommodate longer text */
+    text-align: left; /* Keep left-aligned, fixed position */
+    max-width: 240px; /* Reduced max-width to prevent text movement, but allow slight right shift */
     white-space: pre-wrap; /* Allow text to wrap for legibility */
-    line-height: 1.5; /* Increased line height for better spacing between Democrats */
+    line-height: 1.5; /* Maintain spacing for legibility */
     display: block;
     z-index: 10;
     overflow: hidden; /* Prevent text from spilling into canvas */
-    text-decoration: underline; /* Underline the title */
+}
+
+#democratsText strong {
+    text-decoration: underline; /* Underline only the title */
 }
 
 #agenciesText {
     position: absolute;
-    left: -250px; /* Keep offset to prevent overlap with longer text */
+    left: -240px; /* Moved slightly more to the right (from -250px to -240px) */
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
-    text-align: right; /* Keep right-aligned, but fixed position */
-    max-width: 250px; /* Increased max-width to accommodate longer text */
+    text-align: right; /* Keep right-aligned, fixed position */
+    max-width: 240px; /* Reduced max-width to prevent text movement, but allow slight right shift */
     white-space: pre-wrap; /* Allow text to wrap for legibility */
-    line-height: 1.2; /* Default line height for agencies (optional, can adjust) */
+    line-height: 1.2; /* Default line height for agencies */
     display: block;
     z-index: 10;
     overflow: hidden; /* Prevent text from spilling into canvas */
-    text-decoration: underline; /* Underline the title */
+}
+
+#agenciesText strong {
+    text-decoration: underline; /* Underline only the title */
 }
 
 #gameCanvas {
