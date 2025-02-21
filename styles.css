@@ -40,5 +40,55 @@ body {
 
 #democratsText {
     position: absolute;
-    right: -300px; /* Maintained offset for legibility, no change */
-    bottom: -20px
+    right: -300px; /* Maintained offset for legibility */
+    bottom: -20px; /* Maintained bottom position for space */
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: left; /* Keep left-aligned, fixed position */
+    max-width: 280px; /* Maintained max-width for legibility */
+    white-space: pre-wrap; /* Allow text to wrap for legibility */
+    line-height: 1.6; /* Maintained increased line height for uniform spacing */
+    display: block;
+    z-index: 10;
+    overflow: hidden; /* Prevent text from spilling into canvas */
+}
+
+#democratsText strong {
+    text-decoration: underline; /* Underline only the title, no bullet */
+}
+
+#democratsText span {
+    display: block; /* Ensure each item is on a new line */
+    margin-top: 2px; /* Reverted to small uniform space between all lines */
+}
+
+#democratsText span:before {
+    content: "• "; /* Maintain bullet point before each Democrat entry */
+    margin-right: 5px; /* Space between bullet and text */
+}
+
+#agenciesText {
+    position: absolute;
+    left: -300px; /* Maintained offset, as requested to keep perfect */
+    bottom: -20px; /* Maintained bottom position, as requested to keep perfect */
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: right; /* Keep right-aligned, fixed position */
+    max-width: 280px; /* Maintained max-width, as requested to keep perfect */
+    white-space: pre-wrap; /* Allow text to wrap for legibility */
+    line-height: 1.4; /* Maintained line height, as requested to keep perfect */
+    display: block;
+    z-index: 10;
+    overflow: hidden; /* Prevent text from spilling into canvas */
+}
+
+#agenciesText strong {
+    text-decoration: underline; /* Underline only the title, no bullet */
+}
+
+#agenciesText span {
+    display: block; /* Ensure each item is on a new
