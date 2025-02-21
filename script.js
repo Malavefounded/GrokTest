@@ -124,7 +124,7 @@ const agencyFullNames = {
     "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
-let agencyList = [];
+let agencyList = new Set(); // Use Set to prevent duplicates
 let usedDemocratNames = new Set();
 let democratList = [];
 
@@ -181,12 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function getRandomAgencyAcronym() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) {
             usedAgencyAcronyms.clear(); // Reset on exhaustion, allowing duplicates after restart
-            agencyList = [];
+            agencyList.clear(); // Clear Set for duplicates
         }
         let acronym;
         do { acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)]; } 
         while (usedAgencyAcronyms.has(acronym));
-        usedAgencyAcronyms.add(acronym); agencyList.push(acronym); updateUIText(); return acronym;
+        usedAgencyAcronyms.add(acronym); agencyList.add(acronym); updateUIText(); return acronym;
     }
 
     function getRandomDemocrat() {
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addAudit() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
         const acronym = getRandomAgencyAcronym();
-        if (acronym) agencyList.push(agencyFullNames[acronym]); // Use full formal name
+        if (acronym) agencyList.add(acronym); // Use Set to prevent duplicates
         updateUIText();
         addDemocrat(); // Spawn new Democrat when Audit is eaten
     }
@@ -220,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateUIText() {
-        democratsText.innerHTML = `Democrats Against you:\n${democratList.map(name => `${name} ${democratDetails[name] || ''}`).join('\n') || ''}`;
-        agenciesText.innerHTML = `Federal Agencies to Audit:\n${agencyList.map(acronym => agencyFullNames[acronym] || acronym).join('\n') || ''}`; // Ensure full names
+        democratsText.innerHTML = `<strong style="color: blue;">Democrats Against you:</strong>\n${democratList.map(name => `${name} ${democratDetails[name] || ''}`).join('\n') || ''}`;
+        agenciesText.innerHTML = `<strong style="color: red;">Federal Agencies to Audit:</strong>\n${[...agencyList].map(acronym => agencyFullNames[acronym] || acronym).join('\n') || ''}`;
     }
 
     function drawGame() {
@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameActive = true;
         usedAgencyAcronyms.clear();
         usedDemocratNames.clear();
-        agencyList = [];
+        agencyList.clear();
         democratList = [];
         updateUIText();
         restartText.style.display = 'none';
