@@ -124,7 +124,7 @@ const agencyFullNames = {
     "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
-let agencyList = new Set(); // Use Set to match eaten Audits exactly
+let agencyList = new Set(); // Ensure exact tracking of eaten Audits
 let usedDemocratNames = new Set();
 let democratList = [];
 
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addAudit() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
         const acronym = getRandomAgencyAcronym();
-        if (acronym) agencyList.add(acronym); // Ensure exact match with eaten Audit
+        if (acronym) agencyList.add(acronym); // Add only eaten acronym, no duplicates
         updateUIText();
         addDemocrat(); // Spawn new Democrat when Audit is eaten
     }
@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameActive = true;
         usedAgencyAcronyms.clear();
         usedDemocratNames.clear();
-        agencyList.clear();
+        agencyList.clear(); // Start empty, no initial audits
         democratList = [];
         updateUIText();
         restartText.style.display = 'none';
