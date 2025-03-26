@@ -139,8 +139,8 @@ const scoreText = document.getElementById('scoreText');
 // Set canvas size dynamically
 const maxWidth = 800;
 const maxHeight = 600; // Matches the 4:3 aspect ratio of the PC screenshot
-const mobileWidth = 972; // 90% of 1080 (typical mobile width)
-const mobileHeight = 1296; // 4:3 aspect ratio (972 * 4/3)
+const mobileWidth = 960; // Adjusted to be divisible by gridSize (20), close to 972
+const mobileHeight = 1280; // 4:3 aspect ratio (960 * 4/3), divisible by 20
 const isMobile = window.innerWidth <= 850;
 
 // Set canvas resolution
@@ -155,6 +155,10 @@ if (isMobile) {
 const gridSize = 20;
 const tileCountX = canvas.width / gridSize;
 const tileCountY = canvas.height / gridSize;
+
+// Debug: Log canvas dimensions and grid counts
+console.log(`Canvas dimensions: ${canvas.width}x${canvas.height}`);
+console.log(`Tile counts: ${tileCountX}x${tileCountY}`);
 
 let snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
 let foods = [
@@ -392,4 +396,26 @@ function drawGame(timestamp) {
 
 function restartGame() {
     snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
-    foods 
+    foods = [
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
+        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
+    ];
+    democrats = [];
+    dx = 0;
+    dy = 0;
+    score = 0;
+    gameActive = true;
+    usedAgencyAcronyms.clear();
+    usedDemocratNames.clear();
+    agencyList.clear();
+    democratList = [];
+    updateUIText();
+    restartText.style.display = 'block';
+    lastFrameTime = 0;
+    requestAnimationFrame(drawGame);
+}
+
+// Start the game
+console.log('Starting game...');
+requestAnimationFrame(drawGame);
