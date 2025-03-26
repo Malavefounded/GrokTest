@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let dx = 0, dy = 0;
     let score = 0, gameSpeed = 100, gameActive = true;
     let touchStartX = 0, touchStartY = 0;
-    const swipeThreshold = 30; // Minimum swipe distance to register
+    const swipeThreshold = 30;
 
     // Prevent scrolling with arrow keys on PC
     document.addEventListener('keydown', (e) => {
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Prevent default touch behavior on the entire document
+    // Prevent default touch behavior
     document.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
     document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const touch = event.touches[0];
         touchStartX = touch.clientX;
         touchStartY = touch.clientY;
-        console.log('Touch Start:', touchStartX, touchStartY); // Debug
+        console.log('Touch Start:', touchStartX, touchStartY);
     }
 
     function handleTouchMove(event) {
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const deltaY = touch.clientY - touchStartY;
         const goingUp = dy === -1, goingDown = dy === 1, goingRight = dx === 1, goingLeft = dx === -1;
 
-        console.log('Touch Move - Delta:', deltaX, deltaY); // Debug
+        console.log('Touch Move - Delta:', deltaX, deltaY);
 
         if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
             if (deltaX > 0 && !goingLeft) { dx = 1; dy = 0; console.log('Swipe Right'); }
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleRestartTouch(event) {
         event.preventDefault();
         if (!gameActive) {
-            console.log('Restart Button Tapped'); // Debug
+            console.log('Restart Button Tapped');
             restartGame();
         }
     }
@@ -393,5 +393,6 @@ document.addEventListener('DOMContentLoaded', () => {
         drawGame();
     }
 
+    // Start the game immediately
     drawGame();
 });
