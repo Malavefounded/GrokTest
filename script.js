@@ -138,9 +138,9 @@ const scoreText = document.getElementById('scoreText');
 
 // Set canvas size dynamically
 const maxWidth = 800;
-const maxHeight = 600; // Increased height for PC to match screenshot proportions
+const maxHeight = 650; // Set to match the larger playing field in the PC screenshot
 const mobileWidth = 1920;
-const mobileHeight = 1080;
+const mobileHeight = 1400; // Increased height for mobile to match the larger playing field
 const isMobile = window.innerWidth <= 850;
 
 // Set canvas resolution
