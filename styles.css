@@ -88,8 +88,6 @@ body {
 
 #gameCanvas {
     border: 2px solid white;
-    width: 800px;
-    height: 500px;
 }
 
 .score-text {
@@ -140,12 +138,9 @@ body {
     #gameCanvas {
         width: 90vw;
         height: auto;
-        max-width: 800px;
-        max-height: 500px;
     }
     #rulesText {
         width: 90vw;
-        max-width: 800px;
         font-size: 14px;
         top: -100px;
     }
