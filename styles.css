@@ -3,8 +3,12 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    width: 100vw;
     margin: 0;
     background-color: black;
+    overflow: hidden;
+    position: fixed;
+    touch-action: none; /* Prevent default touch actions */
 }
 
 .game-container {
@@ -40,48 +44,50 @@ body {
 
 #democratsText {
     position: absolute;
-    right: -300px; /* Moved slightly more to the right (from -250px to -240px) */
+    right: -300px;
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
-    text-align: left; /* Keep left-aligned, fixed position */
-    max-width: 240px; /* Reduced max-width to prevent text movement, but allow slight right shift */
-    white-space: pre-wrap; /* Allow text to wrap for legibility */
-    line-height: 1.5; /* Maintain spacing for legibility */
+    text-align: left;
+    max-width: 240px;
+    white-space: pre-wrap;
+    line-height: 1.5;
     display: block;
     z-index: 10;
-    overflow: hidden; /* Prevent text from spilling into canvas */
+    overflow: hidden;
 }
 
 #democratsText strong {
-    text-decoration: underline; /* Underline only the title */
+    text-decoration: underline;
 }
 
 #agenciesText {
     position: absolute;
-    left: -240px; /* Moved slightly more to the right (from -250px to -240px) */
+    left: -240px;
     bottom: -10px;
     color: white;
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: bold;
-    text-align: right; /* Keep right-aligned, fixed position */
-    max-width: 240px; /* Reduced max-width to prevent text movement, but allow slight right shift */
-    white-space: pre-wrap; /* Allow text to wrap for legibility */
-    line-height: 1.2; /* Default line height for agencies */
+    text-align: right;
+    max-width: 240px;
+    white-space: pre-wrap;
+    line-height: 1.2;
     display: block;
     z-index: 10;
-    overflow: hidden; /* Prevent text from spilling into canvas */
+    overflow: hidden;
 }
 
 #agenciesText strong {
-    text-decoration: underline; /* Underline only the title */
+    text-decoration: underline;
 }
 
 #gameCanvas {
     border: 2px solid white;
+    max-width: 90vw; /* Scale canvas on mobile */
+    height: auto;
 }
 
 .score-text {
@@ -95,7 +101,7 @@ body {
 
 #adText {
     position: absolute;
-    bottom: 20px; /* Position below the game border (under 500px height + border) */
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     color: white;
@@ -106,6 +112,41 @@ body {
 }
 
 #adText a {
-    color: #00FFFF; /* Cyan for visibility, can adjust */
+    color: #00FFFF;
     text-decoration: underline;
+}
+
+#restartButton {
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    z-index: 10;
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    #restartButton {
+        display: none;
+    }
+}
+
+@media (max-width: 850px) {
+    #democratsText {
+        right: -150px;
+    }
+    #agenciesText {
+        left: -150px;
+    }
+    #gameCanvas {
+        width: 90vw;
+        height: auto;
+    }
+    #rulesText {
+        width: 90vw;
+        font-size: 14px;
+    }
 }
