@@ -138,9 +138,9 @@ const scoreText = document.getElementById('scoreText');
 
 // Set canvas size dynamically
 const maxWidth = 800;
-const maxHeight = 650; // Set to match the larger playing field in the PC screenshot
-const mobileWidth = 1920;
-const mobileHeight = 1400; // Increased height for mobile to match the larger playing field
+const maxHeight = 600; // Matches the 4:3 aspect ratio of the PC screenshot
+const mobileWidth = 972; // 90% of 1080 (typical mobile width)
+const mobileHeight = 1296; // 4:3 aspect ratio (972 * 4/3)
 const isMobile = window.innerWidth <= 850;
 
 // Set canvas resolution
@@ -392,25 +392,4 @@ function drawGame(timestamp) {
 
 function restartGame() {
     snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
-    foods = [
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
-        { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
-    ];
-    democrats = [];
-    dx = 0;
-    dy = 0;
-    score = 0;
-    gameActive = true;
-    usedAgencyAcronyms.clear();
-    usedDemocratNames.clear();
-    agencyList.clear();
-    democratList = [];
-    updateUIText();
-    restartText.style.display = 'block';
-    lastFrameTime = 0;
-    requestAnimationFrame(drawGame);
-}
-
-// Start the game
-requestAnimationFrame(drawGame);
+    foods 
