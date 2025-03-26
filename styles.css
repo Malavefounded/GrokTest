@@ -44,6 +44,8 @@ body {
 
 #gameCanvas {
     border: 2px solid white;
+    width: 800px; /* Full width of the container on PC */
+    height: 600px; /* Increased height to match screenshot */
 }
 
 .rules-text {
@@ -103,10 +105,8 @@ body {
     }
 
     #gameCanvas {
-        width: 100vw;
-        height: 100vh;
-        max-width: 100%;
-        max-height: 100%;
+        width: 100vw; /* Full width of the screen */
+        height: calc(100vw * 9 / 16); /* Maintain 16:9 aspect ratio (1920x1080) */
         object-fit: contain; /* Ensure the canvas fits within the viewport */
     }
 
@@ -136,13 +136,13 @@ body {
         padding: 8px;
         margin: 3px 0;
         border: 1px solid white;
-        background-color: black; /* Black background for mobile */
+        background-color: black;
     }
 
     #adText {
         font-size: 12px;
         margin: 5px 0;
-        background-color: black; /* Black background for mobile */
+        background-color: black;
         padding: 8px;
         width: 90%;
         box-sizing: border-box;
