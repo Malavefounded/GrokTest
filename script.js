@@ -162,8 +162,8 @@ let dx = 0, dy = 0;
 let score = 0, gameActive = true;
 let touchStartX = 0, touchStartY = 0;
 const swipeThreshold = 30;
-const targetFPS = 10; // Target 10 frames per second
-const frameInterval = 1000 / targetFPS; // 100ms per frame
+const targetFPS = 15; // Increased to 15 frames per second (from 10)
+const frameInterval = 1000 / targetFPS; // ~66ms per frame
 let lastFrameTime = 0;
 
 // Prevent scrolling with arrow keys on PC
@@ -173,14 +173,12 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Prevent default touch behavior
-document.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
-document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+// Prevent default touch behavior on the entire document
+document.addEventListener('touchstart', handleTouchStart, { passive: false });
+document.addEventListener('touchmove', handleTouchMove, { passive: false });
+restartButton.addEventListener('touchstart', handleRestartTouch, { passive: false });
 
 document.addEventListener('keydown', handleKeyPress);
-canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-restartButton.addEventListener('touchstart', handleRestartTouch, { passive: false });
 
 function handleKeyPress(event) {
     const LEFT_KEY = 37, RIGHT_KEY = 39, UP_KEY = 38, DOWN_KEY = 40, SPACE_KEY = 32;
@@ -200,6 +198,7 @@ function handleKeyPress(event) {
 }
 
 function handleTouchStart(event) {
+    event.preventDefault();
     const touch = event.touches[0];
     touchStartX = touch.clientX;
     touchStartY = touch.clientY;
@@ -207,6 +206,7 @@ function handleTouchStart(event) {
 }
 
 function handleTouchMove(event) {
+    event.preventDefault();
     if (!gameActive) return;
 
     const touch = event.touches[0];
