@@ -143,8 +143,9 @@ document.querySelector('.game-container').appendChild(scoreText);
 // Set canvas size dynamically
 const maxWidth = 800;
 const maxHeight = 500;
-canvas.width = Math.min(window.innerWidth * 0.9, maxWidth);
-canvas.height = (canvas.width / maxWidth) * maxHeight;
+const isMobile = window.innerWidth <= 850;
+canvas.width = isMobile ? window.innerWidth * 0.9 : maxWidth;
+canvas.height = isMobile ? (canvas.width / maxWidth) * maxHeight : maxHeight;
 
 const gridSize = 20;
 const tileCountX = canvas.width / gridSize;
@@ -252,8 +253,6 @@ function getRandomDemocrat() {
     let name;
     do { name = democratNames[Math.floor(Math.random() * democratNames.length)]; } 
     while (usedDemocratNames.has(name));
-ස: The `usedDemocratNames` set is used to keep track of used Democrat names to avoid duplicates. The `democratList` array stores the list of Democrats that have appeared in the game.
-
     usedDemocratNames.add(name);
     democratList.push(name);
     updateUIText();
@@ -288,7 +287,11 @@ function updateUIText() {
 }
 
 function drawGame() {
-    if (!gameActive) return;
+    if (!gameActive) {
+        restartText.style.display = 'block';
+        restartButton.style.display = isMobile ? 'block' : 'none';
+        return;
+    }
 
     try {
         const head = { x: snake[0].x + dx, y: snake[0].y + dy };
@@ -316,18 +319,18 @@ function drawGame() {
         if (!foodEaten) snake.pop();
 
         if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
-            gameOver();
+            gameActive = false;
             return;
         }
         for (let i = 1; i < snake.length; i++) {
             if (head.x === snake[i].x && head.y === snake[i].y) {
-                gameOver();
+                gameActive = false;
                 return;
             }
         }
         for (let i = 0; i < democrats.length; i++) {
             if (head.x === democrats[i].x && head.y === democrats[i].y) {
-                gameOver();
+                gameActive = false;
                 return;
             }
         }
@@ -367,17 +370,11 @@ function drawGame() {
 
         scoreText.textContent = `Score: ${score}`;
 
-        setTimeout(drawGame, gameSpeed);
+        requestAnimationFrame(drawGame);
     } catch (error) {
         console.error('Error in drawGame:', error);
-        gameOver();
+        gameActive = false;
     }
-}
-
-function gameOver() {
-    gameActive = false;
-    restartText.style.display = 'block';
-    restartButton.style.display = 'block';
 }
 
 function restartGame() {
@@ -403,4 +400,4 @@ function restartGame() {
 }
 
 // Start the game
-drawGame();
+requestAnimationFrame(drawGame);
