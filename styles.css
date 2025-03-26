@@ -6,109 +6,68 @@ body {
     width: 100vw;
     margin: 0;
     background-color: black;
-    overflow: hidden;
+    overflow: auto; /* Allow scrolling for the vertical layout */
     position: fixed;
     touch-action: none;
 }
 
 .game-container {
-    position: relative;
-    background-color: black;
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
+    background-color: black;
+    width: 100%;
+    padding: 10px 0;
 }
 
-#rulesText {
-    position: absolute;
-    top: -120px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    text-align: center;
+.header {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
     max-width: 800px;
-    white-space: normal;
-    line-height: 1.5;
+    padding: 0 10px;
+    margin-bottom: 10px;
 }
 
-#restartText {
-    position: absolute;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
+.score-text {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+}
+
+.restart-text {
     color: red;
     font-family: Arial, sans-serif;
-    font-size: 16px;
-    display: none;
-}
-
-#democratsText {
-    position: absolute;
-    right: -300px;
-    bottom: -10px;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    font-weight: bold;
-    text-align: left;
-    max-width: 240px;
-    white-space: pre-wrap;
-    line-height: 1.5;
-    display: block;
-    z-index: 10;
-}
-
-#democratsText strong {
-    text-decoration: underline;
-}
-
-#agenciesText {
-    position: absolute;
-    left: -240px;
-    bottom: -10px;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    font-weight: bold;
-    text-align: right;
-    max-width: 240px;
-    white-space: pre-wrap;
-    line-height: 1.2;
-    display: block;
-    z-index: 10;
-}
-
-#agenciesText strong {
-    text-decoration: underline;
+    font-size: 20px;
+    cursor: pointer;
 }
 
 #gameCanvas {
     border: 2px solid white;
 }
 
-.score-text {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-}
-
-#adText {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+.agencies-text, .democrats-text, .rules-text, #adText {
+    background-color: #90EE90; /* Light green background */
     color: white;
     font-family: Arial, sans-serif;
     font-size: 14px;
+    font-weight: bold;
+    text-align: left;
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 800px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.agencies-text strong, .democrats-text strong {
+    text-decoration: underline;
+}
+
+#adText {
     text-align: center;
-    z-index: 10;
 }
 
 #adText a {
@@ -116,25 +75,11 @@ body {
     text-decoration: underline;
 }
 
-#restartButton {
-    position: absolute;
-    bottom: -80px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 60px;
-    cursor: pointer;
-    z-index: 10;
-    display: none;
-}
-
-@media (min-width: 1024px) {
-    #restartButton {
-        display: none;
-    }
-}
-
 @media (max-width: 850px) {
+    .game-container {
+        padding: 5px 0;
+    }
+
     #gameCanvas {
         width: 100vw;
         height: 100vh;
@@ -142,24 +87,20 @@ body {
         max-height: 100%;
         object-fit: contain; /* Ensure the canvas fits within the viewport */
     }
-    #rulesText {
-        width: 90vw;
-        font-size: 14px;
-        top: -100px;
+
+    .header {
+        max-width: 100%;
+        padding: 0 5px;
     }
-    #democratsText {
-        right: -150px;
-        font-size: 8px;
+
+    .score-text, .restart-text {
+        font-size: 16px;
     }
-    #agenciesText {
-        left: -150px;
-        font-size: 8px;
-    }
-    #adText {
-        bottom: 10px;
+
+    .agencies-text, .democrats-text, .rules-text, #adText {
         font-size: 12px;
-    }
-    #restartButton {
-        bottom: -60px;
+        padding: 8px;
+        margin: 3px 0;
+        max-width: 100%;
     }
 }
