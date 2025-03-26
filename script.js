@@ -143,9 +143,18 @@ document.querySelector('.game-container').appendChild(scoreText);
 // Set canvas size dynamically
 const maxWidth = 800;
 const maxHeight = 500;
+const mobileWidth = 1920;
+const mobileHeight = 1080;
 const isMobile = window.innerWidth <= 850;
-canvas.width = isMobile ? window.innerWidth * 0.9 : maxWidth;
-canvas.height = isMobile ? (canvas.width / maxWidth) * maxHeight : maxHeight;
+
+// Set canvas resolution
+if (isMobile) {
+    canvas.width = mobileWidth;
+    canvas.height = mobileHeight;
+} else {
+    canvas.width = maxWidth;
+    canvas.height = maxHeight;
+}
 
 const gridSize = 20;
 const tileCountX = canvas.width / gridSize;
@@ -162,7 +171,7 @@ let dx = 0, dy = 0;
 let score = 0, gameActive = true;
 let touchStartX = 0, touchStartY = 0;
 const swipeThreshold = 30;
-const targetFPS = 15; // Increased to 15 frames per second (from 10)
+const targetFPS = 15; // 15 frames per second
 const frameInterval = 1000 / targetFPS; // ~66ms per frame
 let lastFrameTime = 0;
 
@@ -202,7 +211,6 @@ function handleTouchStart(event) {
     const touch = event.touches[0];
     touchStartX = touch.clientX;
     touchStartY = touch.clientY;
-    console.log('Touch Start:', touchStartX, touchStartY);
 }
 
 function handleTouchMove(event) {
@@ -214,14 +222,12 @@ function handleTouchMove(event) {
     const deltaY = touch.clientY - touchStartY;
     const goingUp = dy === -1, goingDown = dy === 1, goingRight = dx === 1, goingLeft = dx === -1;
 
-    console.log('Touch Move - Delta:', deltaX, deltaY);
-
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-        if (deltaX > 0 && !goingLeft) { dx = 1; dy = 0; console.log('Swipe Right'); }
-        else if (deltaX < 0 && !goingRight) { dx = -1; dy = 0; console.log('Swipe Left'); }
+        if (deltaX > 0 && !goingLeft) { dx = 1; dy = 0; }
+        else if (deltaX < 0 && !goingRight) { dx = -1; dy = 0; }
     } else if (Math.abs(deltaY) > swipeThreshold) {
-        if (deltaY > 0 && !goingUp) { dx = 0; dy = 1; console.log('Swipe Down'); }
-        else if (deltaY < 0 && !goingDown) { dx = 0; dy = -1; console.log('Swipe Up'); }
+        if (deltaY > 0 && !goingUp) { dx = 0; dy = 1; }
+        else if (deltaY < 0 && !goingDown) { dx = 0; dy = -1; }
     }
 
     touchStartX = touch.clientX;
@@ -231,7 +237,6 @@ function handleTouchMove(event) {
 function handleRestartTouch(event) {
     event.preventDefault();
     if (!gameActive) {
-        console.log('Restart Button Tapped');
         restartGame();
     }
 }
