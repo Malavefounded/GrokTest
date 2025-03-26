@@ -45,7 +45,7 @@ body {
 #gameCanvas {
     border: 2px solid white;
     width: 800px; /* Full width of the container on PC */
-    height: 600px; /* Increased height to match screenshot */
+    height: 650px; /* Exact height to match the PC screenshot */
 }
 
 .rules-text {
@@ -106,7 +106,7 @@ body {
 
     #gameCanvas {
         width: 100vw; /* Full width of the screen */
-        height: calc(100vw * 9 / 16); /* Maintain 16:9 aspect ratio (1920x1080) */
+        height: calc(100vw * 1400 / 1920); /* Maintain aspect ratio based on 1920x1400 */
         object-fit: contain; /* Ensure the canvas fits within the viewport */
     }
 
