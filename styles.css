@@ -106,7 +106,7 @@ body {
 
     #gameCanvas {
         width: 90vw; /* Matches the width of agencies-text and democrats-text */
-        height: calc(90vw * 1296 / 972); /* Maintain 4:3 aspect ratio (972x1296) */
+        height: calc(90vw * 1280 / 960); /* Maintain 4:3 aspect ratio (960x1280) */
         border: 2px solid white;
     }
 
