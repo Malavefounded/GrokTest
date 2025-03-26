@@ -134,11 +134,7 @@ const restartText = document.getElementById('restartText');
 const rulesText = document.getElementById('rulesText');
 const democratsText = document.getElementById('democratsText');
 const agenciesText = document.getElementById('agenciesText');
-const restartButton = document.getElementById('restartButton');
-const scoreText = document.createElement('div');
-scoreText.className = 'score-text';
-scoreText.textContent = 'Score: 0';
-document.querySelector('.game-container').appendChild(scoreText);
+const scoreText = document.getElementById('scoreText');
 
 // Set canvas size dynamically
 const maxWidth = 800;
@@ -185,7 +181,7 @@ document.addEventListener('keydown', (e) => {
 // Prevent default touch behavior on the entire document
 document.addEventListener('touchstart', handleTouchStart, { passive: false });
 document.addEventListener('touchmove', handleTouchMove, { passive: false });
-restartButton.addEventListener('touchstart', handleRestartTouch, { passive: false });
+restartText.addEventListener('touchstart', handleRestartTouch, { passive: false });
 
 document.addEventListener('keydown', handleKeyPress);
 
@@ -307,7 +303,6 @@ function drawGame(timestamp) {
 
     if (!gameActive) {
         restartText.style.display = 'block';
-        restartButton.style.display = isMobile ? 'block' : 'none';
         return;
     }
 
@@ -412,8 +407,7 @@ function restartGame() {
     agencyList.clear();
     democratList = [];
     updateUIText();
-    restartText.style.display = 'none';
-    restartButton.style.display = 'none';
+    restartText.style.display = 'block';
     lastFrameTime = 0;
     requestAnimationFrame(drawGame);
 }
