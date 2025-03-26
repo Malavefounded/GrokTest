@@ -159,9 +159,12 @@ let foods = [
 ];
 let democrats = [];
 let dx = 0, dy = 0;
-let score = 0, gameSpeed = 100, gameActive = true;
+let score = 0, gameActive = true;
 let touchStartX = 0, touchStartY = 0;
 const swipeThreshold = 30;
+const targetFPS = 10; // Target 10 frames per second
+const frameInterval = 1000 / targetFPS; // 100ms per frame
+let lastFrameTime = 0;
 
 // Prevent scrolling with arrow keys on PC
 document.addEventListener('keydown', (e) => {
@@ -286,7 +289,17 @@ function updateUIText() {
     agenciesText.innerHTML = `<strong style="color: white;">Federal Agencies to Audit:</strong>\n${[...agencyList].map(acronym => agencyFullNames[acronym] || acronym).join('\n') || ''}`;
 }
 
-function drawGame() {
+function drawGame(timestamp) {
+    if (!lastFrameTime) lastFrameTime = timestamp;
+    const elapsed = timestamp - lastFrameTime;
+
+    if (elapsed < frameInterval) {
+        requestAnimationFrame(drawGame);
+        return;
+    }
+
+    lastFrameTime = timestamp;
+
     if (!gameActive) {
         restartText.style.display = 'block';
         restartButton.style.display = isMobile ? 'block' : 'none';
@@ -396,7 +409,8 @@ function restartGame() {
     updateUIText();
     restartText.style.display = 'none';
     restartButton.style.display = 'none';
-    drawGame();
+    lastFrameTime = 0;
+    requestAnimationFrame(drawGame);
 }
 
 // Start the game
