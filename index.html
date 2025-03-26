@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>D.O.G.E Snek GovAudit</title>
+    <title>Snake Audit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="game-container">
         <div id="rulesText" class="rules-text">
-            D.O.G.E Snek GovAudit<br>
+            Snake Audit<br>
             • Eat the red blocks: Audits (+30 points, +3 size)<br>
             • Avoid the blue blocks: Democrats (instant death)<br>
-            • Press Space to Restart
+            • Press Space to Restart (Swipe on Mobile)
         </div>
-        <canvas id="gameCanvas" width="800" height="500"></canvas>
-        <div id="restartText">Press Space to Restart</div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="restartText">Press Space to Restart (Tap on Mobile)</div>
         <div id="democratsText" class="democrats-text">Democrats Against you:</div>
         <div id="agenciesText" class="agencies-text">Federal Agencies to Audit:</div>
         <div id="adText"><a href="https://businessisbusinesses.com" target="_blank">BUSINESSISBUSINESSES.COM</a></div>
+        <img id="restartButton" src="https://dogesim.copycode.ai/doge-logo.png" alt="Department of Government Efficiency logo - Shiba Inu in a suit">
     </div>
     <script src="script.js"></script>
 </body>
