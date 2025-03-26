@@ -124,7 +124,7 @@ const agencyFullNames = {
     "Smithsonian": "Smithsonian Institution"
 };
 let usedAgencyAcronyms = new Set();
-let agencyList = new Set(); // Track eaten Audits only
+let agencyList = new Set();
 let usedDemocratNames = new Set();
 let democratList = [];
 
@@ -135,12 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const rulesText = document.getElementById('rulesText');
     const democratsText = document.getElementById('democratsText');
     const agenciesText = document.getElementById('agenciesText');
+    const restartButton = document.getElementById('restartButton');
     const scoreText = document.createElement('div');
     scoreText.className = 'score-text';
     scoreText.textContent = 'Score: 0';
     document.querySelector('.game-container').appendChild(scoreText);
 
-    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText || !scoreText) {
+    if (!canvas || !ctx || !restartText || !rulesText || !democratsText || !agenciesText || !scoreText || !restartButton) {
         console.error('One or more DOM elements not found. Check your HTML.');
         return;
     }
@@ -155,11 +156,27 @@ document.addEventListener('DOMContentLoaded', () => {
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() },
         { x: Math.floor(Math.random() * tileCountX), y: Math.floor(Math.random() * tileCountY), type: 'audit', acronym: getRandomAgencyAcronym() }
     ];
-    let democrats = []; // Start with no Democrats
+    let democrats = [];
     let dx = 0, dy = 0;
     let score = 0, gameSpeed = 100, gameActive = true;
+    let touchStartX = 0, touchStartY = 0;
+    const swipeThreshold = 30; // Minimum swipe distance to register
+
+    // Prevent scrolling with arrow keys on PC
+    document.addEventListener('keydown', (e) => {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+        }
+    });
+
+    // Prevent default touch behavior on the entire document
+    document.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
     document.addEventListener('keydown', handleKeyPress);
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    restartButton.addEventListener('touchstart', handleRestartTouch, { passive: false });
 
     function handleKeyPress(event) {
         const LEFT_KEY = 37, RIGHT_KEY = 39, UP_KEY = 38, DOWN_KEY = 40, SPACE_KEY = 32;
@@ -178,21 +195,58 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; }
     }
 
+    function handleTouchStart(event) {
+        const touch = event.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        console.log('Touch Start:', touchStartX, touchStartY); // Debug
+    }
+
+    function handleTouchMove(event) {
+        if (!gameActive) return;
+
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        const goingUp = dy === -1, goingDown = dy === 1, goingRight = dx === 1, goingLeft = dx === -1;
+
+        console.log('Touch Move - Delta:', deltaX, deltaY); // Debug
+
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+            if (deltaX > 0 && !goingLeft) { dx = 1; dy = 0; console.log('Swipe Right'); }
+            else if (deltaX < 0 && !goingRight) { dx = -1; dy = 0; console.log('Swipe Left'); }
+        } else if (Math.abs(deltaY) > swipeThreshold) {
+            if (deltaY > 0 && !goingUp) { dx = 0; dy = 1; console.log('Swipe Down'); }
+            else if (deltaY < 0 && !goingDown) { dx = 0; dy = -1; console.log('Swipe Up'); }
+        }
+
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+    }
+
+    function handleRestartTouch(event) {
+        event.preventDefault();
+        if (!gameActive) {
+            console.log('Restart Button Tapped'); // Debug
+            restartGame();
+        }
+    }
+
     function getRandomAgencyAcronym() {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) {
-            usedAgencyAcronyms.clear(); // Reset on exhaustion, allowing duplicates after restart
-            agencyList.clear(); // Clear Set for duplicates, but only eaten Audits added
+            usedAgencyAcronyms.clear();
+            agencyList.clear();
         }
         let acronym;
         do { acronym = agencyAcronyms[Math.floor(Math.random() * agencyAcronyms.length)]; } 
         while (usedAgencyAcronyms.has(acronym));
-        usedAgencyAcronyms.add(acronym); // Only tracks appearance, not list addition
-        return acronym; // Don’t add to agencyList here—only when eaten
+        usedAgencyAcronyms.add(acronym);
+        return acronym;
     }
 
     function getRandomDemocrat() {
         if (usedDemocratNames.size >= democratNames.length) {
-            usedDemocratNames.clear(); // Reset on exhaustion, allowing duplicates after restart
+            usedDemocratNames.clear();
             democratList = [];
         }
         let name;
@@ -205,11 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (usedAgencyAcronyms.size >= agencyAcronyms.length) return;
         const acronym = foods.find(food => food.type === 'audit' && snake[0].x === food.x && snake[0].y === food.y)?.acronym;
         if (acronym) {
-            agencyList.add(acronym); // Add only when eaten, not on appearance
-            usedAgencyAcronyms.add(acronym); // Ensure tracking
+            agencyList.add(acronym);
+            usedAgencyAcronyms.add(acronym);
         }
         updateUIText();
-        addDemocrat(); // Spawn new Democrat when Audit is eaten
+        addDemocrat();
     }
 
     function addDemocrat() {
@@ -237,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let foodEaten = false;
             for (let i = 0; i < foods.length; i++) {
-                if (head.x === foods[i]?.x && head.y === foods[i]?.y) { // Safety check
+                if (head.x === foods[i]?.x && head.y === foods[i]?.y) {
                     if (foods[i].type === 'audit') {
                         score += 30; for (let j = 0; j < 3; j++) snake.push({...snake[snake.length - 1]});
                         addAudit();
@@ -268,9 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     gameOver(); return;
                 }
             }
-            for (let i = 0; i < foods.length; i++) {
-                if (head.x === foods[i]?.x && head.y === foods[i]?.y) continue; // Red only grow/score
-            }
 
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -282,11 +333,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText('D.O.G.E', snake[0].x * gridSize, snake[0].y * gridSize - 5);
 
             foods.forEach(food => {
-                if (!food || !food.type || food.type !== 'audit') return; // Skip invalid or non-audit food
+                if (!food || !food.type || food.type !== 'audit') return;
                 ctx.fillStyle = 'red';
                 ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
                 if (food.type === 'audit' && !food.acronym) {
-                    food.acronym = getRandomAgencyAcronym(); // Ensure acronym
+                    food.acronym = getRandomAgencyAcronym();
                 }
                 if (food.type === 'audit' && food.acronym) {
                     ctx.fillStyle = 'white';
@@ -317,6 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameOver() {
         gameActive = false;
         restartText.style.display = 'block';
+        restartButton.style.display = 'block';
     }
 
     function restartGame() {
@@ -333,10 +385,11 @@ document.addEventListener('DOMContentLoaded', () => {
         gameActive = true;
         usedAgencyAcronyms.clear();
         usedDemocratNames.clear();
-        agencyList.clear(); // Start empty, no initial audits
+        agencyList.clear();
         democratList = [];
         updateUIText();
         restartText.style.display = 'none';
+        restartButton.style.display = 'none';
         drawGame();
     }
 
