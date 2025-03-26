@@ -45,7 +45,7 @@ body {
 #gameCanvas {
     border: 2px solid white;
     width: 800px; /* Full width of the container on PC */
-    height: 650px; /* Exact height to match the PC screenshot */
+    height: 600px; /* Exact height to match the PC screenshot (4:3) */
 }
 
 .rules-text {
@@ -105,9 +105,9 @@ body {
     }
 
     #gameCanvas {
-        width: 100vw; /* Full width of the screen */
-        height: calc(100vw * 1400 / 1920); /* Maintain aspect ratio based on 1920x1400 */
-        object-fit: contain; /* Ensure the canvas fits within the viewport */
+        width: 90vw; /* Matches the width of agencies-text and democrats-text */
+        height: calc(90vw * 1296 / 972); /* Maintain 4:3 aspect ratio (972x1296) */
+        border: 2px solid white;
     }
 
     .header {
