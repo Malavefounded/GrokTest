@@ -46,32 +46,54 @@ body {
     border: 2px solid white;
 }
 
-.agencies-text, .democrats-text, .rules-text, #adText {
-    background-color: #90EE90; /* Light green background */
+.rules-text {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    white-space: normal;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+#adText {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+#adText a {
+    color: #00FFFF;
+    text-decoration: underline;
+}
+
+.bottom-section {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 10px;
+}
+
+.agencies-text, .democrats-text {
     color: white;
     font-family: Arial, sans-serif;
     font-size: 14px;
     font-weight: bold;
     text-align: left;
+    width: 48%;
     padding: 10px;
-    margin: 5px 0;
-    width: 100%;
-    max-width: 800px;
+    border: 1px solid white;
     white-space: pre-wrap;
     line-height: 1.5;
     box-sizing: border-box;
 }
 
 .agencies-text strong, .democrats-text strong {
-    text-decoration: underline;
-}
-
-#adText {
-    text-align: center;
-}
-
-#adText a {
-    color: #00FFFF;
     text-decoration: underline;
 }
 
@@ -97,10 +119,32 @@ body {
         font-size: 16px;
     }
 
-    .agencies-text, .democrats-text, .rules-text, #adText {
+    .rules-text {
+        font-size: 14px;
+        width: 90vw;
+    }
+
+    .bottom-section {
+        flex-direction: column;
+        align-items: center;
+        max-width: 100%;
+    }
+
+    .agencies-text, .democrats-text {
+        width: 90%;
         font-size: 12px;
         padding: 8px;
         margin: 3px 0;
-        max-width: 100%;
+        border: 1px solid white;
+        background-color: black; /* Black background for mobile */
+    }
+
+    #adText {
+        font-size: 12px;
+        margin: 5px 0;
+        background-color: black; /* Black background for mobile */
+        padding: 8px;
+        width: 90%;
+        box-sizing: border-box;
     }
 }
